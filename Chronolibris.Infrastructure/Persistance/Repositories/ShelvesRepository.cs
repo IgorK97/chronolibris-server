@@ -176,6 +176,14 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return await _context.Shelves
                 .AnyAsync(s => s.UserId == userId && s.Id == shelfId);
         }
+
+        public async Task<long[]> SeekBookInShelves(long userId, long bookId)
+        {
+            return await _context.Shelves
+                .Where(s => s.UserId == userId && s.Books.Any(b => b.Id == bookId))
+                .Select(s => s.Id)
+                .ToArrayAsync();
+        }
     }
 
 }

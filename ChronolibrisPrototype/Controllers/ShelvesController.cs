@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.Requests;
+﻿using System.Security.Claims;
+using Chronolibris.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,38 @@ namespace ChronolibrisPrototype.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserShelves(long userId)
+        public record CreateShelfRequest(string Name);
+
+        [HttpPost]
+        public async Task<IActionResult> CreateShelf(CreateShelfRequest request)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var result = await _mediator.Send(new CreateShelfCommand(userId, request.Name));
+            return Ok(result);
+        }
+
+        [HttpGet("books/{bookId}")]
+        public async Task<IActionResult> SeekBookInShelves(long bookId)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var result = await _mediator.Send(new SeekBookInShelvesQuery(userId, bookId));
+
+            return Ok(result);
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUserShelves()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
             var result = await _mediator.Send(new GetUserShelvesQuery(userId));
             return Ok(result);
         }
@@ -34,12 +64,17 @@ namespace ChronolibrisPrototype.Controllers
 
             return Ok(result);
         }
+
+        //public record AddBookToShelf(long shelfId, long bookId);
+
         [HttpPost("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> AddBook(long shelfId, long bookId)
         {
             bool res = await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
             return Ok(res);
         }
+
+        //public record DeleteBookFromShelf(long shelfId, long bookId);
 
         [HttpDelete("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> RemoveBook(long shelfId, long bookId)
