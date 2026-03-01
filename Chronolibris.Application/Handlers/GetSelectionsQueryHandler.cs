@@ -44,6 +44,7 @@ namespace Chronolibris.Application.Handlers
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description,
+                SelectionTypeId = s.SelectionTypeId
                 //IsActive = s.IsActive
             });
         }

@@ -26,6 +26,8 @@ namespace Chronolibris.Application.Models
         /// Обязательное подробное описание, объясняющее содержание и цель подборки.
         /// </summary>
         public required string Description { get; set; }
+
+        public required int SelectionTypeId { get; set; }
         
     }
 }
