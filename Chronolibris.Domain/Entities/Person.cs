@@ -19,5 +19,7 @@ namespace Chronolibris.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public ICollection<Content> Contents { get; set; } = new List<Content>();
         public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<BookParticipation> BookParticipations { get; set; } = new List<BookParticipation>();
+        public ICollection<ContentParticipation> ContentParticipations { get; set; } = new List<ContentParticipation>();
     }
 }

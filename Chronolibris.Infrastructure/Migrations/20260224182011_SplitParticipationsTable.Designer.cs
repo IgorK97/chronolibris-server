@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260224182011_SplitParticipationsTable")]
+    partial class SplitParticipationsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,13 +114,13 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_fragment");
 
-                    b.Property<bool>("IsReviewable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_reviewable");
-
                     b.Property<long>("LanguageId")
                         .HasColumnType("bigint")
                         .HasColumnName("language_id");
+
+                    b.Property<long?>("ParentBookId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_book_id");
 
                     b.Property<long?>("PublisherId")
                         .HasColumnType("bigint")
@@ -162,6 +165,9 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasIndex("LanguageId")
                         .HasDatabaseName("ix_books_language_id");
 
+                    b.HasIndex("ParentBookId")
+                        .HasDatabaseName("ix_books_parent_book_id");
+
                     b.HasIndex("PublisherId")
                         .HasDatabaseName("ix_books_publisher_id");
 
@@ -185,7 +191,6 @@ namespace Chronolibris.Infrastructure.Migrations
                             FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                             IsAvailable = true,
                             IsFragment = false,
-                            IsReviewable = true,
                             LanguageId = 2L,
                             PublisherId = 2L,
                             RatingsCount = 0L,
@@ -204,7 +209,6 @@ namespace Chronolibris.Infrastructure.Migrations
                             FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                             IsAvailable = true,
                             IsFragment = false,
-                            IsReviewable = true,
                             LanguageId = 2L,
                             PublisherId = 1L,
                             RatingsCount = 0L,
@@ -339,10 +343,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("ContentTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("content_type_id");
-
                     b.Property<long>("CountryId")
                         .HasColumnType("bigint")
                         .HasColumnName("country_id");
@@ -356,6 +356,14 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<bool>("IsOriginal")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_original");
+
+                    b.Property<bool>("IsTranslate")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_translate");
+
                     b.Property<long>("LanguageId")
                         .HasColumnType("bigint")
                         .HasColumnName("language_id");
@@ -364,7 +372,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("parent_content_id");
 
-                    b.Property<int?>("Position")
+                    b.Property<int>("Position")
                         .HasColumnType("integer")
                         .HasColumnName("position");
 
@@ -385,9 +393,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_contents");
 
-                    b.HasIndex("ContentTypeId")
-                        .HasDatabaseName("ix_contents_content_type_id");
-
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_contents_country_id");
 
@@ -403,10 +408,11 @@ namespace Chronolibris.Infrastructure.Migrations
                         new
                         {
                             Id = 1L,
-                            ContentTypeId = 20L,
                             CountryId = 1L,
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Монография является первой в отечественной литературе попыткой проследить процесс становления японского буддизма...",
+                            IsOriginal = true,
+                            IsTranslate = false,
                             LanguageId = 2L,
                             Position = 0,
                             Title = "Буддизм в Японии",
@@ -415,10 +421,11 @@ namespace Chronolibris.Infrastructure.Migrations
                         new
                         {
                             Id = 2L,
-                            ContentTypeId = 19L,
                             CountryId = 5L,
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Это — второе крупное исследование Ф. Броделя. Первое — «Средиземное море и мир Средиземноморья в эпоху Филиппа II»...",
+                            IsOriginal = false,
+                            IsTranslate = true,
                             LanguageId = 2L,
                             Position = 0,
                             Title = "Структуры повседневности: возможное и невозможное",
@@ -475,167 +482,6 @@ namespace Chronolibris.Infrastructure.Migrations
                             ContentId = 2L,
                             PersonId = 2L,
                             PersonRoleId = 1L
-                        });
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.ContentType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Nature")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("nature");
-
-                    b.HasKey("Id")
-                        .HasName("pk_content_type");
-
-                    b.ToTable("content_type", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Name = "Дневник",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Name = "Письмо",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Name = "Мемуары",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            Name = "Автобиография",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            Name = "Хроника",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 6L,
-                            Name = "Летопись",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 7L,
-                            Name = "Манифест",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 8L,
-                            Name = "Речь",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 9L,
-                            Name = "Указ",
-                            Nature = "Document"
-                        },
-                        new
-                        {
-                            Id = 10L,
-                            Name = "Рассказ",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 11L,
-                            Name = "Роман",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 12L,
-                            Name = "Философский трактат",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 13L,
-                            Name = "Богословский трактат",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 14L,
-                            Name = "Политический трактат",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 15L,
-                            Name = "Биография",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 16L,
-                            Name = "Путевые заметки",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 17L,
-                            Name = "Сборник",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 18L,
-                            Name = "Учебник",
-                            Nature = "Work"
-                        },
-                        new
-                        {
-                            Id = 19L,
-                            Name = "Историческое исследование",
-                            Nature = "Analysis"
-                        },
-                        new
-                        {
-                            Id = 20L,
-                            Name = "Монография",
-                            Nature = "Analysis"
-                        },
-                        new
-                        {
-                            Id = 21L,
-                            Name = "Научная статья",
-                            Nature = "Analysis"
-                        },
-                        new
-                        {
-                            Id = 22L,
-                            Name = "Неизвестно",
-                            Nature = "Unknown"
                         });
                 });
 
@@ -700,10 +546,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("book_id");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
                     b.Property<long>("FileSizeBytes")
                         .HasColumnType("bigint")
                         .HasColumnName("file_size_bytes");
@@ -712,19 +554,15 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("format_id");
 
-                    b.Property<bool>("IsReadable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_readable");
-
                     b.Property<string>("StorageUrl")
                         .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)")
                         .HasColumnName("storage_url");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("uploaded_at");
 
                     b.HasKey("Id")
                         .HasName("pk_digital_files");
@@ -1875,6 +1713,11 @@ namespace Chronolibris.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_books_languages_language_id");
 
+                    b.HasOne("Chronolibris.Domain.Entities.Book", "ParentBook")
+                        .WithMany()
+                        .HasForeignKey("ParentBookId")
+                        .HasConstraintName("fk_books_books_parent_book_id");
+
                     b.HasOne("Chronolibris.Domain.Entities.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
@@ -1893,6 +1736,8 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("Country");
 
                     b.Navigation("Language");
+
+                    b.Navigation("ParentBook");
 
                     b.Navigation("Publisher");
 
@@ -1971,13 +1816,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Content", b =>
                 {
-                    b.HasOne("Chronolibris.Domain.Entities.ContentType", "ContentType")
-                        .WithMany("Contents")
-                        .HasForeignKey("ContentTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_contents_content_type_content_type_id");
-
                     b.HasOne("Chronolibris.Domain.Entities.Country", "Country")
                         .WithMany("Contents")
                         .HasForeignKey("CountryId")
@@ -1995,10 +1833,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasOne("Chronolibris.Domain.Entities.Content", "ParentContent")
                         .WithMany()
                         .HasForeignKey("ParentContentId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_contents_contents_parent_content_id");
-
-                    b.Navigation("ContentType");
 
                     b.Navigation("Country");
 
@@ -2266,11 +2101,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Navigation("BookContents");
 
                     b.Navigation("Participations");
-                });
-
-            modelBuilder.Entity("Chronolibris.Domain.Entities.ContentType", b =>
-                {
-                    b.Navigation("Contents");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Country", b =>

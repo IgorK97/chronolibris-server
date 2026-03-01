@@ -37,15 +37,15 @@ namespace ChronolibrisPrototype.Controllers
         [HttpPost("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> AddBook(long shelfId, long bookId)
         {
-            await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
-            return Ok();
+            bool res = await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
+            return Ok(res);
         }
 
         [HttpDelete("{shelfId}/books/{bookId}")]
         public async Task<IActionResult> RemoveBook(long shelfId, long bookId)
         {
-            await _mediator.Send(new RemoveBookFromShelfCommand(shelfId, bookId));
-            return Ok();
+            bool res = await _mediator.Send(new RemoveBookFromShelfCommand(shelfId, bookId));
+            return Ok(res);
         }
 
     }

@@ -15,21 +15,22 @@ namespace Chronolibris.Domain.Entities
         public required string Title { get; set; }
         public required string Description { get; set; }
         public required long CountryId { get; set; }
+        public required long ContentTypeId { get; set; }
         public required long LanguageId { get; set; }
         public int? Year { get; set; }
-        public required bool IsOriginal { get; set; }
-        public required bool IsTranslate { get; set; }
         public long? ParentContentId { get; set; }
-        [ForeignKey("ParentContentId")]
         public Content? ParentContent { get; set; }
-        public required int Position { get; set; }
+
+        public int? Position { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public ICollection<BookContent> BookContents { get; set; } = [];
         public Country Country { get; set; } = null!;
         public Language Language { get; set; } = null!;
-        public ICollection<Participation> Participations { get; set; } = [];
-        public ICollection<Person> Persons { get; set;} = [];
+        public ICollection<ContentParticipation> Participations { get; set; } = [];
+        public ICollection<Person> Persons { get; set; } = [];
         public ICollection<Theme> Themes { get; set; }=[];
+        public ContentType ContentType { get; set; } = null!;
+
     }
 }

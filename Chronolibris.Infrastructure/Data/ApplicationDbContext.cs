@@ -22,7 +22,9 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<Bookmark> Bookmarks { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Language> Languages { get; set; }
-        public DbSet<Participation> Participations { get; set; }
+        public DbSet<ContentParticipation> ContentParticipations { get; set; }
+        public DbSet<BookParticipation> BookParticipations { get; set; }
+
         public DbSet<Person> Persons { get; set; }
         public DbSet<PersonRole> PersonRoles { get; set; }
         public DbSet<Publisher> Publishers { get; set; }

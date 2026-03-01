@@ -1,4 +1,4 @@
-﻿using System;
+﻿        using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,7 +17,10 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(2048)]
         public required string StorageUrl { get; set; }
         public required long FileSizeBytes { get; set; }
-        public required DateTime UploadedAt { get; set; }
+
+        public required bool IsReadable { get; set; }
+        public required DateTime CreatedAt { get; set; }
+        public required DateTime UpdatedAt { get; set; }
 
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;

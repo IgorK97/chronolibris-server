@@ -47,11 +47,27 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Series)
                 .Include(b => b.Country)
                 .Include(b => b.Language)
-                .Include(b => b.BookContents).ThenInclude(bc => bc.Content).ThenInclude(c => c.Participations).ThenInclude(p => p.Person)
-                .Include(b => b.BookContents).ThenInclude(bc => bc.Content).ThenInclude(c => c.Themes)
-                //.Include(b => b.Reviews)
+
                 .Include(b => b.Participations)
-                .Include(b => b.Persons)
+                    .ThenInclude(p => p.Person)
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.PersonRole)
+
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Content)
+                        .ThenInclude(c => c.Participations)
+                            .ThenInclude(p => p.Person)
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Content)
+                        .ThenInclude(c => c.Participations)
+                            .ThenInclude(p => p.PersonRole)
+
+
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Content)
+                        .ThenInclude(c => c.Themes)
+
+                //.Include(b => b.Persons)
                 .FirstOrDefaultAsync(b => b.Id == id, token);
         }
 
@@ -106,6 +122,33 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .ToListAsync(token);
 
             return books;
+        }
+
+        public async Task<Content?> GetContentWithRelationsAsync(long id, CancellationToken token)
+        {
+            return await _context.Contents
+                .Include(b => b.Country)
+                .Include(b => b.Language)
+                .Include(b => b.ContentType)
+
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.Person)
+                .Include(b => b.Participations)
+                    .ThenInclude(p => p.PersonRole)
+
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Book)
+                        .ThenInclude(c => c.Participations)
+                            .ThenInclude(p => p.Person)
+                .Include(b => b.BookContents)
+                    .ThenInclude(bc => bc.Book)
+                        .ThenInclude(c => c.Participations)
+                            .ThenInclude(p => p.PersonRole)
+
+                .Include(c => c.Themes)
+
+                //.Include(b => b.Persons)
+                .FirstOrDefaultAsync(b => b.Id == id, token);
         }
     }
 }

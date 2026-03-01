@@ -27,12 +27,11 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(2048)]
         public required string CoverPath { get; set; }
         public required bool IsAvailable { get; set; }
+
+        public required bool IsReviewable { get; set; }
         public required decimal AverageRating { get; set; }
         public required long RatingsCount { get; set; }
         public required long ReviewsCount { get; set; }
-        public long? ParentBookId { get; set; }
-        [ForeignKey("ParentBookId")]
-        public Book? ParentBook { get; set; }
         public long? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
         public long? SeriesId { get; set; }
@@ -44,7 +43,7 @@ namespace Chronolibris.Domain.Entities
         public ICollection<BookContent> BookContents { get; set; } = [];
         public ICollection<Shelf> Shelves { get; set; } = [];
         public ICollection<Person> Persons { get; set; } = [];
-        public ICollection<Participation> Participations { get; set; } = [];
+        public ICollection<BookParticipation> Participations { get; set; } = [];
         public ICollection<Selection> Selections { get; set; } = [];
         
     }

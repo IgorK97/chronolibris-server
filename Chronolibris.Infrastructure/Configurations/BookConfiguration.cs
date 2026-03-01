@@ -15,7 +15,7 @@ namespace Chronolibris.Infrastructure.Configurations
         {
             builder.HasMany(b => b.Persons)
                 .WithMany(b => b.Books)
-                .UsingEntity<Participation>();
+                .UsingEntity<BookParticipation>();
 
             //builder.HasMany(b => b.Shelves)
             //    .WithMany(s => s.Books)
@@ -72,6 +72,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Title = "Буддизм в Японии",
                     Year = 1993,
                     PublisherId = 2, // Восточная литература
+                    IsReviewable = true,
                 },
                 new Book
                 {
@@ -90,6 +91,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Title = "Структуры повседневности: возможное и невозможное",
                     Year = 1986,
                     PublisherId = 1, // Прогресс
+                    IsReviewable = true,
                 }
             );
 

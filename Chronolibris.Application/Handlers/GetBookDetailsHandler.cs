@@ -55,13 +55,24 @@ namespace Chronolibris.Application.Handlers
             if (book == null)
                 return null;
 
-            var bookParticipations = book.Participations;
+            //var bookParticipations = book.Participations;
+            //var contentParticipations = book.BookContents
+            //    .SelectMany(bc => bc.Content.Participations)
+            //    .ToList();
+
+            //var allParticipations = bookParticipations
+            //    .Concat(contentParticipations) 
+            //    .ToList();
+
+            var bookParticipations = book.Participations
+                .Select(p => new { p.PersonId, p.PersonRoleId, p.Person });
+
             var contentParticipations = book.BookContents
                 .SelectMany(bc => bc.Content.Participations)
-                .ToList();
+                .Select(p => new { p.PersonId, p.PersonRoleId, p.Person });
 
             var allParticipations = bookParticipations
-                .Concat(contentParticipations) 
+                .Concat(contentParticipations)
                 .ToList();
 
             var allThemes = book.BookContents
