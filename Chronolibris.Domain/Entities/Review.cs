@@ -14,7 +14,12 @@ namespace Chronolibris.Domain.Entities
         public required long BookId { get; set; }
         public string? ReviewText { get; set; }
         public required short Score { get; set; }
+        public required long ReviewStatusId { get; set; }
         public required DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ModeratedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public ReviewStatus ReviewStatus { get; set; } = null!;
         public ICollection<ReviewsReaction> ReviewsRatings { get; set; } = new List<ReviewsReaction>();
     }
 }

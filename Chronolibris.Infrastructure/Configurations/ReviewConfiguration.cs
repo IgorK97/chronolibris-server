@@ -22,6 +22,11 @@ namespace Chronolibris.Infrastructure.Configurations
                    .HasForeignKey(b => b.UserId)
                    .HasPrincipalKey(u => u.Id);
 
+            builder.HasOne<ReviewStatus>(r => r.ReviewStatus)
+               .WithMany(rs => rs.Reviews)
+               .HasForeignKey(b => b.ReviewStatusId)
+               .HasPrincipalKey(u => u.Id);
+
             builder.HasIndex(r => new { r.UserId, r.BookId })
                .IsUnique();
 

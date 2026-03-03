@@ -30,6 +30,12 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(reviews);
         }
 
+        private bool TryGetUserId(out long userId)
+        {
+            var claim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return long.TryParse(claim, out userId);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateReview(CreateReviewRequest request)
         {
@@ -45,6 +51,31 @@ namespace ChronolibrisPrototype.Controllers
             };
             var reviewId = await _mediator.Send(command);
             return Ok(reviewId);
+        }
+
+        [HttpPut("{reviewId}")]
+        public async Task<IActionResult> UpdateReview(long reviewId, UpdateReviewCommand request)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            var command = new UpdateReviewCommand
+            {
+                ReviewId = reviewId,
+                UserId = userId,
+                ReviewText = request.ReviewText,
+                Score = request.Score,
+            };
+            await _mediator.Send(command);
+            return NoContent();
+        }
+
+        [HttpDelete("{reviewId}")]
+        public async Task<IActionResult> DeleteReview(long reviewId)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            await _mediator.Send(new DeleteReviewCommand { ReviewId = reviewId, UserId = userId });
+            return NoContent();
         }
 
         [HttpPost("rate")]

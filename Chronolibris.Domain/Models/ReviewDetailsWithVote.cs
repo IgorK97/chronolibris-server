@@ -12,6 +12,6 @@ namespace Chronolibris.Domain.Models
         public required Review Review { get; set; }
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
-        public bool? UserVote { get; set; } // true - лайк, false - дизлайк, null - не голосовал
+        public bool? UserVote { get; set; }
     }
 }

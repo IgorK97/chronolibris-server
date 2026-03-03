@@ -47,7 +47,15 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<long> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
-            // Создание новой сущности Review из данных команды
+
+            var existing = await _unitOfWork.Reviews.GetActiveByUserAndBookAsync(request.UserId, request.BookId, cancellationToken);
+            if (existing != null)
+                throw new Exception("Пользователь уже оставил отзыв на эту книгу.");
+            if(request.Score < 1 || request.Score > 5)
+                throw new Exception("Оценка должна быть от 1 до 5.");
+            if (request.ReviewText != null && (request.ReviewText.Length < 120 || string.IsNullOrWhiteSpace(request.ReviewText.Trim())))
+                throw new Exception("Текст отзыва должен быть не менее 120 символов.");
+
             var review = new Review
             {
                 BookId = request.BookId,
@@ -60,6 +68,7 @@ namespace Chronolibris.Application.Handlers
                 //AverageRating = 0,
                 //DislikesCount = 0,
                 Id = 0,
+                ReviewStatusId = request.ReviewText != null ? 1 : 2,
                 //LikesCount = 0,
                 //Name = request.UserName ?? "",
             };

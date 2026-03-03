@@ -128,7 +128,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, CancellationToken token)
         {
             var raw = await _context.Books
-                .Where(b => b.Id == bookId)
+                .Where(b => b.Id == bookId).AsSplitQuery()
                 .Select(b => new
                 {
                     b.Id,
@@ -143,17 +143,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     LanguageName = b.Language.Name,
                     PublisherId = b.PublisherId,
                     PublisherName = b.Publisher != null ? b.Publisher.Name : null,
-                    //Reviews = b.Reviews.Select(r => new { r.UserId, r.Score, r.ReviewText }),
-                    AverageRating = b.IsReviewable && b.Reviews.Any()
-                    ? b.Reviews.Average(r => (decimal)r.Score)
-                    : 0M,
-                    RatingsCount = b.IsReviewable ? b.Reviews.Count() : 0,
-                    ReviewsCount = b.IsReviewable ? b.Reviews.Count(r => r.ReviewText != null) : 0,
-                    UserRating = b.IsReviewable
-                    ? b.Reviews.Where(r => r.UserId == userId)
-                                 .Select(r => (decimal?)r.Score)
-                                 .FirstOrDefault() ?? 0M
-                    : 0M,
+                    Stats = b.IsReviewable ? new
+                    {
+                        AverageRating = b.Reviews.Any() ? b.Reviews.Average(r => (decimal)r.Score) : 0M,
+                        RatingsCount = b.Reviews.Count(),
+                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null),
+                        UserRating = b.Reviews.Where(r => r.UserId == userId).Select(r => (decimal?)r.Score).FirstOrDefault()
+                    } : null,
                     IsFavorite = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.FAVORITES_CODE),
                     IsRead = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.READ_CODE),
                     DirectParticipations = b.Participations.Select(p => new
@@ -180,7 +176,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
             if (raw == null) return null;
 
-            // Step 2: shape in memory
             var allParticipations = raw.DirectParticipations
                 .Concat(raw.ContentParticipations);
 
@@ -199,10 +194,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 Publisher = raw.PublisherName != null
                     ? new PublisherDetails { Id = (long)raw.PublisherId!, Name = raw.PublisherName }
                     : null,
-                AverageRating = raw.AverageRating,
-                RatingsCount = raw.RatingsCount,
-                ReviewsCount = raw.ReviewsCount,
-                UserRating = raw.UserRating,
+                AverageRating = raw.Stats?.AverageRating ?? 0M,
+                RatingsCount = raw.Stats?.RatingsCount??0,
+                ReviewsCount = raw.Stats?.ReviewsCount??0,
+                UserRating = raw.Stats?.UserRating ?? 0M,
                 IsFavorite = raw.IsFavorite,
                 IsRead = raw.IsRead,
                 Participants = allParticipations
