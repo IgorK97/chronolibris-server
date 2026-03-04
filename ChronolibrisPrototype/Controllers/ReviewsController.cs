@@ -4,6 +4,7 @@ using Chronolibris.Application.Requests;
 using Chronolibris.Infrastructure.Data;
 using ChronolibrisPrototype.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,13 +22,35 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{bookId}")]
-        public async Task<IActionResult> GetReviews(long bookId, long? lastId, int limit=20, long? userId=null)
+        public async Task<IActionResult> GetReviews(long bookId, long? lastId, int limit=20)
         {
+            long? userId = null;
+            if (!TryGetUserId(out var tryUserId))
+                userId = null;
+            else
+            {
+                userId = tryUserId;
+            }
+
             if (limit < 1) limit = 20;
             else if (limit > 20) limit = 20;
 
             var reviews = await _mediator.Send(new GetReviewsQuery(bookId, lastId, limit, userId));
             return Ok(reviews);
+        }
+
+        [Authorize]
+        [HttpGet("my/{bookId}")]
+        public async Task<IActionResult> GetMyReview(long bookId)
+        {
+            if (!TryGetUserId(out var userId))
+                return Unauthorized();
+
+            var review = await _mediator.Send(new GetUserReviewForBookQuery(bookId, userId));
+
+            //if (review == null) return NotFound();
+
+            return Ok(review);
         }
 
         private bool TryGetUserId(out long userId)
@@ -36,6 +59,7 @@ namespace ChronolibrisPrototype.Controllers
             return long.TryParse(claim, out userId);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateReview(CreateReviewRequest request)
         {
@@ -53,8 +77,9 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(reviewId);
         }
 
+        [Authorize]
         [HttpPut("{reviewId}")]
-        public async Task<IActionResult> UpdateReview(long reviewId, UpdateReviewCommand request)
+        public async Task<IActionResult> UpdateReview(long reviewId, UpdateReviewRequest request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
@@ -69,6 +94,7 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{reviewId}")]
         public async Task<IActionResult> DeleteReview(long reviewId)
         {
@@ -78,10 +104,19 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost("rate")]
-        public async Task<IActionResult> RateReview(RateReviewCommand request)
+        public async Task<IActionResult> RateReview(RateReviewRequest request)
         {
-            var result = await _mediator.Send(request);
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            var result = await _mediator.Send(
+                new RateReviewCommand { 
+                    ReviewId=request.ReviewId,
+                    Score=request.Score,
+                    UserId=userId
+                });
+
             return Ok(result);
         }
     }

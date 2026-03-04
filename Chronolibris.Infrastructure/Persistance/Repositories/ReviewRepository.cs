@@ -73,7 +73,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(r => r.Id > lastId.Value);
             }
 
-            return await query.Where(r => r.ReviewStatusId == 2).OrderBy(r => r.Id).Take(limit+1)
+            return await query.Where(r => r.ReviewStatusId == 2 && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
                 .Select(r => new ReviewDetailsWithVote
                 {
                     Review = r,
