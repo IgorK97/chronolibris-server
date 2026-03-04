@@ -62,7 +62,7 @@ namespace Chronolibris.Application.Handlers
                 UserId = request.UserId,
                 // Используем оператор объединения с null (??) для обеспечения не-null значений для строк
                 //Title = request.Title ?? "",
-                ReviewText = request.ReviewText ?? "",
+                ReviewText = request.ReviewText ?? null,
                 Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
                 //AverageRating = 0,

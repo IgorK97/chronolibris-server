@@ -145,10 +145,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     PublisherName = b.Publisher != null ? b.Publisher.Name : null,
                     Stats = b.IsReviewable ? new
                     {
-                        AverageRating = b.Reviews.Any() ? b.Reviews.Average(r => (decimal)r.Score) : 0M,
+                        AverageRating = b.Reviews.Any(r => r.ReviewStatusId == 2) ? b.Reviews
+                                        .Where(r => r.ReviewStatusId == 2)
+                                        .Average(r => (decimal)r.Score) : 0M,
                         RatingsCount = b.Reviews.Count(r => r.ReviewStatusId==2),
                         ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && r.ReviewStatusId==2),
-                        UserRating = b.Reviews.Where(r => r.UserId == userId).Select(r => (decimal?)r.Score).FirstOrDefault()
+                        UserRating = b.Reviews.Where(r => r.UserId == userId && r.ReviewStatusId == 2)
+                                        .Select(r => (decimal?)r.Score).FirstOrDefault()
                     } : null,
                     IsFavorite = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.FAVORITES_CODE),
                     IsRead = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.READ_CODE),
