@@ -59,8 +59,8 @@ namespace Chronolibris.Application.Handlers
                 Id = r.Review.Id,
                 //AverageRating = r.Review.AverageRating,
                 Text = r.Review.ReviewText, // Маппинг Description на Text
-                //DislikesCount = r.Review.DislikesCount,
-                //LikesCount = r.Review.LikesCount,
+                DislikesCount = r.DislikesCount,
+                LikesCount = r.LikesCount,
                 //UserName = r.Review.Name,
                 Score = r.Review.Score,
                 //Title = r.Review.Title,

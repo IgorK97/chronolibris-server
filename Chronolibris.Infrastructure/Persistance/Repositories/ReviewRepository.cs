@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
@@ -113,6 +114,22 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             //    .ToListAsync(token);
         }
 
+        public async Task<ReviewDetailsWithVote?> GetByIdWithVotesAsync(long reviewId, long userId, CancellationToken token = default)
+        {
+            return await _context.Reviews.AsNoTracking()
+                .Where(r => r.Id == reviewId)
+                .Select(r => new ReviewDetailsWithVote
+                {
+                    Review = r,
+                    DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
+                    LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
+                    UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)
+                        .Select(rr => (bool?)(rr.ReactionType == 1))
+                        .FirstOrDefault()
+                })
+                .FirstOrDefaultAsync(token);
+        }
+
         /// <summary>
         /// Атомарно пересчитывает счетчики лайков, дизлайков и средний рейтинг для отзыва, 
         /// обновляя сущность <see cref="Review"/> в базе данных.
@@ -146,5 +163,5 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         //    //            .SetProperty(r => r.AverageRating, averageQuery),
         //    //            token);
         //}
-}
+    }
 }

@@ -32,7 +32,7 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Обязательный полный текст отзыва.
         /// </summary>
-        public required string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
         /// Обязательная оценка, выставленная пользователем книге в этом отзыве 
@@ -48,12 +48,12 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Обязательное количество положительных оценок (лайков), полученных этим отзывом от других пользователей.
         /// </summary>
-        //public required long LikesCount { get; set; }
+        public required long LikesCount { get; set; }
 
         /// <summary>
         /// Обязательное количество отрицательных оценок (дизлайков), полученных этим отзывом от других пользователей.
         /// </summary>
-        //public required long DislikesCount { get; set; }
+        public required long DislikesCount { get; set; }
 
         /// <summary>
         /// Обязательная дата и время создания отзыва.

@@ -53,7 +53,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
         {
 
-            var review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
+            var review = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, cancellationToken);
             if (review == null)
                 return null;
 
@@ -92,24 +92,24 @@ namespace Chronolibris.Application.Handlers
             //await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
 
 
-            _unitOfWork.Reviews.Detach(review);
-            review = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
+            _unitOfWork.Reviews.Detach(review.Review);
+            var newReview = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
 
             if (review == null) return null;
 
 
             return new ReviewDetails
             {
-                Id = review.Id,
+                Id = review.Review.Id,
 
                 //AverageRating = review.AverageRating,
-                //DislikesCount = review.DislikesCount,
-                //LikesCount = review.LikesCount,
+                DislikesCount = review.DislikesCount,
+                LikesCount = review.LikesCount,
 
 
-                CreatedAt = review.CreatedAt,
-                Score = review.Score,
-                Text = review.ReviewText,
+                CreatedAt = review.Review.CreatedAt,
+                Score = review.Review.Score,
+                Text = review.Review.ReviewText,
                 //Title = review.Title,
                 //UserName = review.Name,
                 UserVote = request.Score switch
