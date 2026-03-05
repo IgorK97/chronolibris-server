@@ -52,6 +52,8 @@ namespace Chronolibris.Application.Handlers
         /// </returns>
         public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
         {
+            if (request.Score != 1 && request.Score != -1)
+                throw new Exception("Неверная оценка");
 
             var review = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, cancellationToken);
             if (review == null)
@@ -61,33 +63,47 @@ namespace Chronolibris.Application.Handlers
             var rating = await _unitOfWork.ReviewsRatings.GetReviewsRatingByUserIdAsync(request.ReviewId,
                 request.UserId, cancellationToken);
 
-            
-            if (request.Score == 0) // Снятие оценки
+            if (rating is null)
             {
-                if (rating != null)
-                    _unitOfWork.ReviewsRatings.Delete(rating);
+                rating = new ReviewsReaction
+                {
+                    Id = 0,
+                    ReviewId = request.ReviewId,
+                    ReactionType = request.Score,
+                    UserId = request.UserId,
+                };
             }
-            else // Установка или изменение оценки
+            else
             {
-                if (rating == null)
-                {
-                    rating = new ReviewsReaction
-                    {
-                        Id = 0,
-                        ReviewId = request.ReviewId,
-                        ReactionType = request.Score,
-                        UserId = request.UserId,
-                    };
-                    await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
-                }
-                else
-                {
-                    rating.ReactionType = request.Score;
-                }
+                rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score;
             }
 
+                //if (request.Score == 0) // Снятие оценки
+                //{
+                //    if (rating != null)
+                //        _unitOfWork.ReviewsRatings.Delete(rating);
+                //}
+                //else // Установка или изменение оценки
+                //{
+                //    if (rating == null)
+                //    {
+                //        rating = new ReviewsReaction
+                //        {
+                //            Id = 0,
+                //            ReviewId = request.ReviewId,
+                //            ReactionType = request.Score,
+                //            UserId = request.UserId,
+                //        };
+                //        await _unitOfWork.ReviewsRatings.AddAsync(rating, cancellationToken);
+                //    }
+                //    else
+                //    {
+                //        rating.ReactionType = request.Score;
+                //    }
+                //}
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             //await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
 

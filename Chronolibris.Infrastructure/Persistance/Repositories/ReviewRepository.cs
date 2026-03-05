@@ -47,7 +47,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)
-                        .Select(rr => (bool?)(rr.ReactionType == 1))
+                        .Select(rr => rr.ReactionType == 1 ? (bool?) true : (rr.ReactionType == 0 ? null : (bool?) false))
                         .FirstOrDefault()
                 })
                 .FirstOrDefaultAsync(token);
@@ -93,9 +93,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     Review = r,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
-                    UserVote = userId ==null? null
-                    : r.ReviewsRatings.Where(rr=>rr.UserId==userId.Value)
-                    .Select(rr=>(bool?)(rr.ReactionType == 1)).FirstOrDefault()
+                    UserVote = (userId == null) ? null : r.ReviewsRatings.Where(rr => rr.UserId == userId)
+                        .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
+                        .FirstOrDefault()
                 }).ToListAsync(token);
 
             //var limitedReviews = await query
@@ -138,7 +138,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)
-                        .Select(rr => (bool?)(rr.ReactionType == 1))
+                        .Select(rr => rr.ReactionType == 1 ? (bool?)true : (rr.ReactionType == 0 ? null : (bool?)false))
                         .FirstOrDefault()
                 })
                 .FirstOrDefaultAsync(token);
