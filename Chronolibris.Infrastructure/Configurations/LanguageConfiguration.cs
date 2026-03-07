@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Chronolibris.Infrastructure.Configurations
 {
@@ -14,10 +15,10 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Language> builder)
         {
             builder.HasData(
-                new Language { Id = 1, Name = "Английский" },
-                new Language { Id = 2, Name = "Русский" },
-                new Language { Id = 3, Name = "Французский" },
-                new Language { Id = 4, Name = "Немецкий" }
+                new Language { Id = 1, Name = "Английский", FtsConfiguration="english" },
+                new Language { Id = 2, Name = "Русский", FtsConfiguration="russian" },
+                new Language { Id = 3, Name = "Французский", FtsConfiguration="french" },
+                new Language { Id = 4, Name = "Немецкий", FtsConfiguration="german" }
             );
         }
     }

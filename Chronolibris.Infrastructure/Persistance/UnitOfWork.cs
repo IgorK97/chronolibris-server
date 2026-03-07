@@ -57,6 +57,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Person"/> (например, авторы).
         /// </summary>
         public IGenericRepository<Person> Persons { get; }
+        public ILanguageRepository Languages { get; }
 
         /// <summary>
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Content"/> (файлы/содержимое).
@@ -94,7 +95,8 @@ namespace Chronolibris.Infrastructure.Persistance
             IReviewReactionsRepository reviewsRatings,
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
-            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, ICommentReactionsRepository commentReactions)
+            IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
+            ICommentReactionsRepository commentReactions, ILanguageRepository languages)
         {
             _context = context;
 
@@ -111,6 +113,7 @@ namespace Chronolibris.Infrastructure.Persistance
             ReadingProgresses = readingProgresses;
             Comments = comments;
             CommentReactions = commentReactions;
+            Languages = languages;
         }
 
         /// <summary>

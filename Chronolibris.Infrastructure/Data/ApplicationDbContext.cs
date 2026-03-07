@@ -7,6 +7,7 @@ using Chronolibris.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 
 namespace Chronolibris.Infrastructure.Data
 {

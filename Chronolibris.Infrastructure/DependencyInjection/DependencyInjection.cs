@@ -53,6 +53,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<PersonRole>, GenericRepository<PersonRole>>();
             services.AddScoped<IGenericRepository<Shelf>, GenericRepository<Shelf>>();
             services.AddScoped<IGenericRepository<Comment>, GenericRepository<Comment>>();
+            services.AddScoped<IGenericRepository<Language>, GenericRepository<Language>>();
 
             // Регистрация специфических репозиториев (Scoped lifetime)
             services.AddScoped<IBookRepository, BookRepository>();
@@ -64,6 +65,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IShelfRepository, ShelvesRepository>();
             services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<ILanguageRepository, LanguageRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

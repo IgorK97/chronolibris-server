@@ -55,6 +55,7 @@ namespace Chronolibris.Domain.Interfaces
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Person"/>.
         /// </summary>
         IGenericRepository<Person> Persons { get; }
+        ILanguageRepository Languages { get; }
 
         /// <summary>
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Content"/> (файлы/содержимое).
