@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.Handlers;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
@@ -63,6 +64,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// Получает обобщенный репозиторий для управления сущностями <see cref="Content"/> (файлы/содержимое).
         /// </summary>
         public IGenericRepository<Content> Contents { get; }
+        public IGenericRepository<Country> Countries { get; }
         //public IGenericRepository<Review> Reviews { get; }
 
         /// <summary>
@@ -96,7 +98,8 @@ namespace Chronolibris.Infrastructure.Persistance
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
-            ICommentReactionsRepository commentReactions, ILanguageRepository languages)
+            ICommentReactionsRepository commentReactions, ILanguageRepository languages,
+            IGenericRepository<Country> countries)
         {
             _context = context;
 
@@ -114,6 +117,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Comments = comments;
             CommentReactions = commentReactions;
             Languages = languages;
+            Countries = countries;
         }
 
         /// <summary>

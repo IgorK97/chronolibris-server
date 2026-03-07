@@ -110,5 +110,88 @@ namespace ChronolibrisPrototype.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Получает список всех стран
+        /// </summary>
+        [HttpGet("countries")]
+        public async Task<ActionResult<IEnumerable<CountryDto>>> GetAllCountries(CancellationToken cancellationToken)
+        {
+            var query = new GetAllCountriesQuery();
+            var countries = await _mediator.Send(query, cancellationToken);
+            return Ok(countries);
+        }
+
+        /// <summary>
+        /// Получает страну по идентификатору
+        /// </summary>
+        [HttpGet("countries/{id}")]
+        public async Task<ActionResult<CountryDto>> GetCountryById(long id, CancellationToken cancellationToken)
+        {
+            var query = new GetCountryByIdQuery(id);
+            var country = await _mediator.Send(query, cancellationToken);
+
+            if (country == null)
+                return NotFound(new { message = $"Страна с ID {id} не найдена" });
+
+            return Ok(country);
+        }
+
+        /// <summary>
+        /// Создает новую запись страны
+        /// </summary>
+        [Authorize]
+        [HttpPost("countries")]
+        public async Task<ActionResult<long>> CreateCountry([FromBody] CreateCountryRequest request, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new { message = "Название страны обязательно" });
+
+            var command = new CreateCountryCommand(request.Name);
+            var id = await _mediator.Send(command, cancellationToken);
+
+            return CreatedAtAction(nameof(GetCountryById), new { id = id }, id);
+        }
+
+        /// <summary>
+        /// Обновляет существующую запись страны
+        /// </summary>
+        [Authorize]
+        [HttpPut("countries/{id}")]
+        public async Task<ActionResult> UpdateCountry(long id, [FromBody] UpdateCountryRequest request, CancellationToken cancellationToken)
+        {
+
+            if (id != request.Id)
+                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new { message = "Название страны обязательно" });
+
+            var command = new UpdateCountryCommand(request.Id, request.Name);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = $"Страна с ID {id} не найдена" });
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Удаляет запись страны
+        /// </summary>
+        [Authorize]
+        [HttpDelete("countries/{id}")]
+        public async Task<ActionResult> DeleteCountry(long id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteCountryCommand(id);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = $"Страна с ID {id} не найдена" });
+
+            return NoContent();
+        }
+
     }
 }
