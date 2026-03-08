@@ -12,6 +12,18 @@ namespace Chronolibris.Domain.Entities
         Author = 1,
         Translator = 2,
         Editor = 3,
+        Illustrator = 4,
+        Compiler = 5,
+        Proofreader = 6,
+        ScientificEditor = 7,
+        LiteraryEditor = 8,
+        TechnicalEditor = 9,
+        TranslatorEditor = 10,
+        Scanner = 11,
+        AuthorOfIntroduction = 12,
+        AuthorOfAfterword = 13,
+        Commentator = 14,
+        Designer = 15,
 
     }
     public class PersonRole
