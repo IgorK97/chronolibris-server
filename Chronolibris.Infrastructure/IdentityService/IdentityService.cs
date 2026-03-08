@@ -83,7 +83,7 @@ namespace Chronolibris.Infrastructure.Identity
 
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(365);
            
             await _userManager.UpdateAsync(user);
             return new RegistrationResult

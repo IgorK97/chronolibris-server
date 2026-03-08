@@ -71,6 +71,7 @@ namespace Chronolibris.Domain.Interfaces
 
         IGenericRepository<PersonRole> PersonRoles { get; }
         IReadingProgressRepository ReadingProgresses { get; }
+        IGenericRepository<Series> Series { get; }
 
         /// <summary>
         /// Асинхронно сохраняет все изменения, накопленные в контексте отслеживания 

@@ -76,6 +76,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public IGenericRepository<PersonRole> PersonRoles { get; }
         public IReadingProgressRepository ReadingProgresses { get; }
 
+        public IGenericRepository<Series> Series { get; }
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="UnitOfWork"/>, 
@@ -100,7 +101,8 @@ namespace Chronolibris.Infrastructure.Persistance
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
             ICommentReactionsRepository commentReactions, ILanguageRepository languages,
-            IGenericRepository<Country> countries, IGenericRepository<Format> formats)
+            IGenericRepository<Country> countries, IGenericRepository<Format> formats,
+            IGenericRepository<Series> series)
         {
             _context = context;
 
@@ -120,6 +122,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Languages = languages;
             Countries = countries;
             Formats = formats;
+            Series = series;
         }
 
         /// <summary>

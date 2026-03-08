@@ -56,6 +56,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Language>, GenericRepository<Language>>();
             services.AddScoped<IGenericRepository<Country>, GenericRepository<Country>>();
             services.AddScoped<IGenericRepository<Format>, GenericRepository<Format>>();
+            services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
 
 
             // Регистрация специфических репозиториев (Scoped lifetime)
