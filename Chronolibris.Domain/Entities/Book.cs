@@ -27,7 +27,7 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(2048)]
         public required string CoverPath { get; set; }
 
-        public string? SearchData { get; set; }
+        //public string? SearchData { get; set; }
         public required bool IsAvailable { get; set; }
 
         public required bool IsReviewable { get; set; }
