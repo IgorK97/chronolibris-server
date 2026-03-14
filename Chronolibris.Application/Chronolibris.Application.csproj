@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Chronolibris.Domain\Chronolibris.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Results\" />
-  </ItemGroup>
-
 </Project>

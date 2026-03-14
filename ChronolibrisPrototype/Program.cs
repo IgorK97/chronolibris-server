@@ -1,9 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
+п»їusing System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using Chronolibris.Application.Extensions;
+using Chronolibris.Application.Fb2Converter.Interfaces;
 using Chronolibris.Application.Handlers;
+using Chronolibris.Infrastructure.DataAccess.DependencyInjection;
 using Chronolibris.Infrastructure.DatabaseChecker;
 using Chronolibris.Infrastructure.DependencyInjection;
 using ChronolibrisPrototype.Middleware;
@@ -15,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Очистка карты клеймов до настройки аутентификации
+// РћС‡РёСЃС‚РєР° РєР°СЂС‚С‹ РєР»РµР№РјРѕРІ РґРѕ РЅР°СЃС‚СЂРѕР№РєРё Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё
 //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 // CORS
@@ -32,25 +34,26 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Настройка логирования и уровней
+// РќР°СЃС‚СЂРѕР№РєР° Р»РѕРіРёСЂРѕРІР°РЅРёСЏ Рё СѓСЂРѕРІРЅРµР№
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Настройка уровней логирования
+// РќР°СЃС‚СЂРѕР№РєР° СѓСЂРѕРІРЅРµР№ Р»РѕРіРёСЂРѕРІР°РЅРёСЏ
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("System", LogLevel.Warning)
     .AddFilter("Default", LogLevel.Information);
 
-// Инфраструктурные сервисы
+// РРЅС„СЂР°СЃС‚СЂСѓРєС‚СѓСЂРЅС‹Рµ СЃРµСЂРІРёСЃС‹
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileProviderInfrastructure(builder.Configuration);
 builder.Services.AddFileServices(builder.Configuration);
+builder.Services.AddFb2Converter(builder.Configuration);
 
-// Конфигурация аутентификации с использованием JWT-токенов
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј JWT-С‚РѕРєРµРЅРѕРІ
 builder.Services.AddAuthentication(options =>
 {
-    // Устанавливаем JWT как схему по умолчанию для всего
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј JWT РєР°Рє СЃС…РµРјСѓ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ РІСЃРµРіРѕ
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -88,7 +91,7 @@ builder.Services.AddAuthentication(options =>
                 }
                 return Task.CompletedTask;
             }
-            //TODO: Реализовать черный список токенов (например, при выходе пользователя из системы) и проверять его здесь
+            //TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ С‡РµСЂРЅС‹Р№ СЃРїРёСЃРѕРє С‚РѕРєРµРЅРѕРІ (РЅР°РїСЂРёРјРµСЂ, РїСЂРё РІС‹С…РѕРґРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· СЃРёСЃС‚РµРјС‹) Рё РїСЂРѕРІРµСЂСЏС‚СЊ РµРіРѕ Р·РґРµСЃСЊ
             //OnTokenValidated = context =>
             //{
             //    var jti = context.SecurityToken.Id;
@@ -103,7 +106,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-// Авторизация
+// РђРІС‚РѕСЂРёР·Р°С†РёСЏ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
@@ -126,7 +129,7 @@ builder.Services.AddOpenApiDocument(options =>
         Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
         Name = "Authorization",
         In = NSwag.OpenApiSecurityApiKeyLocation.Header,
-        Description = "Введите: Bearer {ваш_токен}"
+        Description = "Р’РІРµРґРёС‚Рµ: Bearer {РІР°С€_С‚РѕРєРµРЅ}"
     });
 
     options.OperationProcessors.Add(
@@ -143,6 +146,10 @@ var app = builder.Build();
 var configuration = app.Configuration;
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+if (app.Environment.IsDevelopment())
+{
+    await TestConvertAsync(app.Services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -164,7 +171,7 @@ app.MapControllers();
 app.UseOpenApi();
 app.UseSwaggerUI();
 
-// Запуск проверки БД (миграций) при старте приложения
+// Р—Р°РїСѓСЃРє РїСЂРѕРІРµСЂРєРё Р‘Р” (РјРёРіСЂР°С†РёР№) РїСЂРё СЃС‚Р°СЂС‚Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
     try
@@ -179,3 +186,50 @@ app.Lifetime.ApplicationStarted.Register(async () =>
 });
 
 app.Run();
+
+
+static async Task TestConvertAsync(IServiceProvider services)
+{
+    var fb2Path = Path.Combine(AppContext.BaseDirectory, "test.fb2");
+
+    if (!File.Exists(fb2Path))
+    {
+        Console.WriteLine($"[TEST] Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ: {fb2Path}");
+        Console.WriteLine($"[TEST] РћР¶РёРґР°РµС‚СЃСЏ РїРѕ РїСѓС‚Рё: {fb2Path}");
+        return;
+    }
+
+    using var scope = services.CreateScope();
+    var converter = scope.ServiceProvider.GetRequiredService<IFb2Converter>();
+
+    Console.WriteLine("[TEST] РќР°С‡РёРЅР°РµРј РєРѕРЅРІРµСЂС‚Р°С†РёСЋ...");
+
+    try
+    {
+        await using var stream = File.OpenRead(fb2Path);
+        var result = await converter.ConvertAsync(stream);
+
+        Console.WriteLine($"[TEST] вњ“ BookId:     {result.BookId}");
+        Console.WriteLine($"[TEST] вњ“ РќР°Р·РІР°РЅРёРµ:   {result.Meta.Title}");
+        Console.WriteLine($"[TEST] вњ“ РЇР·С‹Рє:       {result.Meta.Lang}");
+        Console.WriteLine($"[TEST] вњ“ РђРІС‚РѕСЂ:      {result.Meta.Authors?.FirstOrDefault()?.Last}");
+        Console.WriteLine($"[TEST] вњ“ Р­Р»РµРјРµРЅС‚РѕРІ:  {result.TotalElements}");
+        Console.WriteLine($"[TEST] вњ“ Р¤СЂР°РіРјРµРЅС‚РѕРІ: {result.PartFiles.Count}");
+        Console.WriteLine($"[TEST] вњ“ toc.json:   {result.TocFile.SizeBytes} Р±Р°Р№С‚");
+        Console.WriteLine($"[TEST] в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ");
+
+        foreach (var part in result.PartFiles)
+        {
+            Console.WriteLine(
+                $"[TEST]   {part.FileName}  " +
+                $"s={part.GlobalStart,-5} e={part.GlobalEnd,-5}  " +
+                $"xps=[{string.Join(",", part.XpStart!)}]  " +
+                $"{part.SizeBytes} Р±Р°Р№С‚");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[TEST] вњ— РћС€РёР±РєР°: {ex.Message}");
+        Console.WriteLine(ex.StackTrace);
+    }
+}
