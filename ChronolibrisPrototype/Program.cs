@@ -6,9 +6,12 @@ using Chronolibris.Application.Extensions;
 using Chronolibris.Application.Fb2Converter.Interfaces;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Infrastructure.DataAccess.DependencyInjection;
+using Chronolibris.Infrastructure.DataAccess.Hangfire;
 using Chronolibris.Infrastructure.DatabaseChecker;
 using Chronolibris.Infrastructure.DependencyInjection;
+using ChronolibrisPrototype.Hangfire;
 using ChronolibrisPrototype.Middleware;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Memory;
@@ -49,6 +52,9 @@ builder.Services.AddIdentityRealization(builder.Configuration);
 builder.Services.AddFileProviderInfrastructure(builder.Configuration);
 builder.Services.AddFileServices(builder.Configuration);
 builder.Services.AddFb2Converter(builder.Configuration);
+builder.Services.AddHangfireInfrastructure(builder.Configuration);
+
+GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 3 });
 
 // Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(options =>
@@ -166,6 +172,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseStaticFiles();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthFilter() },
+    DashboardTitle = "My App Jobs"
+});
 app.MapControllers();
 
 app.UseOpenApi();

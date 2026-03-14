@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chronolibris.Infrastructure.DataAccess.Configurations
@@ -15,6 +16,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<BookFile> builder)
         {
             builder.ToTable("book_files");
+            builder.HasOne(bf => bf.BookFileStatus)
+                .WithMany(bs => bs.BookFiles)
+                .HasForeignKey(b => b.BookFileStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
             builder
                 .HasIndex(bf => new { bf.BookId, bf.IsReadable })
                 .IsUnique()

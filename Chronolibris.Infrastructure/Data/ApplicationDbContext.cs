@@ -28,6 +28,8 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<ContentParticipation> ContentParticipations { get; set; }
         public DbSet<BookParticipation> BookParticipations { get; set; }
 
+        public DbSet<BookFileStatus> BookFileStatuses { get; set; }
+
         public DbSet<Person> Persons { get; set; }
         public DbSet<PersonRole> PersonRoles { get; set; }
         public DbSet<Publisher> Publishers { get; set; }

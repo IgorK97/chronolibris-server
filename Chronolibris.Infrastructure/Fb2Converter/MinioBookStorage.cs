@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Fb2Converter.Interfaces;
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
@@ -149,6 +150,52 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                 await ((IMinioClient)_minioClient).MakeBucketAsync(mbArgs, ct);
             }
         }
+
+        public async Task SaveImageAsync(string bookId, string fileName, byte[] data,
+    string contentType, CancellationToken cancellationToken = default)
+        {
+            await EnsureBucketAsync(cancellationToken);
+
+            var objectName = BuildObjectName(bookId, fileName);
+            using var ms = new MemoryStream(data);
+
+            var args = new PutObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(objectName)
+                .WithStreamData(ms)
+                .WithObjectSize(data.Length)
+                .WithContentType(contentType);
+
+            await _minioClient.PutObjectAsync(args, cancellationToken);
+        }
+
+        public async Task<Stream?> ReadStreamAsync(string objectName,
+    CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var ms = new MemoryStream();
+
+                var args = new GetObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(objectName)
+                    .WithCallbackStream(async (stream, ct) =>
+                    {
+                        await stream.CopyToAsync(ms, ct);
+                    });
+
+                await _minioClient.GetObjectAsync(args, cancellationToken);
+
+                ms.Position = 0;
+                return ms;
+            }
+            catch (ObjectNotFoundException)
+            {
+                return null;
+            }
+        }
+
+
 
     }
 

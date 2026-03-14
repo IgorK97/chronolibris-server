@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Fb2Converter.Interfaces
 {
@@ -25,7 +26,7 @@ namespace Chronolibris.Application.Fb2Converter.Interfaces
         /// <returns>Результат конвертации с метаданными всех созданных объектов.</returns>
         Task<ConversionResult> ConvertAsync(
             Stream fb2Stream,
-            string? bookId = null,
+            long? bookId = null,
             ConversionOptions? options = null,
             CancellationToken cancellationToken = default);
     }

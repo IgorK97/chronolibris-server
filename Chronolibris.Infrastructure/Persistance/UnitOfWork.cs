@@ -37,6 +37,7 @@ namespace Chronolibris.Infrastructure.Persistance
         /// </summary>
         public IReviewReactionsRepository ReviewReactions { get; }
         public ICommentReactionsRepository CommentReactions { get; }
+        public IBookFileRepository BookFiles { get; }
 
         /// <summary>
         /// Получает репозиторий для управления отзывами (рецензиями).
@@ -102,7 +103,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
             ICommentReactionsRepository commentReactions, ILanguageRepository languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
-            IGenericRepository<Series> series)
+            IGenericRepository<Series> series, IBookFileRepository bookFiles)
         {
             _context = context;
 
@@ -123,6 +124,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Countries = countries;
             Formats = formats;
             Series = series;
+            BookFiles = bookFiles;
         }
 
         /// <summary>

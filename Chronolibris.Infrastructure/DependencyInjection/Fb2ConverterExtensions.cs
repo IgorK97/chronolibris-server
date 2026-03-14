@@ -15,13 +15,7 @@ namespace Chronolibris.Infrastructure.DataAccess.DependencyInjection
     public static class Fb2ConverterExtensions
     {
         /// <summary>
-        /// Добавляет к уже зарегистрированному IMinioClient сервисы конвертера книг:
-        ///   • BookStorageOptions  (из секции "BookStorageOptions")
-        ///   • IBookStorage        → MinioBookStorage  (Singleton, использует общий IMinioClient)
-        ///   • IFb2Converter       → Fb2ConverterService (Scoped)
-        ///
-        /// Предполагается, что IMinioClient уже зарегистрирован — как в вашем AddFileServices.
-        /// Вызывайте этот метод ПОСЛЕ AddFileServices.
+        /// 
         /// </summary>
         public static IServiceCollection AddFb2Converter(
             this IServiceCollection services,
@@ -35,7 +29,7 @@ namespace Chronolibris.Infrastructure.DataAccess.DependencyInjection
             //    - IMinioClient берётся из DI (уже зарегистрирован в AddFileServices)
             //    - bucket/prefix берутся из BookStorageOptions
             //    Singleton безопасен: IMinioClient thread-safe, своего состояния нет
-            services.AddSingleton<IBookStorage>(sp =>
+            services.AddScoped<IBookStorage>(sp =>
             {
                 var minioClient = sp.GetRequiredService<IMinioClient>();
                 var opts = sp.GetRequiredService<IOptions<BookStorageOptions>>().Value;
@@ -43,21 +37,8 @@ namespace Chronolibris.Infrastructure.DataAccess.DependencyInjection
             });
 
             // 3. Конвертер — Scoped (на один HTTP-запрос / единицу работы)
-            services.AddScoped<IFb2Converter, Fb2ConverterService>();
+            services.AddScoped<IFb2Converter, Fb2ConverterXReader>();
 
-            return services;
-        }
-
-        /// <summary>
-        /// Вариант для тестов и разработки без реального MinIO.
-        /// Регистрирует InMemoryBookStorage вместо MinioBookStorage.
-        /// IMinioClient НЕ нужен.
-        /// </summary>
-        public static IServiceCollection AddFb2ConverterInMemory(
-            this IServiceCollection services)
-        {
-            services.AddSingleton<IBookStorage, InMemoryBookStorage>();
-            services.AddScoped<IFb2Converter, Fb2ConverterService>();
             return services;
         }
     }

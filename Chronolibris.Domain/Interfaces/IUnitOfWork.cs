@@ -32,7 +32,7 @@ namespace Chronolibris.Domain.Interfaces
         IReviewReactionsRepository ReviewReactions { get; }
         ICommentReactionsRepository CommentReactions { get; }
 
-
+        IBookFileRepository BookFiles { get; }
 
         /// <summary>
         /// Получает репозиторий для управления сущностями <see cref="IReviewRepository"/> (отзывы).

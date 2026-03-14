@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chronolibris.Infrastructure.DataAccess.Configurations
 {
-    internal class ContentTypeConfiguration : IEntityTypeConfiguration<ContentType>
+    public class ContentTypeConfiguration : IEntityTypeConfiguration<ContentType>
     {
         public void Configure(EntityTypeBuilder<ContentType> builder)
         {

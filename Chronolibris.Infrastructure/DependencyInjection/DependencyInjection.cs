@@ -5,6 +5,7 @@ using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
 using Chronolibris.Infrastructure.DataAccess.Files;
+using Chronolibris.Infrastructure.DataAccess.Persistance;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 using Chronolibris.Infrastructure.Files;
 using Chronolibris.Infrastructure.Identity;
@@ -56,6 +57,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Country>, GenericRepository<Country>>();
             services.AddScoped<IGenericRepository<Format>, GenericRepository<Format>>();
             services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
+            services.AddScoped<IGenericRepository<BookFile>, GenericRepository<BookFile>>();
 
 
             // Регистрация специфических репозиториев (Scoped lifetime)
@@ -71,6 +73,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddScoped<IThemeRepository, ThemeRepository>();
             services.AddScoped<IContentRepository, ContentRepository>();
+            services.AddScoped<IBookFileRepository, BookFileRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -85,7 +88,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.Configure<MinioOptions>(configuration.GetSection("MinioOptions"));
 
             // 2. Регистрируем IMinioClient как Singleton или Scoped
-            services.AddSingleton<IMinioClient>(sp =>
+            services.AddScoped<IMinioClient>(sp =>
             {
                 var client = new MinioClient()
                     .WithEndpoint(minioOptions!.Endpoint)
