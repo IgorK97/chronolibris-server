@@ -17,6 +17,10 @@ namespace Chronolibris.Infrastructure.Configurations
             //    .WithMany(b => b.Contents)
             //    .UsingEntity<ContentBook>();
 
+            builder.HasMany(c => c.Tags)
+                .WithMany(t => t.Contents)
+                .UsingEntity(j => j.ToTable("content_tags"));
+
             builder.HasOne(c => c.ParentContent)
                 .WithMany()
                 .HasForeignKey(c => c.ParentContentId)

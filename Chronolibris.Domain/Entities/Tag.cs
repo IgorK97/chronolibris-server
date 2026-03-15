@@ -16,6 +16,6 @@ namespace Chronolibris.Domain.Entities
         public required long TagTypeId { get; set; }
         //public long? ParentTagId { get; set; }
         public TagType TagType { get; set; }
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<Content> Contents { get; set; } = new List<Content>();
     }
 }

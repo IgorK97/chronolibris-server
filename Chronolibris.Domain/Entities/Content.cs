@@ -31,6 +31,7 @@ namespace Chronolibris.Domain.Entities
         public ICollection<Person> Persons { get; set; } = [];
         public ICollection<Theme> Themes { get; set; }=[];
         public ContentType ContentType { get; set; } = null!;
+        public ICollection<Tag> Tags { get; set; } = null!;
 
     }
 }

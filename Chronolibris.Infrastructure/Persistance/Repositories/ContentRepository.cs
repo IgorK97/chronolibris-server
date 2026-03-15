@@ -33,8 +33,104 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .Include(c => c.Themes)
                 .Include(c => c.Participations)
                     .ThenInclude(p => p.Person)
+                .Include(c => c.Tags)
+                    .ThenInclude(t => t.TagType)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
+
+        public async Task<List<TagDetails>> GetTagsAsync(long contentId, CancellationToken ct)
+        {
+            var content = await _context.Contents
+                .Where(c => c.Id == contentId)
+                .SelectMany(c => c.Tags)
+                .Select(t => new TagDetails
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    TagTypeId = t.TagTypeId,
+                    TagTypeName = t.TagType.Name
+                })
+                .ToListAsync(ct);
+
+            return content;
+        }
+
+        public async Task<List<TagDetails>> SearchTagsAsync(
+            string searchTerm,
+            long? tagTypeId,
+            int limit,
+            CancellationToken ct)
+        {
+            IQueryable<Tag> query = _context.Tags.AsNoTracking()
+                .Include(t => t.TagType);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
+            }
+
+            if (tagTypeId.HasValue)
+            {
+                query = query.Where(t => t.TagTypeId == tagTypeId.Value);
+            }
+
+            var tags = await query
+                .OrderBy(t => t.Name)
+                .Take(limit)
+                .Select(t => new TagDetails
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    TagTypeId = t.TagTypeId,
+                    TagTypeName = t.TagType.Name
+                })
+                .ToListAsync(ct);
+
+            return tags;
+        }
+
+        public async Task<bool> AddTagAsync(long contentId, long tagId, CancellationToken ct)
+        {
+            var content = await _context.Contents
+                .Include(c => c.Tags)
+                .FirstOrDefaultAsync(c => c.Id == contentId, ct);
+
+            if (content == null)
+                return false;
+
+            var tag = await _context.Tags.FindAsync(new object[] { tagId }, ct);
+            if (tag == null)
+                return false;
+
+            if (!content.Tags.Any(t => t.Id == tagId))
+            {
+                content.Tags.Add(tag);
+                await _context.SaveChangesAsync(ct);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> RemoveTagAsync(long contentId, long tagId, CancellationToken ct)
+        {
+            var content = await _context.Contents
+                .Include(c => c.Tags)
+                .FirstOrDefaultAsync(c => c.Id == contentId, ct);
+
+            if (content == null)
+                return false;
+
+            var tag = content.Tags.FirstOrDefault(t => t.Id == tagId);
+            if (tag != null)
+            {
+                content.Tags.Remove(tag);
+                await _context.SaveChangesAsync(ct);
+                return true;
+            }
+
+            return false;
+        }
+
 
         public async Task<IReadOnlyList<Content>> GetAllAsync(CancellationToken cancellationToken = default)
         {

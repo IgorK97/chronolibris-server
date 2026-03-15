@@ -54,6 +54,55 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(content);
         }
 
+        [HttpGet("{id}/tags")]
+        public async Task<ActionResult<List<TagDetails>>> GetContentTags(long id, CancellationToken cancellationToken)
+        {
+            var query = new GetContentTagsQuery(id);
+            var tags = await _mediator.Send(query, cancellationToken);
+            return Ok(tags);
+        }
+
+        [HttpGet("tags/search")]
+        public async Task<ActionResult<List<TagDetails>>> SearchTags(
+        [FromQuery] string searchTerm,
+        [FromQuery] long? tagTypeId = null,
+        [FromQuery] int limit = 5,
+        CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return BadRequest(new { message = "Search term is required" });
+
+            var query = new SearchTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
+            var tags = await _mediator.Send(query, cancellationToken);
+            return Ok(tags);
+        }
+
+        [Authorize]
+        [HttpPost("{contentId}/tags/{tagId}")]
+        public async Task<ActionResult> AddTagToContent(long contentId, long tagId, CancellationToken cancellationToken)
+        {
+            var command = new AddTagToContentCommand(contentId, tagId);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = "Контент или тег не найден" });
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{contentId}/tags/{tagId}")]
+        public async Task<ActionResult> RemoveTagFromContent(long contentId, long tagId, CancellationToken cancellationToken)
+        {
+            var command = new RemoveTagFromContentCommand(contentId, tagId);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return NotFound(new { message = "Связь не найдена" });
+
+            return NoContent();
+        }
+
         /// <summary>
         /// Получает список книг для контента
         /// </summary>

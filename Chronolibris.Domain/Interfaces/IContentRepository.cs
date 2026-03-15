@@ -22,5 +22,10 @@ namespace Chronolibris.Domain.Interfaces
         Task UnlinkContentFromBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default);
         Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
         Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
+
+        Task<List<TagDetails>> GetTagsAsync(long contentId, CancellationToken ct);
+        Task<List<TagDetails>> SearchTagsAsync(string searchTerm, long? tagTypeId, int limit, CancellationToken ct);
+        Task<bool> AddTagAsync(long contentId, long tagId, CancellationToken ct);
+        Task<bool> RemoveTagAsync(long contentId, long tagId, CancellationToken ct);
     }
 }
