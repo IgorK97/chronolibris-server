@@ -54,8 +54,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<long>> CreateBook(
             [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
         {
@@ -95,14 +93,9 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateBook(long id,
             [FromBody] UpdateBookRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
 
             if (id != request.Id)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
@@ -252,8 +245,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{bookId}/contents/{contentId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,
             CancellationToken cancellationToken)
         {

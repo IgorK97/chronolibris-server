@@ -23,11 +23,11 @@ namespace Chronolibris.Application.Models
         /// </summary>
         public int ParaIndex { get; set; }
         public string? Note { get; set; }
-        public long BookfileId { get; set; }
+        public required long BookFileId { get; set; }
 
         /// <summary>
         /// Дата и время создания закладки.
         /// </summary>
-        public DateTime СreatedAt { get; set; }
+        public required DateTime CreatedAt { get; set; }
     }
 }

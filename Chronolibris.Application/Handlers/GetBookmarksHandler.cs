@@ -52,9 +52,9 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = b.Id,
                 Note = b.Note,
-                BookfileId=b.BookFileId,
+                BookFileId=b.BookFileId,
                 ParaIndex = b.ParaIndex,
-                СreatedAt = b.CreatedAt
+                CreatedAt = b.CreatedAt
             }).ToList();
         }
     }

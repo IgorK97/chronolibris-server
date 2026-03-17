@@ -25,5 +25,6 @@ namespace Chronolibris.Domain.Interfaces
         /// </returns>
         Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token);
 
+
     }
 }
