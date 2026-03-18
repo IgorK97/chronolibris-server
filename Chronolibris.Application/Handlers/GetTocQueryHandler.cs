@@ -26,7 +26,7 @@ namespace Chronolibris.Application.Handlers
             var bookFile = await _bookFiles.GetByIdAsync(request.BookFileId, ct)
                 ?? throw new KeyNotFoundException($"BookFile {request.BookFileId} не найден");
 
-            return await _storage.ReadChunkAsync(bookFile.BookId.ToString(), "toc.json", "toc", ct);
+            return await _storage.ReadChunkAsync(bookFile.Id.ToString(), "toc.json", "toc", ct);
         }
     }
 }

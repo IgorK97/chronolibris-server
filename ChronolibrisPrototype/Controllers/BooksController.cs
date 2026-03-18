@@ -203,7 +203,7 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")] //:инт можно ещЁ писать
+        [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")] //:инт можно ещё писать
         public async Task<ActionResult> GetChunk(long bookFileId, string chunkIndex)
         {
             try

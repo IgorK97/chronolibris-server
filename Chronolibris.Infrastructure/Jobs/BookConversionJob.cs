@@ -65,7 +65,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Jobs
                 {
                     var result = await _converter.ConvertAsync(
                         fb2Stream,
-                        bookId: bookFile.BookId,
+                        bookId: bookFile.Id,
                         options: new ConversionOptions { TargetPartSize = 88 }
                       );
 

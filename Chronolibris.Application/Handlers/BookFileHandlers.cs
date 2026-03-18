@@ -155,7 +155,7 @@ namespace Chronolibris.Application.Handlers
 
                 // метод сам строит ключ и возвращает storageUrl
                 var storageUrl = await _bookStorage.SaveBookSourceAsync(
-                    bookFile.BookId.ToString(),
+                    bookFile.Id.ToString(),
                     extension,
                     request.FileStream,
                     cancellationToken);

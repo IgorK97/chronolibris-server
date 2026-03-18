@@ -54,6 +54,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             await _minioClient.PutObjectAsync(args, ct);
 
             //await _minio.PutAsync(_bookOpts.BooksBucket, key, data, data.Length, contentType, ct);
+            //return $"books/{bookId}";
             return key;
         }
 

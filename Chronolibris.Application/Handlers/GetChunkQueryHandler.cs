@@ -28,9 +28,9 @@ namespace Chronolibris.Application.Handlers
 
             // Имя файла совпадает с тем, что пишет конвертер: 000.json, 001.json, … 
             //Что такое :D3???
-            var fileName = $"{request.ChunkIndex}.json";
+            //var fileName = $"{request.ChunkIndex}.json";
 
-            return await _storage.ReadChunkAsync(bookFile.BookId.ToString(), fileName, "chunk", ct);
+            return await _storage.ReadChunkAsync(bookFile.Id.ToString(), request.ChunkIndex, "chunk", ct);
         }
     }
 }
