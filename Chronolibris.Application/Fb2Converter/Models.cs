@@ -26,16 +26,6 @@ namespace Chronolibris.Application.Fb2Converter
         public string FormatVersion { get; init; } = "1.1";
     }
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Результат конвертации (возвращается вызывающей стороне для записи в БД)
-    // ─────────────────────────────────────────────────────────────────────────────
-
-
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Внутренние модели toc.json
-    // ─────────────────────────────────────────────────────────────────────────────
-
     /// <summary>Корень toc.json.</summary>
     public sealed class TocDocument
     {
@@ -112,7 +102,7 @@ namespace Chronolibris.Application.Fb2Converter
     ///   • есть сноски → массив строк и Note:     "c": ["текст", {t:"note",...}, "продолжение"]
     ///   • br          → поле c отсутствует
     /// </summary>
-    [JsonConverter(typeof(PartElementJsonConverter))]
+    [JsonConverter(typeof(PartElementJsonConverter))] //Что такое typeof и что он здесь делает?
     public sealed class PartElement
     {
         public required string T { get; init; }
@@ -205,6 +195,11 @@ namespace Chronolibris.Application.Fb2Converter
                 case string plainText:
                     // Абзац без сносок → "c": "строка"
                     writer.WriteString("c", plainText);
+                    break;
+
+                case int pageNum:
+                    // Номер страницы → "c": 10
+                    writer.WriteNumber("c", pageNum);
                     break;
 
                 case List<object> mixed:

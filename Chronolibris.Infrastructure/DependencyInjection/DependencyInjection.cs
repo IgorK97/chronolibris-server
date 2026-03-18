@@ -122,7 +122,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
             // 3. Регистрируем твой сервис для работы с файлами
             //services.AddScoped<IFileService, MinioFileService>();
-            services.AddScoped<IMinioService, MinioService>();
+            //services.AddScoped<IMinioService, MinioService>();
             services.AddScoped<IStorageService, StorageService>();
 
             return services;

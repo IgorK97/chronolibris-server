@@ -339,7 +339,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
 
 
         private string BookImageKey(string bookId, string fileName)
-            => $"{bookId}/images/{fileName}";
+            => $"{bookId}/{fileName}";
 
 
         private static string UploadKey(string fileName)

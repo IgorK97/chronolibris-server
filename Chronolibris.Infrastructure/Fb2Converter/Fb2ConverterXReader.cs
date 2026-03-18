@@ -360,7 +360,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                             var pe = new ParsedElement
                             {
                                 Type = "pn",
-                                Content = pageNum.Value,
+                                Content = pageNum,
                                 Text = null,
                                 BodyIndex = bodyIdx,
                                 SectionIndex = mySectionIdx,
@@ -837,12 +837,41 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
             catch { return string.Empty; }
         }
 
+        //private static PartElement MapToPartElement(ParsedElement pe)
+        //{
+        //    object? c = pe.Content;
+
+        //    // Если Content — одиночный ImgSegment, передаём как есть (список из одного)
+        //    // PartElementJsonConverter умеет сериализовать List<object> и string
+        //    if (c is ImgSegment img)
+        //        c = new List<object> { img };
+
+        //    return new PartElement
+        //    {
+        //        T = pe.Type,
+        //        Xp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex],
+        //        C = c
+        //    };
+        //}
+
         private static PartElement MapToPartElement(ParsedElement pe)
         {
             object? c = pe.Content;
 
-            // Если Content — одиночный ImgSegment, передаём как есть (список из одного)
-            // PartElementJsonConverter умеет сериализовать List<object> и string
+            // pn-элемент: Content — int (номер страницы).
+            // Обходим PartElementJsonConverter передавая int напрямую через JsonSerializer.Serialize.
+            if (pe.Type == "pn" && c is int pageNum)
+            {
+                return new PartElement
+                {
+                    T = pe.Type,
+                    Xp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex],
+                    C = pageNum   // int сериализуется как JSON number
+                };
+            }
+
+            // Если Content — одиночный ImgSegment, передаём как список из одного.
+            // PartElementJsonConverter умеет сериализовать List<object> и string.
             if (c is ImgSegment img)
                 c = new List<object> { img };
 
