@@ -12,9 +12,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Report> builder)
         {
-            builder.HasOne(r => r.Status)
+            builder.HasOne(r => r.ModerationTask)
                 .WithMany(s=>s.Reports)
-                .HasForeignKey(r => r.StatusId)
+                .HasForeignKey(r => r.ModerationTaskId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(r => r.ReasonType)

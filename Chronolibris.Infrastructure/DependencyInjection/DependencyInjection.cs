@@ -61,6 +61,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Format>, GenericRepository<Format>>();
             services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
             services.AddScoped<IGenericRepository<BookFile>, GenericRepository<BookFile>>();
+            services.AddScoped<IGenericRepository<Report>,  GenericRepository<Report>>();
 
 
             // Регистрация репозиториев
@@ -78,6 +79,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IBookFileRepository, BookFileRepository>();
             services.AddScoped<ITagsRepository, TagsRepository>();
+            services.AddScoped<IReportRepository, ReportRepository>();
 
             // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

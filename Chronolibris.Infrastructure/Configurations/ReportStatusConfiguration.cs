@@ -17,7 +17,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 new ReportStatus { Id = 1, Name = "Новое" },
                 new ReportStatus { Id = 2, Name = "В работе" },
                 new ReportStatus { Id = 3, Name = "Принято" },
-                new ReportStatus { Id = 4, Name = "отклонено" }
+                new ReportStatus { Id = 4, Name = "Отклонено" }
             );
         }
     }

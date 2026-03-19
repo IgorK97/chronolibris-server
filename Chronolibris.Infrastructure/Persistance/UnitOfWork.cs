@@ -8,6 +8,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Chronolibris.Infrastructure.Persistance
 {
@@ -31,6 +32,8 @@ namespace Chronolibris.Infrastructure.Persistance
         /// Получает репозиторий для управления сущностями закладок.
         /// </summary>
         public IBookmarkRepository Bookmarks { get; }
+
+        public IReportRepository Reports { get; }
 
         /// <summary>
         /// Получает репозиторий для управления оценками отзывов.
@@ -78,6 +81,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public IReadingProgressRepository ReadingProgresses { get; }
 
         public IGenericRepository<Series> Series { get; }
+        public IModerationTasksRepository ModerationTasks { get; }
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="UnitOfWork"/>, 
@@ -103,7 +107,8 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
             ICommentReactionsRepository commentReactions, ILanguageRepository languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
-            IGenericRepository<Series> series, IBookFileRepository bookFiles)
+            IGenericRepository<Series> series, IModerationTasksRepository moderationTasks,
+            IBookFileRepository bookFiles, IReportRepository reports)
         {
             _context = context;
 
@@ -125,6 +130,8 @@ namespace Chronolibris.Infrastructure.Persistance
             Formats = formats;
             Series = series;
             BookFiles = bookFiles;
+            Reports = reports;
+            ModerationTasks = moderationTasks;
         }
 
         /// <summary>
@@ -136,9 +143,37 @@ namespace Chronolibris.Infrastructure.Persistance
         public async Task<int> SaveChangesAsync(CancellationToken ct) =>
         await _context.SaveChangesAsync(ct);
 
+        public async Task<ITransaction> BeginTransactionAsync(
+            CancellationToken token = default)
+        {
+            var tx = await _context.Database.BeginTransactionAsync(token);
+            return new EfTransaction(tx);
+        }
+
         /// <summary>
         /// Освобождает ресурсы, связанные с контекстом базы данных.
         /// </summary>
         public void Dispose() => _context.Dispose();
+    }
+
+    public sealed class EfTransaction : ITransaction
+    {
+        private readonly IDbContextTransaction _inner;
+        public EfTransaction(IDbContextTransaction inner)
+        {
+            _inner = inner;
+
+        }
+
+        public Task CommitAsync(CancellationToken token = default)
+        {
+            return _inner.CommitAsync(token);
+        }
+        public Task RollbackAsync(CancellationToken cancellationToken = default)
+        {
+            return _inner.RollbackAsync(cancellationToken);
+        }
+
+        public ValueTask DisposeAsync() => _inner.DisposeAsync();
     }
 }

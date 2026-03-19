@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using Chronolibris.Domain.Entities;
 
 namespace Chronolibris.Domain.Interfaces
@@ -25,6 +26,9 @@ namespace Chronolibris.Domain.Interfaces
         /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IBookmarkRepository"/>.
         /// </summary>
         IBookmarkRepository Bookmarks { get; }
+
+        IReportRepository Reports { get; }
+        IModerationTasksRepository ModerationTasks { get; }
 
         /// <summary>
         /// Получает репозиторий для управления сущностями <see cref="Chronolibris.Domain.Interfaces.IReviewReactionsRepository"/> (оценки отзывов).
@@ -80,5 +84,16 @@ namespace Chronolibris.Domain.Interfaces
         /// <param name="token">Токен отмены для прерывания операции. По умолчанию — <c>default</c>.</param>
         /// <returns>Задача, представляющая асинхронную операцию. Результат задачи — количество успешно сохраненных записей.</returns>
         Task<int> SaveChangesAsync(CancellationToken token = default);
+        /// <summary>
+        /// Открывает транзакцию. Возвращает объект транзакции, который нужно
+        /// передать в Commit или Rollback. Использовать через using или try/finally.
+        /// </summary>
+        Task<ITransaction> BeginTransactionAsync(CancellationToken token = default);
+    }
+
+    public interface ITransaction : IAsyncDisposable
+    {
+        Task CommitAsync(CancellationToken token = default);
+        Task RollbackAsync(CancellationToken token = default);
     }
 }
