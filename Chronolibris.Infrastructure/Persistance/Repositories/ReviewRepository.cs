@@ -39,7 +39,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         ReviewStatusId = r.ReviewStatusId,
                         CreatedAt = r.CreatedAt,
                         UpdatedAt = r.UpdatedAt,
-                        ModeratedAt = r.ModeratedAt,
+                        //ModeratedAt = r.ModeratedAt,
                         DeletedAt = r.DeletedAt,
                         ReviewStatus = r.ReviewStatus
                     },

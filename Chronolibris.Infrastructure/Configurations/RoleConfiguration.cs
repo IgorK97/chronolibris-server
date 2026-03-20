@@ -25,6 +25,12 @@ namespace Chronolibris.Infrastructure.Configurations
                     Id = 2,
                     Name = "reader",
                     NormalizedName = "READER"
+                },
+                new IdentityRole<long>
+                {
+                    Id=3,
+                    Name="moderator",
+                    NormalizedName="MODERATOR"
                 }
             );
         }

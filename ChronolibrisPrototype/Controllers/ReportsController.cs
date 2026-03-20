@@ -28,7 +28,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> CreateReport([FromBody] CreateReportRequest request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

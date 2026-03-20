@@ -24,7 +24,8 @@ namespace Chronolibris.Application.Handlers
                 UserId = request.UserId,
                 Text = request.Text,
                 ParentCommentId = request.ParentCommentId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false,
             };
             await _uow.Comments.AddAsync(comment, ct);
             await _uow.SaveChangesAsync();

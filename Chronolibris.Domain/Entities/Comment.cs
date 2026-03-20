@@ -15,6 +15,7 @@ namespace Chronolibris.Domain.Entities
         public required string Text { get; set; }
 
         public required DateTime CreatedAt { get; set; }
+        public required bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 
         public long UserId { get; set; }

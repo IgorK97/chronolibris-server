@@ -176,7 +176,7 @@ namespace Chronolibris.Infrastructure.Identity
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
@@ -186,7 +186,8 @@ namespace Chronolibris.Infrastructure.Identity
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
-                claims.Append(new Claim(ClaimTypes.Role, role));
+                //claims.Append(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var token = new JwtSecurityToken(
@@ -204,6 +205,8 @@ namespace Chronolibris.Infrastructure.Identity
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
                 return null;
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? string.Empty;
             return new UserProfileResponse
             {
                 UserId = user.Id,
@@ -211,7 +214,8 @@ namespace Chronolibris.Infrastructure.Identity
                 LastName = user.FamilyName,
                 Email = user.Email,
                 UserName = user.UserName!,
-                PhoneNumber = user.PhoneNumber!
+                PhoneNumber = user.PhoneNumber!,
+                Role=role,
             };
         }
         public async Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request)
@@ -219,7 +223,8 @@ namespace Chronolibris.Infrastructure.Identity
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
                 throw new ApplicationException("User not found.");
-
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? string.Empty;
             // 1. Обновляем Имя/Фамилию (Name/FamilyName)
             user.Name = request.FirstName;
             user.FamilyName = request.LastName;
@@ -248,7 +253,8 @@ namespace Chronolibris.Infrastructure.Identity
                 LastName = user.FamilyName,
                 Email = user.Email,
                 UserName = user.UserName!,
-                PhoneNumber = user.PhoneNumber!
+                PhoneNumber = user.PhoneNumber!,
+                Role=role,
             };
         }
 

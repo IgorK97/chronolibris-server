@@ -33,18 +33,64 @@ namespace Chronolibris.Application.Reports.Handlers
                     Success = false,
                 };
             var now = DateTime.UtcNow;
-            task.StatusId = command.Resolution ? 3 : 4;
 
-            task.ResolvedAt = now;
-
-            await _unitOfWork.SaveChangesAsync();
-
-            return new TaskResolutionResponse
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(token);
+            try
             {
-                Success = true,
-                TaskResolvedAt = now,
-                TaskStatusId = task.StatusId
-            };
+                task.StatusId = command.Resolution ? 3 : 4;
+                task.ResolvedAt = now;
+                if (command.Resolution)
+                {
+                    switch (task.TargetTypeId)
+                    {
+                        case 3:
+                            {
+                                var comment = await _unitOfWork.Comments.GetByIdAsync(task.TargetId, token);
+                                if(comment is not null && !comment.IsDeleted)
+                                {
+                                    comment.IsDeleted = true;
+                                    comment.DeletedAt = now;
+                                }
+                                break;
+                            }
+                        case 2:
+                            {
+                                var review = await _unitOfWork.Reviews.GetByIdAsync(task.TargetId, token);
+                                if(review is not null && review.ReviewStatusId!= 4)
+                                {
+                                    review.ReviewStatusId = 4;
+                                    review.DeletedAt = now;
+                                    //review.ModeratedAt = now;
+                                }
+                                break;
+                            }
+                        case 1:
+                            {
+                                var book = await _unitOfWork.Books.GetByIdAsync(task.TargetId, token);
+                                if(book is not null && book.IsAvailable)
+                                {
+                                    book.IsAvailable = false;
+                                    book.UpdatedAt = now;
+                                }
+                                break;
+                            }
+                    }
+                    
+                }
+                await _unitOfWork.SaveChangesAsync(token);
+                await transaction.CommitAsync(token);
+                return new TaskResolutionResponse
+                {
+                    Success = true,
+                    TaskResolvedAt = now,
+                    TaskStatusId = task.StatusId
+                };
+            }
+            catch
+            {
+                await transaction.RollbackAsync(token);
+                throw;
+            }
                 
         }
     }
