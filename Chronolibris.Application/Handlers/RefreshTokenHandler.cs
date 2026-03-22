@@ -9,17 +9,17 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class RefreshTokenHandler(IIdentityService identityService) : IRequestHandler<RefreshTokenCommand, string>
-    {
-        public async Task<string> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
-        {
-            var newToken = await identityService.RefreshTokenAsync(request.token);
-            if(newToken is null)
-            {
-                throw new UnauthorizedAccessException("Invalid token");
-            }
+    //public class RefreshTokenHandler(IIdentityService identityService) : IRequestHandler<RefreshTokenCommand, string>
+    //{
+    //    public async Task<string> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var newToken = await identityService.RefreshTokenAsync(request.token);
+    //        if(newToken is null)
+    //        {
+    //            throw new UnauthorizedAccessException("Invalid token");
+    //        }
 
-            return newToken;
-        }
-    }
+    //        return newToken;
+    //    }
+    //}
 }

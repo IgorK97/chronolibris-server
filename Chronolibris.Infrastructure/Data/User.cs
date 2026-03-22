@@ -19,11 +19,11 @@ namespace Chronolibris.Infrastructure.Data
         //public required string Password { get; set; }
         public required string LastName { get; set; }
         public required DateTime RegisteredAt { get; set; }
-        public required DateTime LastEnteredAt { get; set; }
+        //public required DateTime LastEnteredAt { get; set; }
         public required bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public string? RefreshToken { get; set; }
-        public DateTime RefreshTokenExpiryTime { get; set; }
+        //public string? RefreshToken { get; set; }
+        //public DateTime RefreshTokenExpiryTime { get; set; }
 
     }
 }

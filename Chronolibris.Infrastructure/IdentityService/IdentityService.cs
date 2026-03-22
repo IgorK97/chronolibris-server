@@ -59,7 +59,7 @@ namespace Chronolibris.Infrastructure.Identity
             {
                 LastName = request.LastName,
                 IsDeleted = false,
-                LastEnteredAt = dt,
+                //LastEnteredAt = dt,
                 FirstName = request.UserName,
                 RegisteredAt = dt,
                 Email = request.Email,
@@ -82,8 +82,8 @@ namespace Chronolibris.Infrastructure.Identity
             await _userManager.AddToRoleAsync(user, "Reader");
 
             var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(365);
+            //user.RefreshToken = refreshToken;
+            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(365);
            
             await _userManager.UpdateAsync(user);
             return new RegistrationResult
@@ -129,8 +129,8 @@ namespace Chronolibris.Infrastructure.Identity
             string jwt = await GenerateJwtToken(user);
             string refresh = GenerateRefreshToken();
 
-            user.RefreshToken = refresh;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            //user.RefreshToken = refresh;
+            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
             return new LoginResult
@@ -148,16 +148,16 @@ namespace Chronolibris.Infrastructure.Identity
             return Convert.ToBase64String(randomBytes);
         }
 
-        public async Task<string?> RefreshTokenAsync(string refreshToken)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        //public async Task<string?> RefreshTokenAsync(string refreshToken)
+        //{
+        //    var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 
-            if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
-                return null;
+        //    if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        //        return null;
 
-            var newToken = await GenerateJwtToken(user);
-            return newToken;
-        }
+        //    var newToken = await GenerateJwtToken(user);
+        //    return newToken;
+        //}
 
 
 
@@ -252,8 +252,8 @@ namespace Chronolibris.Infrastructure.Identity
             string jwt = await GenerateJwtToken(user);
             string refresh = GenerateRefreshToken();
 
-            user.RefreshToken = refresh;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            //user.RefreshToken = refresh;
+            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
             return new LoginResult { Success = true, Token = jwt, RefreshToken = refresh };

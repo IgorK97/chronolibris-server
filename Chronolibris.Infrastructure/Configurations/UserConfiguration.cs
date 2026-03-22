@@ -28,7 +28,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Id = 1,
                     LastName = "KQWERTY",
                     IsDeleted = false,
-                    LastEnteredAt = dt,
+                    //LastEnteredAt = dt,
                     FirstName = "AQWERTY",
                     RegisteredAt = dt,
                     Email = "mail@mail.com",

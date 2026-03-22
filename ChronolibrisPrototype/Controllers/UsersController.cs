@@ -65,12 +65,12 @@ namespace ChronolibrisPrototype.Controllers
             return Ok();
         }
 
-        [HttpPost("refresh")]
-        public async Task<ActionResult> Refresh(string refreshToken)
-        {
-            var result = await _mediator.Send(new RefreshTokenCommand(refreshToken));
-            return Ok(result);
-        }
+        //[HttpPost("refresh")]
+        //public async Task<ActionResult> Refresh(string refreshToken)
+        //{
+        //    var result = await _mediator.Send(new RefreshTokenCommand(refreshToken));
+        //    return Ok(result);
+        //}
 
         [Authorize]
         [HttpGet("me")]
