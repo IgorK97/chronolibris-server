@@ -17,12 +17,14 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Обязательное имя пользователя (например, имя).
         /// </summary>
-        public required string Name { get; init; }
+        public required string UserName { get; init; }
+
+        public required string FirstName { get; init; }
 
         /// <summary>
         /// Обязательная фамилия пользователя.
         /// </summary>
-        public required string FamilyName { get; init; }
+        public required string LastName { get; init; }
 
         /// <summary>
         /// Обязательный адрес электронной почты пользователя. Используется для аутентификации.
@@ -33,5 +35,6 @@ namespace Chronolibris.Application.Models
         /// Обязательный пароль для новой учетной записи. Должен быть хеширован сервисом идентификации.
         /// </summary>
         public required string Password { get; init; }
+        public required string PhoneNumber { get; init; }
     }
 }

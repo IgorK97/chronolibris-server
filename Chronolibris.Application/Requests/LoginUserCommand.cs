@@ -15,9 +15,9 @@ namespace Chronolibris.Application.Queries
     /// что обеспечивает неизменяемость (immutability) данных запроса.
     /// </para>
     /// </summary>
-    /// <param name="Email">Адрес электронной почты, используемый для входа.</param>
+    /// <param name="UserName">Адрес электронной почты, используемый для входа.</param>
     /// <param name="Password">Пароль пользователя.</param>
     /// <returns>Возвращает объект <see cref="LoginResult"/>, содержащий статус входа 
     /// и, при успехе, токен аутентификации.</returns>
-    public record LoginUserCommand(string Email, string Password) : IRequest<LoginResult>;
+    public record LoginUserCommand(string UserName, string Password) : IRequest<LoginResult>;
 }

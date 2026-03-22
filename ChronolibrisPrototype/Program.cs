@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(allowAVDCORSPolicy,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "http://localhost:45457", "https://localhost:5173")
+            policy.WithOrigins(/*"http://localhost:5173", "http://localhost:45457",*/ "https://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -131,6 +131,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(options =>
 {
     options.Title = "My API";
+
     options.AddSecurity("Bearer", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
     {
         Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
@@ -178,10 +179,23 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
     Authorization = new[] { new HangfireAuthFilter() },
     DashboardTitle = "My App Jobs"
 });
-app.MapControllers();
 
-app.UseOpenApi();
+
+app.UseOpenApi(options =>
+{
+    options.PostProcess = (document, request) =>
+    {
+        document.Servers.Clear();
+        document.Servers.Add(new NSwag.OpenApiServer
+        {
+            Url = "https://localhost:7016",
+            Description = "Local HTTPS (dev)"
+        });
+    };
+});
 app.UseSwaggerUI();
+
+app.MapControllers();
 
 // Запуск проверки БД (миграций) при старте приложения
 app.Lifetime.ApplicationStarted.Register(async () =>

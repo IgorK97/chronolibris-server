@@ -57,9 +57,11 @@ namespace Chronolibris.Application.Handlers
             var result = await _identityService.RegisterUserAsync(new RegisterRequest
             {
                 Email = request.Email,
-                FamilyName = request.FamilyName,
-                Name = request.Name,
-                Password = request.Password
+                LastName = request.LastName,
+                UserName = request.UserName,
+                Password = request.Password,
+                FirstName = request.FirstName,
+                PhoneNumber = request.PhoneNumber,
             });
 
             if (result.Success)

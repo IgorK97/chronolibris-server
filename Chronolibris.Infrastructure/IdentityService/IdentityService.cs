@@ -57,13 +57,13 @@ namespace Chronolibris.Infrastructure.Identity
             DateTime dt = DateTime.UtcNow;
             var user = new User
             {
-                LastName = request.FamilyName,
+                LastName = request.LastName,
                 IsDeleted = false,
                 LastEnteredAt = dt,
-                FirstName = request.Name,
+                FirstName = request.UserName,
                 RegisteredAt = dt,
                 Email = request.Email,
-                UserName = request.Name,
+                UserName = request.UserName,
                 EmailConfirmed = true
             };
 
@@ -217,6 +217,46 @@ namespace Chronolibris.Infrastructure.Identity
                 PhoneNumber = user.PhoneNumber!,
                 Role=role,
             };
+        }
+
+        public async Task<bool> IsUserNameUniqueAsync(string username, string role)
+        {
+            // FindByNameAsync ищет по NormalizedUserName — регистронезависимо
+            return await _userManager.FindByNameAsync(username) is null;
+        }
+
+        public async Task<bool> IsPhoneUniqueAsync(string phone, string role)
+        {
+            var normalized = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)]", "");
+            return !await _userManager.Users
+                                        .AnyAsync(u => u.PhoneNumber == normalized);
+
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email, string role)
+        {
+            return await _userManager.FindByEmailAsync(email) is null;
+        }
+
+        public async Task<LoginResult> LoginUserByUserNameAsync(string username, string password)
+        {
+            // UserName в Identity нормализуется к upper-case, FindByNameAsync учитывает это
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                return new LoginResult { Success = false, Token = string.Empty, Message = "Пользователь не найден" };
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            if (!result.Succeeded)
+                return new LoginResult { Success = false, Token = string.Empty, Message = "Неверный пароль" };
+
+            string jwt = await GenerateJwtToken(user);
+            string refresh = GenerateRefreshToken();
+
+            user.RefreshToken = refresh;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            return new LoginResult { Success = true, Token = jwt, RefreshToken = refresh };
         }
         public async Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request)
         {

@@ -22,19 +22,22 @@ namespace Chronolibris.Application.Requests
         /// Обязательное имя пользователя.
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
-        public required string Name { get; init; }
+        public required string UserName { get; init; }
+
+        public required string FirstName { get; init; }
 
         /// <summary>
         /// Обязательная фамилия пользователя.
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
-        public required string FamilyName { get; init; }
+        public required string LastName { get; init; }
 
         /// <summary>
         /// Обязательный адрес электронной почты пользователя. Используется в качестве логина.
         /// Свойство доступно только для инициализации (<c>init</c>).
         /// </summary>
         public required string Email { get; init; }
+        public required string PhoneNumber { get; init; }
 
         /// <summary>
         /// Обязательный пароль, который будет использоваться для аутентификации.
