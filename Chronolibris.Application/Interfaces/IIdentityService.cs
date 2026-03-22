@@ -36,9 +36,9 @@ namespace Chronolibris.Application.Interfaces
         /// </returns>
         Task<LoginResult> LoginUserByEmailAsync(string Email, string Password);
         Task<LoginResult> LoginUserByUserNameAsync(string userName, string password);
-        Task<bool> IsUserNameUniqueAsync(string userName, string role);
-        Task<bool> IsEmailUniqueAsync(string email, string role);
-        Task<bool>IsPhoneUniqueAsync(string phone, string role);
+        Task<bool> IsUserNameUniqueAsync(string userName);
+        Task<bool> IsEmailUniqueAsync(string email);
+        Task<bool>IsPhoneUniqueAsync(string phone);
         //Task<string?> RefreshTokenAsync(string token);
         //Task<MeData?> GetMeDataAsync(Guid userId);
 

@@ -36,5 +36,6 @@ namespace Chronolibris.Application.Models
         /// </summary>
         public required string Password { get; init; }
         public required string PhoneNumber { get; init; }
+        public string? Role { get; init; }
     }
 }

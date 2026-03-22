@@ -79,7 +79,9 @@ namespace Chronolibris.Infrastructure.Identity
                 };
             };
 
-            await _userManager.AddToRoleAsync(user, "Reader");
+            var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
+
+            await _userManager.AddToRoleAsync(user, "reader");
 
             var refreshToken = GenerateRefreshToken();
             //user.RefreshToken = refreshToken;
@@ -219,13 +221,13 @@ namespace Chronolibris.Infrastructure.Identity
             };
         }
 
-        public async Task<bool> IsUserNameUniqueAsync(string username, string role)
+        public async Task<bool> IsUserNameUniqueAsync(string username)
         {
             // FindByNameAsync ищет по NormalizedUserName — регистронезависимо
             return await _userManager.FindByNameAsync(username) is null;
         }
 
-        public async Task<bool> IsPhoneUniqueAsync(string phone, string role)
+        public async Task<bool> IsPhoneUniqueAsync(string phone)
         {
             var normalized = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)]", "");
             return !await _userManager.Users
@@ -233,7 +235,7 @@ namespace Chronolibris.Infrastructure.Identity
 
         }
 
-        public async Task<bool> IsEmailUniqueAsync(string email, string role)
+        public async Task<bool> IsEmailUniqueAsync(string email)
         {
             return await _userManager.FindByEmailAsync(email) is null;
         }

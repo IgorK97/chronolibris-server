@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
+using Chronolibris.Application.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -145,6 +146,24 @@ namespace ChronolibrisPrototype.Controllers
                 SameSite = SameSiteMode.Strict
             });
             return Ok();
+        }
+
+        /// <summary>
+        /// POST /api/users/staff
+        /// Регистрация модератора или администратора.
+        /// Доступно только администраторам.
+        /// </summary>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("staff")]
+        public async Task<IActionResult> RegisterStaff(
+            [FromBody] RegisterStaffCommand request)
+        {
+            var result = await _mediator.Send(request);
+
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = "Пользователь успешно зарегистрирован." });
         }
     }
 
