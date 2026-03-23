@@ -21,8 +21,8 @@ namespace Chronolibris.Application.Models
         public bool IsReviewable { get; set; }
         public long? PublisherId { get; set; }
         public string? PublisherName { get; set; }
-        public long? SeriesId { get; set; }
-        public string? SeriesName { get; set; }
+        //public long? SeriesId { get; set; }
+        //public string? SeriesName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<string> Authors { get; set; } = new();

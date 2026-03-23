@@ -33,7 +33,7 @@ namespace Chronolibris.Application.Handlers
                 Description = selection.Description,
                 CreatedAt = selection.CreatedAt,
                 UpdatedAt = selection.UpdatedAt,
-                SelectionTypeId = selection.SelectionTypeId,
+                //SelectionTypeId = selection.SelectionTypeId,
                 BooksCount = selection.Books.Count,
                 IsActive = selection.IsActive
             };

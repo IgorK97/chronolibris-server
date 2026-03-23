@@ -10,6 +10,6 @@ namespace Chronolibris.Application.Requests
     public record CreateSelectionRequest(
        string Name,
        string Description,
-       int SelectionTypeId
+       int SelectionTypeId,long UserId
    ) : IRequest<long>;
 }

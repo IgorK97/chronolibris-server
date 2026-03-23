@@ -15,6 +15,7 @@ namespace Chronolibris.Infrastructure.Configurations
 
         public void Configure(EntityTypeBuilder<User> builder)
         {
+
             builder.Property(user => user.PhoneNumber)
                 .IsUnicode(false)
                 .IsFixedLength(false)

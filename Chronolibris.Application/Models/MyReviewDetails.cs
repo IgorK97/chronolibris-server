@@ -62,6 +62,6 @@ namespace Chronolibris.Application.Models
         /// <c>true</c> для лайка, <c>false</c> для дизлайка. <c>null</c>, если пользователь еще не голосовал.
         /// </summary>
         public bool? UserVote { get; set; }
-        public required string Status { get; set; }
+        //public required string Status { get; set; }
     }
 }

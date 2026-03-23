@@ -26,7 +26,8 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<ReviewDetailsWithVote?> GetActiveByUserAndBookAsync(long userId, long bookId, CancellationToken token = default)
         {
             return await _context.Reviews.AsNoTracking()
-                .Where(r => r.UserId == userId && r.BookId == bookId && r.ReviewStatusId != 4).OrderByDescending(r => r.CreatedAt)
+                .Where(r => r.UserId == userId && r.BookId == bookId && !r.IsDeleted).OrderByDescending(r => r.CreatedAt)
+
                 .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = new Review
@@ -36,12 +37,13 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         BookId = r.BookId,
                         ReviewText = r.ReviewText,
                         Score = r.Score,
-                        ReviewStatusId = r.ReviewStatusId,
+                        //ReviewStatusId = r.ReviewStatusId,
                         CreatedAt = r.CreatedAt,
                         UpdatedAt = r.UpdatedAt,
                         //ModeratedAt = r.ModeratedAt,
                         DeletedAt = r.DeletedAt,
-                        ReviewStatus = r.ReviewStatus
+                        IsDeleted= r.IsDeleted,
+                        //ReviewStatus = r.ReviewStatus
                     },
                     UserName = u.UserName,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
@@ -87,7 +89,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(r => r.Id > lastId.Value);
             }
 
-            return await query.Where(r => r.ReviewStatusId == 2 && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
+            return await query.Where(r => !r.IsDeleted && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
                 .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = r,

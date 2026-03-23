@@ -48,8 +48,8 @@ namespace Chronolibris.Application.Handlers
                     IsReviewable = book.IsReviewable,
                     PublisherId = book.PublisherId,
                     PublisherName = book.Publisher?.Name,
-                    SeriesId = book.SeriesId,
-                    SeriesName = book.Series?.Name,
+                    //SeriesId = book.SeriesId,
+                    //SeriesName = book.Series?.Name,
                     CreatedAt = book.CreatedAt,
                     UpdatedAt = book.UpdatedAt,
                     Authors = authors,
@@ -105,8 +105,8 @@ namespace Chronolibris.Application.Handlers
                 IsReviewable = book.IsReviewable,
                 PublisherId = book.PublisherId,
                 PublisherName = book.Publisher?.Name,
-                SeriesId = book.SeriesId,
-                SeriesName = book.Series?.Name,
+                //SeriesId = book.SeriesId,
+                //SeriesName = book.Series?.Name,
                 CreatedAt = book.CreatedAt,
                 UpdatedAt = book.UpdatedAt,
                 Authors = authors,
@@ -146,10 +146,10 @@ namespace Chronolibris.Application.Handlers
                 IsAvailable = request.IsAvailable,
                 IsReviewable = request.IsReviewable,
                 PublisherId = request.PublisherId,
-                SeriesId = request.SeriesId,
+                //SeriesId = request.SeriesId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = null,
-                IsFragment=false,
+                //IsFragment=false,
             };
 
             await _bookRepository.AddAsync(book, cancellationToken);
@@ -186,7 +186,7 @@ namespace Chronolibris.Application.Handlers
             book.IsAvailable = request.IsAvailable;
             book.IsReviewable = request.IsReviewable;
             book.PublisherId = request.PublisherId;
-            book.SeriesId = request.SeriesId;
+            //book.SeriesId = request.SeriesId;
             book.UpdatedAt = DateTime.UtcNow;
 
             _bookRepository.Update(book);

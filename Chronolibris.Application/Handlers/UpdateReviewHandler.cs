@@ -34,11 +34,11 @@ namespace Chronolibris.Application.Handlers
             review.ReviewText = cmd.ReviewText?.Trim();
             review.UpdatedAt = DateTime.UtcNow;
 
-            if (textAdded)
-            {
-                // Scenario 3: adding text to a published score-only review → must go to moderation
-                review.ReviewStatusId = 1;
-            }
+            //if (textAdded)
+            //{
+            //    // Scenario 3: adding text to a published score-only review → must go to moderation
+            //    review.ReviewStatusId = 1;
+            //}
             // Scenario 4: changing score on a review that already has text → status unchanged
             // (stays Published or Pending as it was — moderator's decision is respected)
 

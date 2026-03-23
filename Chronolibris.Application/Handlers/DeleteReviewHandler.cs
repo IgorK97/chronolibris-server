@@ -28,7 +28,8 @@ namespace Chronolibris.Application.Handlers
 
             // Soft delete — Scenario 2: user can POST again to create a fresh review
             review.DeletedAt = DateTime.UtcNow;
-            review.ReviewStatusId = 4;
+            //review.ReviewStatusId = 4;
+            review.IsDeleted = true;
 
             await _uow.SaveChangesAsync(ct);
             return Unit.Value;

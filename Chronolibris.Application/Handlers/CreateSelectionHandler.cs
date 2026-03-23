@@ -26,7 +26,8 @@ namespace Chronolibris.Application.Handlers
                 Id = 0, // Auto-generated
                 Name = request.Name,
                 Description = request.Description,
-                SelectionTypeId = request.SelectionTypeId,
+                CreatedBy = request.UserId,
+                //SelectionTypeId = request.SelectionTypeId,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };

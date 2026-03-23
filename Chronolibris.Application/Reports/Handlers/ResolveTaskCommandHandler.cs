@@ -56,9 +56,9 @@ namespace Chronolibris.Application.Reports.Handlers
                         case 2:
                             {
                                 var review = await _unitOfWork.Reviews.GetByIdAsync(task.TargetId, token);
-                                if(review is not null && review.ReviewStatusId!= 4)
+                                if(review is not null && !review.IsDeleted)
                                 {
-                                    review.ReviewStatusId = 4;
+                                    review.IsDeleted = true;
                                     review.DeletedAt = now;
                                     //review.ModeratedAt = now;
                                 }

@@ -16,7 +16,7 @@ namespace Chronolibris.Domain.Entities
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public required long CountryId { get; set; }
-        public ICollection<Series> Series { get; set; } = new List<Series>();
+        //public ICollection<Series> Series { get; set; } = new List<Series>();
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

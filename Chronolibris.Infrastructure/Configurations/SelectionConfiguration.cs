@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +14,11 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Selection> builder)
         {
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(s => s.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
 
@@ -24,7 +30,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "Экономическая история",
-                    SelectionTypeId=3
+                    CreatedBy = 1,
+                    //SelectionTypeId=3
                 },
                 new Selection
                 {
@@ -33,7 +40,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "История культуры",
-                    SelectionTypeId = 3
+                    //SelectionTypeId = 3
+                    CreatedBy = 1,
 
                 },
                 new Selection
@@ -43,7 +51,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "История мира",
-                    SelectionTypeId = 3
+                    //SelectionTypeId = 3
+                    CreatedBy = 1,
 
                 },
                 new Selection
@@ -53,7 +62,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "Новое",
-                    SelectionTypeId = 1
+                    //SelectionTypeId = 1
+                    CreatedBy=1,
                 },
                 new Selection {                     
                     Id = 5,
@@ -61,7 +71,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "",
                     IsActive = true,
                     Name = "Часто читают",
-                    SelectionTypeId = 2
+                    //SelectionTypeId = 2
+                    CreatedBy=1,
                 }
             );
         }

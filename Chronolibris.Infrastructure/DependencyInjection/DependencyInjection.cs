@@ -70,7 +70,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Language>, GenericRepository<Language>>();
             services.AddScoped<IGenericRepository<Country>, GenericRepository<Country>>();
             services.AddScoped<IGenericRepository<Format>, GenericRepository<Format>>();
-            services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
+            //services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
             services.AddScoped<IGenericRepository<BookFile>, GenericRepository<BookFile>>();
             services.AddScoped<IGenericRepository<Report>,  GenericRepository<Report>>();
             services.AddScoped<IGenericRepository<ModerationTask>, GenericRepository<ModerationTask>>();

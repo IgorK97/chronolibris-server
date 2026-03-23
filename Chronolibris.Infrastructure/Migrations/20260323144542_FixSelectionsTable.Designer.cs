@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323144542_FixSelectionsTable")]
+    partial class FixSelectionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,6 +87,10 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_available");
 
+                    b.Property<bool>("IsFragment")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_fragment");
+
                     b.Property<bool>("IsReviewable")
                         .HasColumnType("boolean")
                         .HasColumnName("is_reviewable");
@@ -95,6 +102,10 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Property<long?>("PublisherId")
                         .HasColumnType("bigint")
                         .HasColumnName("publisher_id");
+
+                    b.Property<long?>("SeriesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("series_id");
 
                     b.Property<string>("Source")
                         .HasColumnType("text")
@@ -126,6 +137,9 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasIndex("PublisherId")
                         .HasDatabaseName("ix_books_publisher_id");
 
+                    b.HasIndex("SeriesId")
+                        .HasDatabaseName("ix_books_series_id");
+
                     b.ToTable("books", (string)null);
 
                     b.HasData(
@@ -138,6 +152,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             Description = "Монография является первой в отечественной литературе попыткой...",
                             FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                             IsAvailable = true,
+                            IsFragment = false,
                             IsReviewable = true,
                             LanguageId = 2L,
                             PublisherId = 2L,
@@ -153,6 +168,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             Description = "Это — второе крупное исследование Ф. Броделя...",
                             FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                             IsAvailable = true,
+                            IsFragment = false,
                             IsReviewable = true,
                             LanguageId = 2L,
                             PublisherId = 1L,
@@ -1683,6 +1699,38 @@ namespace Chronolibris.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Chronolibris.Domain.Entities.Series", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("name");
+
+                    b.Property<long>("PublisherId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("publisher_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_series");
+
+                    b.HasIndex("PublisherId")
+                        .HasDatabaseName("ix_series_publisher_id");
+
+                    b.ToTable("series", (string)null);
+                });
+
             modelBuilder.Entity("Chronolibris.Domain.Entities.Shelf", b =>
                 {
                     b.Property<long>("Id")
@@ -2426,11 +2474,18 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasForeignKey("PublisherId")
                         .HasConstraintName("fk_books_publishers_publisher_id");
 
+                    b.HasOne("Chronolibris.Domain.Entities.Series", "Series")
+                        .WithMany("Books")
+                        .HasForeignKey("SeriesId")
+                        .HasConstraintName("fk_books_series_series_id");
+
                     b.Navigation("Country");
 
                     b.Navigation("Language");
 
                     b.Navigation("Publisher");
+
+                    b.Navigation("Series");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.BookContent", b =>
@@ -2806,6 +2861,18 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasConstraintName("fk_selections_users_created_by");
                 });
 
+            modelBuilder.Entity("Chronolibris.Domain.Entities.Series", b =>
+                {
+                    b.HasOne("Chronolibris.Domain.Entities.Publisher", "Publisher")
+                        .WithMany("Series")
+                        .HasForeignKey("PublisherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_series_publishers_publisher_id");
+
+                    b.Navigation("Publisher");
+                });
+
             modelBuilder.Entity("Chronolibris.Domain.Entities.Shelf", b =>
                 {
                     b.HasOne("Chronolibris.Domain.Entities.ShelfType", "ShelfType")
@@ -2990,6 +3057,8 @@ namespace Chronolibris.Infrastructure.Migrations
             modelBuilder.Entity("Chronolibris.Domain.Entities.Publisher", b =>
                 {
                     b.Navigation("Books");
+
+                    b.Navigation("Series");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReportReasonType", b =>
@@ -3014,6 +3083,11 @@ namespace Chronolibris.Infrastructure.Migrations
             modelBuilder.Entity("Chronolibris.Domain.Entities.Review", b =>
                 {
                     b.Navigation("ReviewsRatings");
+                });
+
+            modelBuilder.Entity("Chronolibris.Domain.Entities.Series", b =>
+                {
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Shelf", b =>

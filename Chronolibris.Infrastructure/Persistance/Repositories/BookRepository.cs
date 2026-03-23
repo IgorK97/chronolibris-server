@@ -146,12 +146,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     PublisherName = b.Publisher != null ? b.Publisher.Name : null,
                     Stats = b.IsReviewable ? new
                     {
-                        AverageRating = b.Reviews.Any(r => r.ReviewStatusId == 2) ? b.Reviews
-                                        .Where(r => r.ReviewStatusId == 2)
-                                        .Average(r => (decimal)r.Score) : 0M,
-                        RatingsCount = b.Reviews.Count(r => r.ReviewStatusId==2),
-                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && r.ReviewStatusId==2),
-                        UserRating = b.Reviews.Where(r => r.UserId == userId && r.ReviewStatusId == 2)
+                        AverageRating = b.Reviews
+                                        .Where(r => !r.IsDeleted)
+                                        .Average(r => (decimal)r.Score),
+                        RatingsCount = b.Reviews.Count(r => !r.IsDeleted),
+                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && !r.IsDeleted),
+                        UserRating = b.Reviews.Where(r => r.UserId == userId && !r.IsDeleted)
                                         .Select(r => (decimal?)r.Score).FirstOrDefault()
                     } : null,
                     IsFavorite = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.FAVORITES_CODE),
@@ -310,7 +310,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Country)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher)
-                .Include(b => b.Series)
+                //.Include(b => b.Series)
                 .Include(b => b.Participations)
                     .ThenInclude(p => p.Person)
                     .Include(b => b.BookContents)
@@ -331,7 +331,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .Include(b => b.Country)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher)
-                .Include(b => b.Series)
+                //.Include(b => b.Series)
                 .Include(b => b.Participations)
                     .ThenInclude(p => p.Person)
                 .Include(b=>b.BookContents)
@@ -384,11 +384,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(b => b.PublisherId == filter.PublisherId.Value);
             }
 
-            // Фильтр по серии
-            if (filter.SeriesId.HasValue)
-            {
-                query = query.Where(b => b.SeriesId == filter.SeriesId.Value);
-            }
+            //// Фильтр по серии
+            //if (filter.SeriesId.HasValue)
+            //{
+            //    query = query.Where(b => b.SeriesId == filter.SeriesId.Value);
+            //}
 
             // Фильтр по языку
             if (filter.LanguageId.HasValue)

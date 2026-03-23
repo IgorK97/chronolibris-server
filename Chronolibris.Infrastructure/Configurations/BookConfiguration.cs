@@ -84,7 +84,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "Монография является первой в отечественной литературе попыткой...",
                     FilePath = "BuddismHistory/BuddismJapanGrig/MainFile.epub",
                     IsAvailable = true,
-                    IsFragment = false,
+                    //IsFragment = false,
                     LanguageId = 2, // Русский
                     //RatingsCount = 0,
                     //ReviewsCount = 0,
@@ -103,7 +103,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     Description = "Это — второе крупное исследование Ф. Броделя...",
                     FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
                     IsAvailable = true,
-                    IsFragment = false,
+                    //IsFragment = false,
                     LanguageId = 2, // Русский
                     //RatingsCount = 0,
                     //ReviewsCount = 0,

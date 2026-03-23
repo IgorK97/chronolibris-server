@@ -29,7 +29,7 @@ namespace Chronolibris.Application.Handlers
                 Description = s.Description,
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt,
-                SelectionTypeId = s.SelectionTypeId,
+                //SelectionTypeId = s.SelectionTypeId,
                 BooksCount = s.Books.Count
             }).ToList();
 

@@ -80,7 +80,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public IGenericRepository<PersonRole> PersonRoles { get; }
         public IReadingProgressRepository ReadingProgresses { get; }
 
-        public IGenericRepository<Series> Series { get; }
+        //public IGenericRepository<Series> Series { get; }
         public IModerationTasksRepository ModerationTasks { get; }
 
         /// <summary>
@@ -107,7 +107,8 @@ namespace Chronolibris.Infrastructure.Persistance
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
             ICommentReactionsRepository commentReactions, ILanguageRepository languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
-            IGenericRepository<Series> series, IModerationTasksRepository moderationTasks,
+            //IGenericRepository<Series> series, 
+            IModerationTasksRepository moderationTasks,
             IBookFileRepository bookFiles, IReportRepository reports)
         {
             _context = context;
@@ -128,7 +129,7 @@ namespace Chronolibris.Infrastructure.Persistance
             Languages = languages;
             Countries = countries;
             Formats = formats;
-            Series = series;
+            //Series = series;
             BookFiles = bookFiles;
             Reports = reports;
             ModerationTasks = moderationTasks;

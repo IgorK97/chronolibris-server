@@ -30,7 +30,8 @@ namespace Chronolibris.Application.Handlers
                 DislikesCount = review.DislikesCount,
                 CreatedAt = review.Review.CreatedAt,
                 UserVote = review.UserVote,
-                Status = review.Review.ReviewStatus.Name,
+                //Status = review.IsD
+                //Status = review.Review.ReviewStatus.Name,
                 UserName = review.UserName,
             };
 
