@@ -14,9 +14,10 @@ namespace Chronolibris.Infrastructure.Data
         //[Key]
         //public required long Id { get; set; }
         //public required string Email { get; set; }
-
+        [MaxLength(256)]
         public required string FirstName { get; set; }
         //public required string Password { get; set; }
+        [MaxLength(256)]
         public required string LastName { get; set; }
         public required DateTime RegisteredAt { get; set; }
         //public required DateTime LastEnteredAt { get; set; }

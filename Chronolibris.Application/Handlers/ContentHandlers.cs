@@ -45,7 +45,7 @@ namespace Chronolibris.Application.Handlers
                     LanguageId = content.LanguageId,
                     LanguageName = content.Language?.Name,
                     Year = content.Year,
-                    ParentContentId = content.ParentContentId,
+                    //ParentContentId = content.ParentContentId,
                     Position = content.Position,
                     CreatedAt = content.CreatedAt,
                     UpdatedAt = content.UpdatedAt,
@@ -100,7 +100,7 @@ namespace Chronolibris.Application.Handlers
                 LanguageId = content.LanguageId,
                 LanguageName = content.Language?.Name,
                 Year = content.Year,
-                ParentContentId = content.ParentContentId,
+                //ParentContentId = content.ParentContentId,
                 Position = content.Position,
                 CreatedAt = content.CreatedAt,
                 UpdatedAt = content.UpdatedAt,
@@ -198,7 +198,7 @@ namespace Chronolibris.Application.Handlers
                 ContentTypeId = request.ContentTypeId,
                 LanguageId = request.LanguageId,
                 Year = request.Year,
-                ParentContentId = request.ParentContentId,
+                //ParentContentId = request.ParentContentId,
                 Position = request.Position,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = null
@@ -236,7 +236,7 @@ namespace Chronolibris.Application.Handlers
             content.ContentTypeId = request.ContentTypeId;
             content.LanguageId = request.LanguageId;
             content.Year = request.Year;
-            content.ParentContentId = request.ParentContentId;
+            //content.ParentContentId = request.ParentContentId;
             content.Position = request.Position;
             content.UpdatedAt = DateTime.UtcNow;
 

@@ -503,7 +503,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     .ThenInclude(c => c.Participations)
                         .ThenInclude(cp => cp.Person)
                 .Where(bc => bc.BookId == bookId)
-                .OrderBy(bc => bc.Order)
+                //.OrderBy(bc => bc.Order)
                 .Select(bc => bc.Content)
                 .ToListAsync(cancellationToken);
         }
@@ -514,7 +514,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             {
                 BookId = bookId,
                 ContentId = contentId,
-                Order = order
+                //Order = order
             };
 
             await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);

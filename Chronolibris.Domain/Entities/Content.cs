@@ -18,8 +18,8 @@ namespace Chronolibris.Domain.Entities
         public required long ContentTypeId { get; set; }
         public required long LanguageId { get; set; }
         public int? Year { get; set; }
-        public long? ParentContentId { get; set; }
-        public Content? ParentContent { get; set; }
+        //public long? ParentContentId { get; set; }
+        //public Content? ParentContent { get; set; }
 
         public int? Position { get; set; }
         public required DateTime CreatedAt { get; set; }

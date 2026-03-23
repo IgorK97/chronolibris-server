@@ -28,7 +28,7 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = l.Id,
                 Name = l.Name,
-                FtsConfiguration = l.FtsConfiguration
+                FtsConfiguration = l.Code
             });
         }
     }
@@ -51,7 +51,7 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = language.Id,
                 Name = language.Name,
-                FtsConfiguration = language.FtsConfiguration
+                FtsConfiguration = language.Code
             };
         }
     }
@@ -73,7 +73,7 @@ namespace Chronolibris.Application.Handlers
             {
                 Id=0,
                 Name = request.Name,
-                FtsConfiguration = request.FtsConfiguration
+                Code = request.FtsConfiguration
             };
 
             await _repository.AddAsync(language, cancellationToken);
@@ -119,7 +119,7 @@ namespace Chronolibris.Application.Handlers
             if (language == null) return false;
 
             language.Name = request.Name;
-            language.FtsConfiguration = request.FtsConfiguration;
+            language.Code = request.FtsConfiguration;
 
             _repository.Update(language);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

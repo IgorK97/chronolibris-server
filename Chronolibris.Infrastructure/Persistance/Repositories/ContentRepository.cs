@@ -29,7 +29,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .Include(c => c.Country)
                 .Include(c => c.Language)
                 .Include(c => c.ContentType)
-                .Include(c => c.ParentContent)
+                //.Include(c => c.ParentContent)
                 .Include(c => c.Themes)
                 .Include(c => c.Participations)
                     .ThenInclude(p => p.Person)
@@ -263,7 +263,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                         .ThenInclude(p => p.Person)
 
                 .Where(bc => bc.ContentId == contentId)
-                .OrderBy(bc => bc.Order)
+                //.OrderBy(bc => bc.Order)
                 .Select(bc => bc.Book)
                 .ToListAsync(cancellationToken);
         }
@@ -274,7 +274,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             {
                 ContentId = contentId,
                 BookId = bookId,
-                Order = order
+                //Order = order
             };
 
             await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);

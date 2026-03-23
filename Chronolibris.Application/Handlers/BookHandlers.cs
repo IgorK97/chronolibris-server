@@ -249,7 +249,7 @@ namespace Chronolibris.Application.Handlers
                     LanguageId = content.LanguageId,
                     LanguageName = content.Language?.Name,
                     Year = content.Year,
-                    ParentContentId = content.ParentContentId,
+                    //ParentContentId = content.ParentContentId,
                     Position = content.Position,
                     CreatedAt = content.CreatedAt,
                     UpdatedAt = content.UpdatedAt,

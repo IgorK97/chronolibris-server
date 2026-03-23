@@ -14,6 +14,6 @@ namespace Chronolibris.Domain.Entities
         public long BookId { get; set; }
         public Content Content { get; set; }
         public Book Book { get; set; }
-        public int Order { get; set; }
+        //public int Order { get; set; }
     }
 }

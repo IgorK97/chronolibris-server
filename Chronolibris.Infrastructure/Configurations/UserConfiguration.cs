@@ -15,6 +15,28 @@ namespace Chronolibris.Infrastructure.Configurations
 
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.Property(user => user.PhoneNumber)
+                .IsUnicode(false)
+                .IsFixedLength(false)
+                .HasMaxLength(20);
+
+            builder.Property(user => user.PasswordHash)
+                .IsUnicode(false)
+                .IsFixedLength(true)
+                .HasMaxLength(256); //84
+
+            builder.Property(user => user.ConcurrencyStamp)
+                .IsUnicode(false)
+                .IsFixedLength(true)
+                .HasMaxLength(36)
+                .IsRequired(true);
+
+            builder.Property(user => user.SecurityStamp)
+                .IsUnicode(false)
+                .IsFixedLength(false)
+                .HasMaxLength(36)
+                .IsRequired(true);
+
             builder
                 .Property(u => u.UserName)
                 .IsRequired()

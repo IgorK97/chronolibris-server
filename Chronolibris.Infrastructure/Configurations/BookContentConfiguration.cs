@@ -47,7 +47,7 @@ namespace Chronolibris.Infrastructure.Configurations
                 {
                     BookId = 1,
                     ContentId = 1,
-                    Order = 1 // Контент 1 является первым контентом в Книге 1
+                    //Order = 1 // Контент 1 является первым контентом в Книге 1
                 },
 
                 // --- Книга 2 ("Структуры повседневности...") ---
@@ -55,7 +55,7 @@ namespace Chronolibris.Infrastructure.Configurations
                 {
                     BookId = 2,
                     ContentId = 2,
-                    Order = 1 // Контент 2 является первым контентом в Книге 2
+                    //Order = 1 // Контент 2 является первым контентом в Книге 2
                 }
 
 

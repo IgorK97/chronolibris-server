@@ -10,7 +10,7 @@ namespace Chronolibris.Domain.Entities
     public class Person
     {
         public required long Id { get; set; }
-        [MaxLength(255)]
+        [MaxLength(256)]
         public required string Name { get; set; }
         public required string Description { get; set; }
         [MaxLength(2048)]

@@ -21,11 +21,11 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(t => t.Contents)
                 .UsingEntity(j => j.ToTable("content_tags"));
 
-            builder.HasOne(c => c.ParentContent)
-                .WithMany()
-                .HasForeignKey(c => c.ParentContentId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(c => c.ParentContent)
+            //    .WithMany()
+            //    .HasForeignKey(c => c.ParentContentId)
+            //    .IsRequired(false)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(c => c.ContentType)
                 .WithMany(ct =>ct.Contents)
