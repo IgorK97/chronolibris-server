@@ -24,8 +24,6 @@ namespace Chronolibris.API.Controllers.Search
         ///     &amp;lastBestSimilarity=0.75&amp;lastId=42
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(typeof(PagedResult<BookSearchResult>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> Search(
             [FromQuery] SimpleSearchHttpRequest request,
             CancellationToken cancellationToken)
@@ -76,8 +74,8 @@ namespace Chronolibris.API.Controllers.Search
                     PersonFilters: personFilters,
                     RequiredTagIds: request.RequiredTagIds,
                     ExcludedTagIds: request.ExcludedTagIds,
-                    ThemeId: request.ThemeId
-),
+                    ThemeId: request.ThemeId,
+                    SelectionId:request.SelectionId),
                 cancellationToken);
 
             return Ok(result);

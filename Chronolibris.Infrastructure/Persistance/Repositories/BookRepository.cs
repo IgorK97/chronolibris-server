@@ -148,7 +148,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     {
                         AverageRating = b.Reviews
                                         .Where(r => !r.IsDeleted)
-                                        .Average(r => (decimal)r.Score),
+                                        .Average(r => (decimal?)r.Score) ??0m,
                         RatingsCount = b.Reviews.Count(r => !r.IsDeleted),
                         ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && !r.IsDeleted),
                         UserRating = b.Reviews.Where(r => r.UserId == userId && !r.IsDeleted)

@@ -20,13 +20,14 @@ namespace Chronolibris.Application.Search.Queries
     /// Курсор: (LastBestSimilarity, LastId) — оба null на первой странице.
     /// </summary>
     public record AdvancedSearchKeysetQuery(
-        string Query,
+        string? Query,
         int PageSize,
         long? UserId,
         double? LastBestSimilarity,
         long? LastId,
         List<PersonRoleFilter> PersonFilters,
         long ThemeId,
+        long SelectionId,
         List<long> RequiredTagIds,
         List<long> ExcludedTagIds
     ) : IRequest<PagedResult<BookSearchResult>>;

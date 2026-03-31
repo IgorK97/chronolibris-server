@@ -56,6 +56,7 @@ namespace Chronolibris.Application.Search.Handlers
                    RequiredTagIds = request.RequiredTagIds,
                    ExcludedTagIds = request.ExcludedTagIds,
                    ThemeId = request.ThemeId,
+                   SelectionId = request.SelectionId,
                },
                 cancellationToken);
         }

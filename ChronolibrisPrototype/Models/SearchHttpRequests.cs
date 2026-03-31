@@ -10,7 +10,7 @@ namespace Chronolibris.API.Controllers.Search
     public class SimpleSearchHttpRequest
     {
         [Required(ErrorMessage = "Параметр query обязателен")]
-        [MinLength(1, ErrorMessage = "Поисковый запрос не может быть пустым")]
+        //[MinLength(1, ErrorMessage = "Поисковый запрос не может быть пустым")]
         [MaxLength(200, ErrorMessage = "Поисковый запрос слишком длинный")]
         public required string Query { get; set; }
 
@@ -39,21 +39,20 @@ namespace Chronolibris.API.Controllers.Search
 
     public class AdvancedSearchInputModel
     {
-        [Required(ErrorMessage = "Параметр query обязателен")]
-        [MinLength(1)]
+        //[Required(ErrorMessage = "Параметр query обязателен")]
+        //[MinLength(1)]
         [MaxLength(200)]
-        public required string Query { get; set; }
+        public string? Query { get; set; }
 
         [Range(1, 100)]
         public int PageSize { get; set; } = 20;
 
-        // Составной keyset-курсор. Оба поля null = первая страница.
         public double? LastBestSimilarity { get; set; }
         public long? LastId { get; set; }
 
-        // ── Фильтры ────────────────────────────────────────────────────────
         public List<PersonRoleFilterHttpRequest> PersonFilters { get; set; } = [];
         public long ThemeId { get; set; }
+        public long SelectionId { get; set; }
         public List<long> RequiredTagIds { get; set; } = [];
         public List<long> ExcludedTagIds { get; set; } = [];
 

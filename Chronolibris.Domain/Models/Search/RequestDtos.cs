@@ -64,11 +64,12 @@ namespace Chronolibris.Domain.Models.Search
 
     public class AdvancedSearchKeysetRequest
     {
-        public required string Query { get; set; }
+        public string? Query { get; set; }
         public int PageSize { get; set; } = 20;
 
         public List<PersonRoleFilter> PersonFilters { get; set; } = [];
         public long ThemeId { get; set; }
+        public required long SelectionId { get; set; }
         //public List<long> RequiredThemeIds { get; set; } = [];
         //public List<long> ExcludedThemeIds { get; set; } = [];
         public List<long> RequiredTagIds { get; set; } = [];
