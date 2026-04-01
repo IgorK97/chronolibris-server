@@ -69,46 +69,46 @@ namespace Chronolibris.Application.Requests
         }
     }
 
-    public class UpdateBookCommand : IRequest<Unit>
-    {
-        public long Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public long CountryId { get; set; }
-        public long LanguageId { get; set; }
-        public int? Year { get; set; }
-        public string? ISBN { get; set; }
-        public string? FilePath { get; set; }
-        public string? CoverPath { get; set; }
-        public bool IsAvailable { get; set; } = true;
-        public bool IsReviewable { get; set; } = false;
-        public long? PublisherId { get; set; }
-        public long? SeriesId { get; set; }
-        public List<long> PersonIds { get; set; } = new();
-        public List<long> ThemeIds { get; set; } = new();
+    //public class UpdateBookCommand : IRequest<Unit>
+    //{
+    //    public long Id { get; set; }
+    //    public string Title { get; set; } = string.Empty;
+    //    public string Description { get; set; } = string.Empty;
+    //    public long CountryId { get; set; }
+    //    public long LanguageId { get; set; }
+    //    public int? Year { get; set; }
+    //    public string? ISBN { get; set; }
+    //    public string? FilePath { get; set; }
+    //    public string? CoverPath { get; set; }
+    //    public bool IsAvailable { get; set; } = true;
+    //    public bool IsReviewable { get; set; } = false;
+    //    public long? PublisherId { get; set; }
+    //    public long? SeriesId { get; set; }
+    //    public List<long> PersonIds { get; set; } = new();
+    //    public List<long> ThemeIds { get; set; } = new();
 
-        public UpdateBookCommand(long id, string title, string description, long countryId,
-            long languageId, int? year, string? isbn, string? filePath, string? coverPath,
-            bool isAvailable, bool isReviewable, long? publisherId, long? seriesId,
-            List<long> personIds, List<long> themeIds)
-        {
-            Id = id;
-            Title = title;
-            Description = description;
-            CountryId = countryId;
-            LanguageId = languageId;
-            Year = year;
-            ISBN = isbn;
-            FilePath = filePath;
-            CoverPath = coverPath;
-            IsAvailable = isAvailable;
-            IsReviewable = isReviewable;
-            PublisherId = publisherId;
-            SeriesId = seriesId;
-            PersonIds = personIds;
-            ThemeIds = themeIds;
-        }
-    }
+    //    public UpdateBookCommand(long id, string title, string description, long countryId,
+    //        long languageId, int? year, string? isbn, string? filePath, string? coverPath,
+    //        bool isAvailable, bool isReviewable, long? publisherId, long? seriesId,
+    //        List<long> personIds, List<long> themeIds)
+    //    {
+    //        Id = id;
+    //        Title = title;
+    //        Description = description;
+    //        CountryId = countryId;
+    //        LanguageId = languageId;
+    //        Year = year;
+    //        ISBN = isbn;
+    //        FilePath = filePath;
+    //        CoverPath = coverPath;
+    //        IsAvailable = isAvailable;
+    //        IsReviewable = isReviewable;
+    //        PublisherId = publisherId;
+    //        SeriesId = seriesId;
+    //        PersonIds = personIds;
+    //        ThemeIds = themeIds;
+    //    }
+    //}
 
     public class DeleteBookCommand : IRequest<Unit>
     {

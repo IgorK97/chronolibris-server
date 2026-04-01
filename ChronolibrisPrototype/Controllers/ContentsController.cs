@@ -28,7 +28,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает список контентов с фильтрацией и пагинацией
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContentListResponse))]
         public async Task<ActionResult<ContentListResponse>> GetContents(
             [FromQuery] ContentFilterRequest filter, CancellationToken cancellationToken)
         {
@@ -41,8 +40,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает контент по идентификатору
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContentDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ContentDto>> GetContentById(long id, CancellationToken cancellationToken)
         {
             var query = new GetContentByIdQuery(id);
@@ -107,7 +104,6 @@ namespace ChronolibrisPrototype.Controllers
         /// Получает список книг для контента
         /// </summary>
         [HttpGet("{id}/books")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BookDto>))]
         public async Task<ActionResult<List<BookDto>>> GetContentBooks(long id, CancellationToken cancellationToken)
         {
             var query = new GetContentBooksQuery(id);
@@ -120,8 +116,7 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
         public async Task<ActionResult<long>> CreateContent(
             [FromBody] CreateContentRequest request, CancellationToken cancellationToken)
         {

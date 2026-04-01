@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Chronolibris.Application.Commands;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
 using Chronolibris.Application.Requests;
@@ -48,38 +49,43 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(book);
         }
 
+
         /// <summary>
-        /// Создает новую книгу
+        /// Создаёт книгу. Обложка передаётся как Base64 в теле JSON.
+        /// Порядок: 1) запись в БД → получаем id,
+        ///           2) декодируем Base64 и загружаем в MinIO: covers/{id}/cover.{ext},
+        ///           3) обновляем coverPath в БД.
         /// </summary>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
-            [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
+            [FromBody] Chronolibris.Application.Requests.CreateBookRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
-
             try
             {
-                var command = new CreateBookCommand(
+                var command = new Chronolibris.Application.Commands.CreateBookCommand(
                     request.Title,
                     request.Description,
                     request.CountryId,
                     request.LanguageId,
                     request.Year,
                     request.ISBN,
-                    request.FilePath,
-                    request.CoverPath,
+                    request.Bbk,
+                    request.Udk,
+                    request.Source,
+                    request.CoverBase64,
+                    request.CoverContentType,
+                    request.CoverFileName,
                     request.IsAvailable,
                     request.IsReviewable,
                     request.PublisherId,
                     request.SeriesId,
-                    request.PersonIds,
+                    request.PersonFilters,
                     request.ThemeIds
                 );
 
                 var id = await _mediator.Send(command, cancellationToken);
-                return CreatedAtAction(nameof(GetBookById), new { id = id }, id);
+                return CreatedAtAction(nameof(GetBookById), new { id }, id);
             }
             catch (ArgumentException ex)
             {
@@ -88,34 +94,40 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         /// <summary>
-        /// Обновляет существующую книгу
+        /// Обновляет книгу. Поля с null без флага *Provided не трогаются.
+        /// Если CoverBase64 передан — файл перезаписывается в MinIO, путь не меняется.
         /// </summary>
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateBook(long id,
-            [FromBody] UpdateBookRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult> UpdateBook(
+            long id,
+            [FromBody] Chronolibris.Application.Requests.UpdateBookRequest request,
+            CancellationToken cancellationToken)
         {
-
             if (id != request.Id)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
             try
             {
-                var command = new UpdateBookCommand(
+                var command = new Chronolibris.Application.Commands.UpdateBookCommand(
                     id,
                     request.Title,
                     request.Description,
                     request.CountryId,
                     request.LanguageId,
-                    request.Year,
-                    request.ISBN,
-                    request.FilePath,
-                    request.CoverPath,
+                    request.Year, request.YearProvided,
+                    request.ISBN, request.IsbnProvided,
+                    request.Bbk, request.BbkProvided,
+                    request.Udk, request.UdkProvided,
+                    request.Source, request.SourceProvided,
+                    request.CoverBase64,
+                    request.CoverContentType,
+                    request.CoverFileName,
                     request.IsAvailable,
                     request.IsReviewable,
-                    request.PublisherId,
-                    request.SeriesId,
-                    request.PersonIds,
+                    request.PublisherId, request.PublisherIdProvided,
+                    request.SeriesId, request.SeriesIdProvided,
+                    request.PersonFilters,
                     request.ThemeIds
                 );
 
@@ -131,6 +143,88 @@ namespace ChronolibrisPrototype.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        ///// <summary>
+        ///// Создает новую книгу
+        ///// </summary>
+        //[Authorize]
+        //[HttpPost]
+        //public async Task<ActionResult<long>> CreateBook(
+        //    [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
+        //{
+
+        //    try
+        //    {
+        //        var command = new CreateBookCommand(
+        //            request.Title,
+        //            request.Description,
+        //            request.CountryId,
+        //            request.LanguageId,
+        //            request.Year,
+        //            request.ISBN,
+        //            request.FilePath,
+        //            request.CoverPath,
+        //            request.IsAvailable,
+        //            request.IsReviewable,
+        //            request.PublisherId,
+        //            request.SeriesId,
+        //            request.PersonIds,
+        //            request.ThemeIds
+        //        );
+
+        //        var id = await _mediator.Send(command, cancellationToken);
+        //        return CreatedAtAction(nameof(GetBookById), new { id = id }, id);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Обновляет существующую книгу
+        ///// </summary>
+        //[Authorize]
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult> UpdateBook(long id,
+        //    [FromBody] UpdateBookRequest request, CancellationToken cancellationToken)
+        //{
+
+        //    if (id != request.Id)
+        //        return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+
+        //    try
+        //    {
+        //        var command = new UpdateBookCommand(
+        //            id,
+        //            request.Title,
+        //            request.Description,
+        //            request.CountryId,
+        //            request.LanguageId,
+        //            request.Year,
+        //            request.ISBN,
+        //            request.FilePath,
+        //            request.CoverPath,
+        //            request.IsAvailable,
+        //            request.IsReviewable,
+        //            request.PublisherId,
+        //            request.SeriesId,
+        //            request.PersonIds,
+        //            request.ThemeIds
+        //        );
+
+        //        await _mediator.Send(command, cancellationToken);
+        //        return NoContent();
+        //    }
+        //    catch (KeyNotFoundException)
+        //    {
+        //        return NotFound(new { message = $"Книга с ID {id} не найдена" });
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
 
         /// <summary>
         /// Удаляет книгу

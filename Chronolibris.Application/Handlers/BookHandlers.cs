@@ -119,82 +119,82 @@ namespace Chronolibris.Application.Handlers
         }
     }
 
-    public class CreateBookHandler : IRequestHandler<CreateBookCommand, long>
-    {
-        private readonly IBookRepository _bookRepository;
-        private readonly IUnitOfWork _unitOfWork;
+    //public class CreateBookHandler : IRequestHandler<CreateBookCommand, long>
+    //{
+    //    private readonly IBookRepository _bookRepository;
+    //    private readonly IUnitOfWork _unitOfWork;
 
-        public CreateBookHandler(IBookRepository bookRepository, IUnitOfWork unitOfWork)
-        {
-            _bookRepository = bookRepository;
-            _unitOfWork = unitOfWork;
-        }
+    //    public CreateBookHandler(IBookRepository bookRepository, IUnitOfWork unitOfWork)
+    //    {
+    //        _bookRepository = bookRepository;
+    //        _unitOfWork = unitOfWork;
+    //    }
 
-        public async Task<long> Handle(CreateBookCommand request, CancellationToken cancellationToken)
-        {
-            var book = new Book
-            {
-                Id=0,
-                Title = request.Title,
-                Description = request.Description,
-                CountryId = request.CountryId,
-                LanguageId = request.LanguageId,
-                Year = request.Year,
-                ISBN = request.ISBN,
-                //FilePath = request.FilePath ?? string.Empty,
-                CoverPath = request.CoverPath ?? string.Empty,
-                IsAvailable = request.IsAvailable,
-                IsReviewable = request.IsReviewable,
-                PublisherId = request.PublisherId,
-                //SeriesId = request.SeriesId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null,
-                //IsFragment=false,
-            };
+    //    public async Task<long> Handle(CreateBookCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var book = new Book
+    //        {
+    //            Id=0,
+    //            Title = request.Title,
+    //            Description = request.Description,
+    //            CountryId = request.CountryId,
+    //            LanguageId = request.LanguageId,
+    //            Year = request.Year,
+    //            ISBN = request.ISBN,
+    //            //FilePath = request.FilePath ?? string.Empty,
+    //            CoverPath = request.CoverPath ?? string.Empty,
+    //            IsAvailable = request.IsAvailable,
+    //            IsReviewable = request.IsReviewable,
+    //            PublisherId = request.PublisherId,
+    //            //SeriesId = request.SeriesId,
+    //            CreatedAt = DateTime.UtcNow,
+    //            UpdatedAt = null,
+    //            //IsFragment=false,
+    //        };
 
-            await _bookRepository.AddAsync(book, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+    //        await _bookRepository.AddAsync(book, cancellationToken);
+    //        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return book.Id;
-        }
-    }
+    //        return book.Id;
+    //    }
+    //}
 
-    public class UpdateBookHandler : IRequestHandler<UpdateBookCommand, Unit>
-    {
-        private readonly IBookRepository _bookRepository;
-        private readonly IUnitOfWork _unitOfWork;
+    //public class UpdateBookHandler : IRequestHandler<UpdateBookCommand, Unit>
+    //{
+    //    private readonly IBookRepository _bookRepository;
+    //    private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateBookHandler(IBookRepository bookRepository, IUnitOfWork unitOfWork)
-        {
-            _bookRepository = bookRepository;
-            _unitOfWork = unitOfWork;
-        }
+    //    public UpdateBookHandler(IBookRepository bookRepository, IUnitOfWork unitOfWork)
+    //    {
+    //        _bookRepository = bookRepository;
+    //        _unitOfWork = unitOfWork;
+    //    }
 
-        public async Task<Unit> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
-        {
-            var book = await _bookRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (book == null) throw new KeyNotFoundException($"Book with ID {request.Id} not found");
+    //    public async Task<Unit> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var book = await _bookRepository.GetByIdAsync(request.Id, cancellationToken);
+    //        if (book == null) throw new KeyNotFoundException($"Book with ID {request.Id} not found");
 
-            book.Title = request.Title;
-            book.Description = request.Description;
-            book.CountryId = request.CountryId;
-            book.LanguageId = request.LanguageId;
-            book.Year = request.Year;
-            book.ISBN = request.ISBN;
-            //book.FilePath = request.FilePath ?? book.FilePath;
-            book.CoverPath = request.CoverPath ?? book.CoverPath;
-            book.IsAvailable = request.IsAvailable;
-            book.IsReviewable = request.IsReviewable;
-            book.PublisherId = request.PublisherId;
-            //book.SeriesId = request.SeriesId;
-            book.UpdatedAt = DateTime.UtcNow;
+    //        book.Title = request.Title;
+    //        book.Description = request.Description;
+    //        book.CountryId = request.CountryId;
+    //        book.LanguageId = request.LanguageId;
+    //        book.Year = request.Year;
+    //        book.ISBN = request.ISBN;
+    //        //book.FilePath = request.FilePath ?? book.FilePath;
+    //        book.CoverPath = request.CoverPath ?? book.CoverPath;
+    //        book.IsAvailable = request.IsAvailable;
+    //        book.IsReviewable = request.IsReviewable;
+    //        book.PublisherId = request.PublisherId;
+    //        //book.SeriesId = request.SeriesId;
+    //        book.UpdatedAt = DateTime.UtcNow;
 
-            _bookRepository.Update(book);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+    //        _bookRepository.Update(book);
+    //        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
-        }
-    }
+    //        return Unit.Value;
+    //    }
+    //}
 
     public class DeleteBookHandler : IRequestHandler<DeleteBookCommand, Unit>
     {
