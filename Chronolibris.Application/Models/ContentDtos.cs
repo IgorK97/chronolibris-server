@@ -24,6 +24,7 @@ namespace Chronolibris.Application.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<string> Authors { get; set; } = new();
+        public List<PersonRoleFilter> Participants { get; set; } = new();
         public List<ThemeDto> Themes { get; set; } = new();
         public int BooksCount { get; set; }
     }

@@ -116,7 +116,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPost]
-
         public async Task<ActionResult<long>> CreateContent(
             [FromBody] CreateContentRequest request, CancellationToken cancellationToken)
         {
@@ -178,8 +177,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteContent(long id, CancellationToken cancellationToken)
         {
             try
@@ -199,8 +196,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpPost("{contentId}/books/{bookId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> LinkBookToContent(long contentId, long bookId,
             [FromBody] BookContentLinkRequest request, CancellationToken cancellationToken)
         {
@@ -224,8 +219,6 @@ namespace ChronolibrisPrototype.Controllers
         /// </summary>
         [Authorize]
         [HttpDelete("{contentId}/books/{bookId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UnlinkBookFromContent(long contentId, long bookId,
             CancellationToken cancellationToken)
         {

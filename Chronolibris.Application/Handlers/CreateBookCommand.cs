@@ -75,18 +75,16 @@ namespace Chronolibris.Application.Commands
 
             // 2. Декодируем Base64 и загружаем обложку в MinIO: covers/{bookId}/cover.{ext}
             var imageBytes = DecodeCover(cmd.CoverBase64);
-            var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant(); // напр. ".jpg"
+            var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant(); // ".jpg"
             var fileName = $"cover{extension}";
             var coverPath = $"covers/{bookId}/{fileName}";
 
-            await _storageService.SavePublicBookImageAsync(
+            await _storageService.SaveCoverAsync(
                 bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
 
             book.CoverPath = coverPath;
             _bookRepository.Update(book);
             await _bookRepository.SaveChangesAsync();
-            // 3. Сохраняем путь к обложке в БД
-            //await _bookRepository.UpdateCoverPathAsync(bookId, coverPath, ct);
 
             return bookId;
         }

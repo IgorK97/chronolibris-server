@@ -86,7 +86,7 @@ namespace Chronolibris.Application.Commands
 
                 if (existingExt != newExt && !string.IsNullOrWhiteSpace(book.CoverPath))
                 {
-                    await _storageService.DeleteAsync(_storageService.PublicImagesBucket, book.CoverPath, ct);
+                    await _storageService.DeleteAsync(_storageService.PublicCoversBucket, book.CoverPath, ct);
                     var newCoverPath = $"covers/{cmd.Id}/{fileName}";
                     book.CoverPath = newCoverPath;
                     _bookRepository.Update(book);

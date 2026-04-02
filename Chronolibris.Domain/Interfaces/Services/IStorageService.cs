@@ -9,7 +9,7 @@ namespace Chronolibris.Domain.Interfaces.Services
 
     public interface IStorageService
     {
-        string PublicImagesBucket { get; }
+        string PublicCoversBucket { get; }
 
         Task DeleteAsync(string bucketName, string objectKey, CancellationToken ct = default);
 
@@ -88,6 +88,8 @@ namespace Chronolibris.Domain.Interfaces.Services
             byte[] data,
             string contentType,
             CancellationToken ct = default);
+
+        Task SaveCoverAsync(string bookId, string fileName, byte[] data, string contentType, CancellationToken ct = default);
 
         /// <summary>
         /// Загружает произвольный файл (обложку и т.п.) и возвращает его ключ

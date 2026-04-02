@@ -376,7 +376,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
         private readonly UploadStorageOptions _uploadOpts;
 
         /// <summary>Имя бакета с публичными изображениями (обложки).</summary>
-        public string PublicImagesBucket => _bookOpts.PublicImagesBucket;
+        public string PublicCoversBucket => _bookOpts.CoversBucket;
 
         public StorageService(
             IMinioClient minioClient,
@@ -452,6 +452,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             using var ms = new MemoryStream(data);
             await EnsureBucketAsync(_bookOpts.PublicImagesBucket, ct);
             await PutAsync(_bookOpts.PublicImagesBucket, CoverKey(bookId, fileName),
+                ms, data.Length, contentType, ct);
+        }
+
+        public async Task SaveCoverAsync(string bookId, string fileName, byte[] data, string contentType, CancellationToken ct = default)
+        {
+            using var ms = new MemoryStream(data);
+            await EnsureBucketAsync(_bookOpts.CoversBucket, ct);
+            await PutAsync(_bookOpts.CoversBucket, CoverKey(bookId, fileName),
                 ms, data.Length, contentType, ct);
         }
 
@@ -542,7 +550,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             => type == "toc" ? TocKey(bookId) : $"{bookId}/chunks/{file}";
 
         /// <summary>covers/{bookId}/{fileName}  →  напр. covers/42/cover.jpg</summary>
-        private static string CoverKey(string bookId, string fileName) => $"covers/{bookId}/{fileName}";
+        private static string CoverKey(string bookId, string fileName) => $"{bookId}/{fileName}";
 
         private static string UploadKey(string fileName) => $"uploads/{Guid.NewGuid()}_{fileName}";
 

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers
 {
@@ -88,6 +89,14 @@ namespace Chronolibris.Application.Handlers
             var themes = await _contentRepository.GetThemesByContentIdAsync(content.Id, cancellationToken);
             var booksCount = await _contentRepository.GetBooksCountAsync(content.Id, cancellationToken);
 
+            var participants = content.Participations.GroupBy(p => p.PersonRoleId)
+                .Select(g => new PersonRoleFilter
+                {
+                    RoleId = g.Key,
+                    PersonIds = g.Select(p => p.PersonId).ToList()
+                })
+                .ToList();
+
             return new ContentDto
             {
                 Id = content.Id,
@@ -110,7 +119,8 @@ namespace Chronolibris.Application.Handlers
                     Id = t.Id,
                     Name = t.Name
                 }).ToList(),
-                BooksCount = booksCount
+                BooksCount = booksCount,
+                Participants = participants
             };
         }
     }

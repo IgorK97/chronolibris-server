@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using Chronolibris.Application.Commands;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Queries;
@@ -144,87 +145,6 @@ namespace ChronolibrisPrototype.Controllers
             }
         }
 
-        ///// <summary>
-        ///// Создает новую книгу
-        ///// </summary>
-        //[Authorize]
-        //[HttpPost]
-        //public async Task<ActionResult<long>> CreateBook(
-        //    [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
-        //{
-
-        //    try
-        //    {
-        //        var command = new CreateBookCommand(
-        //            request.Title,
-        //            request.Description,
-        //            request.CountryId,
-        //            request.LanguageId,
-        //            request.Year,
-        //            request.ISBN,
-        //            request.FilePath,
-        //            request.CoverPath,
-        //            request.IsAvailable,
-        //            request.IsReviewable,
-        //            request.PublisherId,
-        //            request.SeriesId,
-        //            request.PersonIds,
-        //            request.ThemeIds
-        //        );
-
-        //        var id = await _mediator.Send(command, cancellationToken);
-        //        return CreatedAtAction(nameof(GetBookById), new { id = id }, id);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Обновляет существующую книгу
-        ///// </summary>
-        //[Authorize]
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult> UpdateBook(long id,
-        //    [FromBody] UpdateBookRequest request, CancellationToken cancellationToken)
-        //{
-
-        //    if (id != request.Id)
-        //        return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
-        //    try
-        //    {
-        //        var command = new UpdateBookCommand(
-        //            id,
-        //            request.Title,
-        //            request.Description,
-        //            request.CountryId,
-        //            request.LanguageId,
-        //            request.Year,
-        //            request.ISBN,
-        //            request.FilePath,
-        //            request.CoverPath,
-        //            request.IsAvailable,
-        //            request.IsReviewable,
-        //            request.PublisherId,
-        //            request.SeriesId,
-        //            request.PersonIds,
-        //            request.ThemeIds
-        //        );
-
-        //        await _mediator.Send(command, cancellationToken);
-        //        return NoContent();
-        //    }
-        //    catch (KeyNotFoundException)
-        //    {
-        //        return NotFound(new { message = $"Книга с ID {id} не найдена" });
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
 
         /// <summary>
         /// Удаляет книгу
@@ -247,8 +167,11 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{bookId}/info")]
-        public async Task<ActionResult> GetBookMetadata(long bookId, long userId)
+        public async Task<ActionResult> GetBookMetadata(long bookId)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
 
             var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId, userId));
             if(metadata != null)
