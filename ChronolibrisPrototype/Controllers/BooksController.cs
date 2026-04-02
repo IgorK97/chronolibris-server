@@ -109,9 +109,9 @@ namespace ChronolibrisPrototype.Controllers
 
             try
             {
-                var command = new Chronolibris.Application.Commands.UpdateBookCommand(
-                    id,
-                    request.Title,
+                var command = new Chronolibris.Application.Commands.UpdateBookCommand
+                (id,
+                   request.Title,
                     request.Description,
                     request.CountryId,
                     request.LanguageId,
@@ -121,13 +121,13 @@ namespace ChronolibrisPrototype.Controllers
                     request.Udk, request.UdkProvided,
                     request.Source, request.SourceProvided,
                     request.CoverBase64,
-                    request.CoverContentType,
+                  request.CoverContentType,
                     request.CoverFileName,
                     request.IsAvailable,
                     request.IsReviewable,
-                    request.PublisherId, request.PublisherIdProvided,
-                    request.SeriesId, request.SeriesIdProvided,
-                    request.PersonFilters,
+                    request.PublisherId,request.PublisherIdProvided,
+                   
+                   request.PersonFilters,
                     request.ThemeIds
                 );
 

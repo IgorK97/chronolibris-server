@@ -18,9 +18,10 @@ namespace Chronolibris.Domain.Interfaces
         Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
             BookFilterRequest filter, CancellationToken cancellationToken = default);
-        Task AddAsync(Book book, CancellationToken cancellationToken = default);
-        void Update(Book book);
+        Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken cancellationToken = default);
+        //void Update(Book book);
         void Delete(Book book);
+        Task UpdateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken ct);
         Task<List<string>> GetAuthorNamesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
         Task<List<Theme>> GetThemesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
 

@@ -388,7 +388,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             _uploadOpts = uploadOpts.Value;
         }
 
-        // ── Исходные файлы книг ──────────────────────────────────────────────
 
         public async Task<string> SaveBookSourceAsync(
             string bookId, string extension, Stream data, CancellationToken ct = default)
@@ -407,7 +406,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             string storageUrl, CancellationToken ct = default)
             => await ReadAsync(_bookOpts.BooksBucket, storageUrl, ct);
 
-        // ── Чанки / TOC ──────────────────────────────────────────────────────
 
         public async Task SaveChunkAsync(
             string bookId, string fileName, string content, string type,
@@ -443,7 +441,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             catch (ObjectNotFoundException) { return false; }
         }
 
-        // ── Обложки ──────────────────────────────────────────────────────────
 
         /// <summary>
         /// Сохраняет обложку в PublicImagesBucket по ключу covers/{bookId}/{fileName}.
@@ -458,7 +455,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
                 ms, data.Length, contentType, ct);
         }
 
-        // ── Uploads ──────────────────────────────────────────────────────────
 
         public async Task<string> UploadFileAsync(
             Stream fileStream, string fileName, string contentType, CancellationToken ct = default)
@@ -472,7 +468,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
         public async Task DeleteFileAsync(string storageUrl, CancellationToken ct = default)
             => await DeleteAsync(_uploadOpts.UploadsBucket, storageUrl, ct);
 
-        // ── Удаление ─────────────────────────────────────────────────────────
 
         public async Task DeleteBookAsync(
             string bookId, string extension, CancellationToken ct = default)
@@ -495,7 +490,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
             catch (InvalidObjectNameException) { }
         }
 
-        // ── Вспомогательные ──────────────────────────────────────────────────
 
         private async Task PutAsync(
             string bucket, string key, Stream data, long size, string contentType,
@@ -540,7 +534,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Files
                 await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName), ct);
         }
 
-        // ── Ключи ─────────────────────────────────────────────────────────────
+
 
         private static string BookSourceKey(string bookId, string ext) => $"{bookId}/source{ext}";
         private static string TocKey(string bookId) => $"{bookId}/toc.json";

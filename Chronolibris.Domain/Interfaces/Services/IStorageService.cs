@@ -9,7 +9,9 @@ namespace Chronolibris.Domain.Interfaces.Services
 
     public interface IStorageService
     {
-        // ── Книги: исходники ──────────────────────────────────────────────────────
+        string PublicImagesBucket { get; }
+
+        Task DeleteAsync(string bucketName, string objectKey, CancellationToken ct = default);
 
         /// <summary>
         /// Сохраняет исходный файл книги и возвращает его ключ (storageUrl) для сохранения в БД.

@@ -102,5 +102,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 entityEntry.State = EntityState.Detached;
             }
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

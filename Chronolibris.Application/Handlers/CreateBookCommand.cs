@@ -10,7 +10,7 @@ namespace Chronolibris.Application.Commands
 {
     public record CreateBookCommand(
         string Title,
-        string? Description,
+        string Description,
         int CountryId,
         int LanguageId,
         int? Year,
@@ -18,7 +18,7 @@ namespace Chronolibris.Application.Commands
         string? Bbk,
         string? Udk,
         string? Source,
-        string CoverBase64,          // обязателен при создании
+        string CoverBase64,         
         string CoverContentType,
         string CoverFileName,
         bool IsAvailable,
@@ -55,7 +55,7 @@ namespace Chronolibris.Application.Commands
             {
                 Id=0,
                 Title = cmd.Title.Trim(),
-                Description = cmd.Description?.Trim(),
+                Description = cmd.Description.Trim(),
                 CountryId = cmd.CountryId,
                 LanguageId = cmd.LanguageId,
                 Year = cmd.Year,
@@ -63,7 +63,7 @@ namespace Chronolibris.Application.Commands
                 Bbk = cmd.Bbk?.Trim(),
                 Udk = cmd.Udk?.Trim(),
                 Source = cmd.Source?.Trim(),
-                CoverPath = null,
+                CoverPath = "",
                 IsAvailable = cmd.IsAvailable,
                 IsReviewable = cmd.IsReviewable,
                 PublisherId = cmd.PublisherId,
@@ -82,8 +82,11 @@ namespace Chronolibris.Application.Commands
             await _storageService.SavePublicBookImageAsync(
                 bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
 
+            book.CoverPath = coverPath;
+            _bookRepository.Update(book);
+            await _bookRepository.SaveChangesAsync();
             // 3. Сохраняем путь к обложке в БД
-            await _bookRepository.UpdateCoverPathAsync(bookId, coverPath, ct);
+            //await _bookRepository.UpdateCoverPathAsync(bookId, coverPath, ct);
 
             return bookId;
         }

@@ -65,5 +65,6 @@ namespace Chronolibris.Domain.Interfaces
         /// </summary>
         /// <param name="entity">Сущность, которую нужно отсоединить.</param>
         void Detach(TEntity entity);
+        Task SaveChangesAsync();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 //using Chronolibris.Application.Models;
@@ -348,9 +349,31 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return (items, totalCount, nextCursor, prevCursor);
         }
 
-        public async Task AddAsync(Book book, CancellationToken cancellationToken = default)
+        public async Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilter, CancellationToken cancellationToken = default)
         {
+            if(personFilter != null)
+            {
+                book.Participations = new List<BookParticipation>();
+                foreach(var roleFilter in personFilter)
+                {
+                    if (roleFilter.PersonIds == null) continue;
+                    foreach(var personId in roleFilter.PersonIds)
+                    {
+                        book.Participations.Add(new BookParticipation
+                        {
+                            BookId = book.Id,
+                            PersonId = personId,
+                            PersonRoleId = roleFilter.RoleId
+                        });
+                    }
+                }
+            }
+
+
             await _set.AddAsync(book, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return book.Id;
         }
 
         public void Update(Book book)
@@ -438,6 +461,35 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             }
         }
 
+        public async Task UpdateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken ct)
+        {
+            _context.Books.Update(book);
 
+            if(personFilters != null)
+            {
+                await _context.Entry(book)
+                    .Collection(b => b.Participations)
+                    .LoadAsync(ct);
+
+                book.Participations.Clear();
+
+                foreach (var roleFilter in personFilters)
+                {
+                    if (roleFilter.PersonIds == null) continue;
+
+                    foreach(var personId in roleFilter.PersonIds)
+                    {
+                        book.Participations.Add(new BookParticipation
+                        {
+                            BookId = book.Id,
+                            PersonId = personId,
+                            PersonRoleId = roleFilter.RoleId
+                        });
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync(ct);
+        }
     }
 }

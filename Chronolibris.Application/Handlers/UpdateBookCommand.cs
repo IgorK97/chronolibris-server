@@ -1,6 +1,6 @@
 ﻿using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Interfaces;
-using Chronolibris.Domain.Interfaces.Repositories;
+//using Chronolibris.Domain.Interfaces.Repositories;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
 using MediatR;
@@ -10,7 +10,7 @@ namespace Chronolibris.Application.Commands
     public record UpdateBookCommand(
         long Id,
         string Title,
-        string? Description,
+        string Description,
         int? CountryId,
         int? LanguageId,
         int? Year, bool YearProvided,
@@ -18,13 +18,13 @@ namespace Chronolibris.Application.Commands
         string? Bbk, bool BbkProvided,
         string? Udk, bool UdkProvided,
         string? Source, bool SourceProvided,
-        string? CoverBase64,        // null → не менять обложку
+        string? CoverBase64,        
         string? CoverContentType,
         string? CoverFileName,
         bool IsAvailable,
         bool IsReviewable,
         int? PublisherId, bool PublisherIdProvided,
-        int? SeriesId, bool SeriesIdProvided,
+        //int? SeriesId, bool SeriesIdProvided,
         List<PersonRoleFilter>? PersonFilters,
         List<int>? ThemeIds
     ) : IRequest;
@@ -50,28 +50,27 @@ namespace Chronolibris.Application.Commands
             if (string.IsNullOrWhiteSpace(cmd.Title))
                 throw new ArgumentException("Название книги не может быть пустым.");
 
-            // --- Поля, которые обновляются всегда ---
+
             book.Title = cmd.Title.Trim();
-            book.Description = cmd.Description?.Trim();
+            book.Description = cmd.Description.Trim();
             book.IsAvailable = cmd.IsAvailable;
             book.IsReviewable = cmd.IsReviewable;
 
-            // --- Обновляем только если пришло не-null значение ---
-            if (cmd.CountryId.HasValue) book.CountryId = cmd.CountryId.Value;
-            if (cmd.LanguageId.HasValue) book.LanguageId = cmd.LanguageId.Value;
 
-            // --- Обновляем только при явном флаге Provided ---
+            if (cmd.CountryId != null) book.CountryId = cmd.CountryId.Value;
+            if (cmd.LanguageId != null) book.LanguageId = cmd.LanguageId.Value;
+
             if (cmd.YearProvided) book.Year = cmd.Year;
             if (cmd.IsbnProvided) book.ISBN = cmd.ISBN?.Trim();
             if (cmd.BbkProvided) book.Bbk = cmd.Bbk?.Trim();
             if (cmd.UdkProvided) book.Udk = cmd.Udk?.Trim();
             if (cmd.SourceProvided) book.Source = cmd.Source?.Trim();
             if (cmd.PublisherIdProvided) book.PublisherId = cmd.PublisherId;
-            if (cmd.SeriesIdProvided) book.SeriesId = cmd.SeriesId;
+            //if (cmd.SeriesIdProvided) book.SeriesId = cmd.SeriesId;
 
             book.UpdatedAt = DateTime.UtcNow;
 
-            await _bookRepository.UpdateAsync(book, cmd.PersonFilters, cmd.ThemeIds, ct);
+            await _bookRepository.UpdateAsync(book, cmd.PersonFilters,ct);
 
             // --- Обложка: перезаписываем файл в MinIO, путь в БД не меняем ---
             if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
@@ -89,7 +88,9 @@ namespace Chronolibris.Application.Commands
                 {
                     await _storageService.DeleteAsync(_storageService.PublicImagesBucket, book.CoverPath, ct);
                     var newCoverPath = $"covers/{cmd.Id}/{fileName}";
-                    await _bookRepository.UpdateCoverPathAsync(cmd.Id, newCoverPath, ct);
+                    book.CoverPath = newCoverPath;
+                    _bookRepository.Update(book);
+                    await _bookRepository.SaveChangesAsync();
                 }
 
                 // Загружаем новый файл (перезапись при совпадении имени MinIO обеспечивает сам)
