@@ -155,7 +155,7 @@ namespace ChronolibrisPrototype.Controllers
         /// Регистрация модератора или администратора.
         /// Доступно только администраторам.
         /// </summary>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [HttpPost("staff")]
         public async Task<IActionResult> RegisterStaff(
             [FromBody] RegisterStaffCommand request)
