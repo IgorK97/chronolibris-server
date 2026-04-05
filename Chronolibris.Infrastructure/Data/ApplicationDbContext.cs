@@ -59,6 +59,8 @@ namespace Chronolibris.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.HasPostgresEnum<PersonRoleKind>();
+
             modelBuilder.Ignore<IdentityUserClaim<long>>();
             modelBuilder.Ignore<IdentityUserLogin<long>>();
             modelBuilder.Ignore<IdentityUserToken<long>>();

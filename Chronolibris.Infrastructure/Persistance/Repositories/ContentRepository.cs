@@ -162,42 +162,20 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 query = query.Where(c => c.Participations.Any(p =>
                     p.Person.Name.Contains(filter.AuthorName)));
             }
-
-            // Включение тем
-            if (filter.IncludeThemeIds != null && filter.IncludeThemeIds.Any())
+            if (filter.PersonFilters != null)
             {
-                query = query.Where(c => c.Themes.Any(t =>
-                    filter.IncludeThemeIds.Contains(t.Id)));
-            }
+                foreach (var filt in filter.PersonFilters)
+                {
+                    var roleId = filt.RoleId;
+                    var personIds = filt.PersonIds;
 
-            // Исключение тем
-            if (filter.ExcludeThemeIds != null && filter.ExcludeThemeIds.Any())
-            {
-                query = query.Where(c => !c.Themes.Any(t =>
-                    filter.ExcludeThemeIds.Contains(t.Id)));
-            }
-
-            // Фильтр по типу контента
-            if (filter.ContentTypeId.HasValue)
-            {
-                query = query.Where(c => c.ContentTypeId == filter.ContentTypeId.Value);
+                    if (personIds != null && personIds.Count>0)
+                    {
+                        query = query.Where(c => c.Participations.Any(p => p.PersonRoleId == roleId && personIds.Contains(p.PersonId)));
+                    }
+                }
             }
 
-            // Фильтр по языку
-            if (filter.LanguageId.HasValue)
-            {
-                query = query.Where(c => c.LanguageId == filter.LanguageId.Value);
-            }
-
-            // Фильтр по году
-            if (filter.YearFrom.HasValue)
-            {
-                query = query.Where(c => c.Year >= filter.YearFrom.Value);
-            }
-            if (filter.YearTo.HasValue)
-            {
-                query = query.Where(c => c.Year <= filter.YearTo.Value);
-            }
 
             // Получаем общее количество
             var totalCount = await query.CountAsync(cancellationToken);

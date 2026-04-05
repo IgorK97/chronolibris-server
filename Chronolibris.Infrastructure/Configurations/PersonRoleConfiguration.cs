@@ -13,6 +13,10 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<PersonRole> builder)
         {
+            builder.Property(e => e.Kind)
+                .HasColumnType("person_role_kind")
+                .HasDefaultValue(PersonRoleKind.Both);
+
             builder.HasData(
                 new PersonRole { Id = 1, Name = "Автор" },
                 new PersonRole { Id = 2, Name = "Переводчик" },
@@ -21,14 +25,16 @@ namespace Chronolibris.Infrastructure.Configurations
                 new PersonRole { Id = 5, Name = "Составитель" },
                 new PersonRole { Id = 6, Name = "Корректор"  },
                 new PersonRole { Id = 7, Name = "Научный редактор"  },
-                new PersonRole { Id = 8, Name = "Литературный редактор"  },
-                new PersonRole { Id = 9, Name = "Технический редактор" },
-                new PersonRole { Id = 10, Name = "Редактор перевода"  },
-                new PersonRole { Id = 11, Name = "Оцифровщик" },
-                new PersonRole { Id = 12, Name = "Автор предисловия" },
-                new PersonRole { Id = 13, Name = "Автор послесловия" },
-                new PersonRole { Id = 14, Name = "Комментатор" },
-                new PersonRole { Id = 15, Name = "Дизайнер" }
+                //new PersonRole { Id = 8, Name = "Литературный редактор"  },
+                //new PersonRole { Id = 9, Name = "Технический редактор" },
+                new PersonRole { Id = 8, Name = "Редактор перевода"  },
+                new PersonRole { Id = 9, Name = "Комментатор" },
+                new PersonRole { Id = 10, Name = "Адресат"}
+
+                //new PersonRole { Id = 11, Name = "Оцифровщик" },
+                //new PersonRole { Id = 12, Name = "Автор предисловия" },
+                //new PersonRole { Id = 13, Name = "Автор послесловия" },
+                //new PersonRole { Id = 15, Name = "Дизайнер" }
             );
         }
     }

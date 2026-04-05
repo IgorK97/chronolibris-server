@@ -26,10 +26,18 @@ namespace Chronolibris.Domain.Entities
         Designer = 15,
 
     }
+
+    public enum PersonRoleKind
+    {
+        Content = 1,    // роль относится только к содержанию (текст, идеи, свидетельства)
+        Book = 2,       // роль относится только к воплощению (книга, издание, носитель)
+        Both = 3        // роль применима и к содержанию, и к книге (например, Автор)
+    }
     public class PersonRole
     {
         public required long Id { get; set; }
         [MaxLength(50)]
         public required string Name { get; set; }
+        public PersonRoleKind Kind { get; set; }
     }
 }

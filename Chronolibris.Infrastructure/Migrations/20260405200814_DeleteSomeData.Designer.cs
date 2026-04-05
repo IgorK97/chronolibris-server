@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405200814_DeleteSomeData")]
+    partial class DeleteSomeData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1162,19 +1165,19 @@ namespace Chronolibris.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 8L,
+                            Id = 10L,
                             Kind = 0,
                             Name = "Редактор перевода"
                         },
                         new
                         {
-                            Id = 9L,
+                            Id = 11L,
                             Kind = 0,
                             Name = "Комментатор"
                         },
                         new
                         {
-                            Id = 10L,
+                            Id = 12L,
                             Kind = 0,
                             Name = "Адресат"
                         });
