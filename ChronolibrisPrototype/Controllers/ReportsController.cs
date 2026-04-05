@@ -104,7 +104,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("tasks/{id:long}/resolution")]
+        [HttpPut("tasks/{id:long}/resolution")]
         public async Task<ActionResult<TaskResolutionResponse>> ResolveTask(
             long id, [FromBody] TaskResolutionRequest request)
         {

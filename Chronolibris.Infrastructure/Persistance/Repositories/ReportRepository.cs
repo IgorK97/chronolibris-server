@@ -39,6 +39,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 StatusId = 2,
                 Comment = "",
                 CheckNumber = stamp_number,
+                ReasonTypeId = ReportTypeId,
             };
 
             await _context.ModerationTasks.AddAsync(task);
@@ -86,7 +87,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             if(ReportStatusFilter)
             {
                 if (ReportStatusId is not null) {
-                    query = query.Where(r => r.ModerationTaskId == ReportStatusId);
+                    query = query.Where(r => r.ModerationTaskId != null && r.ModerationTask.StatusId == ReportStatusId);
                 }
                 else
                 {
