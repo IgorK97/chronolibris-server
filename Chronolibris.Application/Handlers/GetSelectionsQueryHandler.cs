@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
@@ -17,7 +18,7 @@ namespace Chronolibris.Application.Handlers
     /// для обработки <see cref="GetSelectionsQuery"/> и возврата коллекции <see cref="SelectionDetails"/>.
     /// </summary>
     public class GetSelectionsQueryHandler(ISelectionsRepository selectionsRepository)
-    : IRequestHandler<GetSelectionsQuery, IEnumerable<SelectionDetails>>
+    : IRequestHandler<GetSelectionsQuery, PagedResult<SelectionDetails>>
     {
         // Примечание: Внедрение зависимости через первичный конструктор (Primary Constructor)
         // автоматически создает приватное поле только для чтения `selectionsRepository`.
@@ -35,18 +36,22 @@ namespace Chronolibris.Application.Handlers
         /// Задача, представляющая асинхронную операцию.
         /// Результат задачи — коллекция <see cref="IEnumerable{T}"/> объектов <see cref="SelectionDetails"/>.
         /// </returns>
-        public async Task<IEnumerable<SelectionDetails>> Handle(GetSelectionsQuery request, CancellationToken ct)
+        public async Task<PagedResult<SelectionDetails>> Handle(GetSelectionsQuery request, CancellationToken ct)
         {
-            var selections = await selectionsRepository.GetActiveSelectionsAsync(ct);
+            var selections = await selectionsRepository.GetSelectionsAsync(request.LastId,
+                request.Limit+1, request.OnlyActive, ct);
 
-            return selections.Select(s => new SelectionDetails
+            var hasMore = selections.Count > request.Limit;
+            var pageItems = hasMore ? selections.Take(request.Limit) : selections;
+            //var nextCursor = hasMore ? (pageItems.ToList())[^1].Id : (long?)null;
+
+            return new PagedResult<SelectionDetails>
             {
-                Id = s.Id,
-                Name = s.Name,
-                Description = s.Description,
-                //SelectionTypeId = s.SelectionTypeId
-                //IsActive = s.IsActive
-            });
+                HasNext = hasMore,
+                Items = pageItems,
+                LastId = request.LastId,
+                Limit = request.Limit,
+            };
         }
     }
 

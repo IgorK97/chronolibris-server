@@ -17,6 +17,8 @@ namespace Chronolibris.Application.Requests
     /// </summary>
     /// <returns>Возвращает <see cref="System.Collections.Generic.IEnumerable{T}"/> 
     /// объектов <see cref="SelectionDetails"/>, содержащий все подборки.</returns>
-    public record GetSelectionsQuery() : IRequest<IEnumerable<SelectionDetails>>;
+    public record GetSelectionsQuery(long? LastId = null, int Limit = 20, bool? OnlyActive=true) : IRequest<PagedResult<SelectionDetails>>;
+
+    public record GetAllSelectionsQuery() : IRequest<IEnumerable<SelectionDetails>>;
 
 }

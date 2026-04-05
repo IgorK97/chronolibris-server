@@ -54,26 +54,27 @@ namespace Chronolibris.Infrastructure.Configurations
                     //SelectionTypeId = 3
                     UserId = 1,
 
-                },
-                new Selection
-                {
-                    Id = 4,
-                    CreatedAt = dt,
-                    Description = "",
-                    IsActive = true,
-                    Name = "Новое",
-                    //SelectionTypeId = 1
-                    UserId=1,
-                },
-                new Selection {                     
-                    Id = 5,
-                    CreatedAt = dt,
-                    Description = "",
-                    IsActive = true,
-                    Name = "Часто читают",
-                    //SelectionTypeId = 2
-                    UserId=1,
                 }
+                //,
+                //new Selection
+                //{
+                //    Id = 4,
+                //    CreatedAt = dt,
+                //    Description = "",
+                //    IsActive = true,
+                //    Name = "Новое",
+                //    //SelectionTypeId = 1
+                //    UserId=1,
+                //},
+                //new Selection {                     
+                //    Id = 5,
+                //    CreatedAt = dt,
+                //    Description = "",
+                //    IsActive = true,
+                //    Name = "Часто читают",
+                //    //SelectionTypeId = 2
+                //    UserId=1,
+                //}
             );
         }
     }

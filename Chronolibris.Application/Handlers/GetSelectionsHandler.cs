@@ -10,7 +10,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers
 {
-    public class GetSelectionsHandler : IRequestHandler<GetSelectionsRequest, PagedResult<SelectionDetails>>
+    public class GetSelectionsHandler : IRequestHandler<GetAllSelectionsQuery, IEnumerable<SelectionDetails>>
     {
         private readonly ISelectionsRepository _repository;
 
@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers
             _repository = repository;
         }
 
-        public async Task<PagedResult<SelectionDetails>> Handle(GetSelectionsRequest request, CancellationToken ct)
+        public async Task<IEnumerable<SelectionDetails>> Handle(GetAllSelectionsQuery request, CancellationToken ct)
         {
             var selections = await _repository.GetActiveSelectionsAsync(ct);
             var selectionDetails = selections.Select(s => new SelectionDetails
@@ -33,12 +33,7 @@ namespace Chronolibris.Application.Handlers
                 BooksCount = s.Books.Count
             }).ToList();
 
-            return new PagedResult<SelectionDetails>
-            {
-                Items = selectionDetails,
-                LastId = selectionDetails.Count,
-                HasNext = false
-            };
+            return selectionDetails;
         }
     }
 }

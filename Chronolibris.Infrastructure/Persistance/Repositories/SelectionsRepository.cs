@@ -62,6 +62,45 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .ToListAsync(ct);
         }
 
+        public async Task<List<SelectionDetails>> GetSelectionsAsync(
+            long? lastId,
+            int limit,
+            bool? onlyActive,
+            CancellationToken ct)
+        {
+
+            if (limit < 1) limit = 20;
+            else if (limit > 100) limit = 100;
+
+            var query = _context.Selections.AsNoTracking();
+
+            // Фильтр по активности
+            if (onlyActive.HasValue)
+                query = query.Where(s => s.IsActive == onlyActive.Value);
+
+            // Keyset cursor
+            if (lastId.HasValue)
+                query = query.Where(s => s.Id > lastId.Value);
+
+            // Берём limit + 1, чтобы понять — есть ли следующая страница
+            var items = await query
+                .OrderBy(s => s.Id)
+                .Take(limit)
+                .Select(s => new SelectionDetails
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = s.Description,
+                    IsActive = s.IsActive,
+                    CreatedAt = s.CreatedAt,
+                    UpdatedAt = s.UpdatedAt,
+                    BooksCount = s.Books.Count()
+                })
+                .ToListAsync(ct);
+            return items;
+
+        }
+
         /// <summary>
         /// Асинхронно получает книги, включенные в указанную активную подборку, с поддержкой пагинации.
         /// </summary>

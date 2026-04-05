@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
 
@@ -35,7 +36,10 @@ namespace Chronolibris.Domain.Interfaces
         /// коллекция <see cref="System.Collections.Generic.IEnumerable{T}"/> активных сущностей <see cref="Selection"/>.
         /// </returns>
         Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken token = default);
-
+        Task<List<SelectionDetails>> GetSelectionsAsync(
+            long? lastId,
+            int limit,
+            bool? onlyActive, CancellationToken token = default);
         /// <summary>
         /// Асинхронно получает книги, включенные в указанную подборку, с поддержкой пагинации.
         /// </summary>

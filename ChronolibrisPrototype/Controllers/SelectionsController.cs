@@ -19,9 +19,21 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("paged")]
-        public async Task<IActionResult> GetSelections(int page = 1, int pageSize = 20)
+        public async Task<IActionResult> GetSelections(long? lastId = null,
+            int limit = 20,
+            bool? onlyActive = true)
         {
-            var result = await _mediator.Send(new GetSelectionsRequest(page, pageSize));
+            if (onlyActive != true)
+            {
+                var role = User.FindFirstValue(ClaimTypes.Role);
+                if (role != "admin")
+                    return Forbid();
+            }
+
+            if (limit < 1) limit = 20;
+            else if (limit > 100) limit = 100;
+
+            var result = await _mediator.Send(new GetSelectionsQuery(lastId, limit, onlyActive));
             return Ok(result);
         }
 
@@ -81,7 +93,7 @@ namespace ChronolibrisPrototype.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSelections()
         {
-            var result = await _mediator.Send(new GetSelectionsQuery());
+            var result = await _mediator.Send(new GetAllSelectionsQuery());
             return Ok(result);
         }
 
