@@ -58,10 +58,15 @@ namespace ChronolibrisPrototype.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateSelection([FromBody] CreateSelectionRequest request)
+        public async Task<IActionResult> CreateSelection([FromBody] CreateSelectionInputModel request)
         {
-            var selectionId = await _mediator.Send(request);
-            return CreatedAtAction(nameof(GetSelection), new { selectionId }, selectionId);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+            {
+                return Forbid();
+            }
+            var selectionId = await _mediator.Send(new CreateSelectionRequest(request.Name, request.Description, userId));
+            return Ok(selectionId);
         }
 
         [HttpPut("{selectionId}")]

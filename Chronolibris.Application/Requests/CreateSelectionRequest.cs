@@ -7,9 +7,11 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
+    public record CreateSelectionInputModel(
+        string Name, string Description);
     public record CreateSelectionRequest(
        string Name,
        string Description,
-       int SelectionTypeId,long UserId
+       long UserId
    ) : IRequest<long>;
 }
