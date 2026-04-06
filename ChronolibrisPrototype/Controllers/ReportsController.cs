@@ -112,7 +112,7 @@ namespace ChronolibrisPrototype.Controllers
             if (!long.TryParse(userIdClaim, out var moderatorId))
                 return Unauthorized();
 
-            var result = await _mediator.Send(new ResolveTaskCommand(id, request.Resolution, moderatorId));
+            var result = await _mediator.Send(new ResolveTaskCommand(id, request.Resolution, moderatorId, request.Comment));
 
             return Ok(result);
         }

@@ -15,10 +15,10 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Language> builder)
         {
             builder.HasData(
-                new Language { Id = 1, Name = "Английский", Code ="english" },
-                new Language { Id = 2, Name = "Русский", Code ="russian" },
-                new Language { Id = 3, Name = "Французский", Code="french" },
-                new Language { Id = 4, Name = "Немецкий", Code ="german" }
+                new Language { Id = 1, Name = "Английский" },
+                new Language { Id = 2, Name = "Русский" },
+                new Language { Id = 3, Name = "Французский"},
+                new Language { Id = 4, Name = "Немецкий" }
             );
         }
     }

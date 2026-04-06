@@ -107,6 +107,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     TargetId = r.Key.TargetId,
                     TargetTypeId = r.Key.TargetTypeId,
                     ReasonTypeId = r.Key.ReasonTypeId,
+                    Comment = r
+                     .Where(r => r.ModerationTaskId!=null).Select(r => r.ModerationTask.Comment).FirstOrDefault() ?? "",
                     //ReasonTypeId = r.Select(r=>r.ReasonTypeId).FirstOrDefault(),
                     //TargetId = r.Select(r=>r.TargetId).FirstOrDefault(),
                     //TargetTypeId = r.Select(r=>r.TargetTypeId).FirstOrDefault(),

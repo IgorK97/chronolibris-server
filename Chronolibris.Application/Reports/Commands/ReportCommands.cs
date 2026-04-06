@@ -26,6 +26,6 @@ namespace Chronolibris.Application.Reports.Commands
     public record ResolveTaskCommand(
         long TaskId,
         bool Resolution,
-        long ModeratorId):IRequest<TaskResolutionResponse>;
+        long ModeratorId, string Comment):IRequest<TaskResolutionResponse>;
 
 }

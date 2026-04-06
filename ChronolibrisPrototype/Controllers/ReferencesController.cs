@@ -79,7 +79,7 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<long>> CreateLanguage([FromBody] CreateLanguageRequest request, CancellationToken cancellationToken)
         {
 
-            var command = new CreateLanguageCommand(request.Name, request.FtsConfiguration);
+            var command = new CreateLanguageCommand(request.Name);
             var id = await _mediator.Send(command, cancellationToken);
 
             return CreatedAtAction(nameof(GetLanguageById), new { id = id }, id);
@@ -92,7 +92,7 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult> UpdateLanguage(long id, [FromBody] UpdateLanguageRequest request, CancellationToken cancellationToken)
         {
 
-            var command = new UpdateLanguageCommand(request.Id, request.Name, request.FtsConfiguration);
+            var command = new UpdateLanguageCommand(request.Id, request.Name);
             var result = await _mediator.Send(command, cancellationToken);
 
             return NoContent();

@@ -26,22 +26,10 @@ public class PersonsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePersonRequest request)
     {
-        byte[]? imageData = null;
-        if (!string.IsNullOrEmpty(request.ImageBase64))
-        {
-            // Убираем префикс "data:image/jpeg;base64,", если фронтенд его прислал
-            var base64Data = request.ImageBase64.Contains(",")
-                ? request.ImageBase64.Split(',')[1]
-                : request.ImageBase64;
-
-            imageData = Convert.FromBase64String(base64Data);
-        }
 
         var command = new CreatePersonCommand(
             request.Name,
-            request.Description,
-            imageData,
-            request.FileName
+            request.Description
         );
 
         var id = await _mediator.Send(command);
@@ -60,21 +48,12 @@ public class PersonsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdatePersonRequest request)
     {
-        byte[]? imageData = null;
-        if (!string.IsNullOrEmpty(request.ImageBase64))
-        {
-            var base64Data = request.ImageBase64.Contains(",")
-                ? request.ImageBase64.Split(',')[1]
-                : request.ImageBase64;
-            imageData = Convert.FromBase64String(base64Data);
-        }
+
 
         var command = new UpdatePersonCommand(
             id,
             request.Name,
-            request.Description,
-            imageData,
-            request.FileName
+            request.Description
         );
 
         try

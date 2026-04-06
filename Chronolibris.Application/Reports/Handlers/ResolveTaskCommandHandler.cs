@@ -37,6 +37,7 @@ namespace Chronolibris.Application.Reports.Handlers
             await using var transaction = await _unitOfWork.BeginTransactionAsync(token);
             try
             {
+                task.Comment = command.Comment;
                 task.StatusId = command.Resolution ? 3 : 4;
                 task.ResolvedAt = now;
                 if (command.Resolution)

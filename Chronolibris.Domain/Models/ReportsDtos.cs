@@ -46,6 +46,7 @@ namespace Chronolibris.Domain.Models
         public DateTime? TaskCreatedAt { get; set; }
         public DateTime? TaskResolvedAt { get; set; }
         public long? TaskStatusId { get; set; }
+        public string Comment { get; set; } = string.Empty;
     }
 
     //Запрос информации о таргете - 2
@@ -124,6 +125,7 @@ namespace Chronolibris.Domain.Models
     {
         //public long Id { get; set; }
         public bool Resolution { get; set; }
+        public required string Comment { get; set; }
         //Модератора контроллер сам подцепит из куков или токена
     }
 

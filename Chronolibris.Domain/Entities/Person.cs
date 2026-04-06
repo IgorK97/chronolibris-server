@@ -14,8 +14,8 @@ namespace Chronolibris.Domain.Entities
         public required string Name { get; set; }
         [MaxLength(2000)]
         public required string Description { get; set; }
-        [MaxLength(2048)]
-        public required string ImagePath { get; set; }
+        //[MaxLength(2048)]
+        //public required string ImagePath { get; set; }
         public required DateTime CreatedAt { get; set; }
         //public DateTime? UpdatedAt { get; set; }
         public ICollection<Content> Contents { get; set; } = new List<Content>();

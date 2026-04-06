@@ -12,9 +12,7 @@ namespace Chronolibris.Application.Handlers
 {
     public record CreatePersonCommand(
     string Name,
-    string Description,
-    byte[]? ImageData,
-    string? FileName) : IRequest<long>;
+    string Description) : IRequest<long>;
 
     public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, long>
     {
@@ -31,21 +29,14 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<long> Handle(CreatePersonCommand request, CancellationToken token)
         {
-            string imagePath = "default_avatar.png";
 
-            if (request.ImageData != null && request.ImageData.Length > 0)
-            {
-                using var stream = new MemoryStream(request.ImageData);
-                // Допустим, MIME-тип определяем по расширению или хардкодим image/jpeg
-                imagePath = await _fileService.UploadFileAsync(stream, request.FileName ?? "upload.jpg", "image/jpeg", token);
-            }
 
             var person = new Person
             {
                 Id = 0,
                 Name = request.Name,
                 Description = request.Description,
-                ImagePath = imagePath,
+                //ImagePath = imagePath,
                 CreatedAt = DateTime.UtcNow
             };
 

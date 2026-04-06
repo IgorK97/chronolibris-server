@@ -63,7 +63,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    ImagePath = p.ImagePath,
+                    //ImagePath = p.ImagePath,
                 })
                 .ToListAsync(ct);
         }

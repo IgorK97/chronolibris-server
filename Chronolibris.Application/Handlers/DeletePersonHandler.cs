@@ -35,7 +35,7 @@ namespace Chronolibris.Application.Handlers
             await _unitOfWork.SaveChangesAsync(token);
 
             // Удаляем файл из MinIO
-            await _fileService.DeleteFileAsync(person.ImagePath, token);
+            //await _fileService.DeleteFileAsync(person.ImagePath, token);
         }
     }
 }

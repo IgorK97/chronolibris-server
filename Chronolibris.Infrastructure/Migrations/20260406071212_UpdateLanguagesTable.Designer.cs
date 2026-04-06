@@ -3,6 +3,7 @@ using System;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406071212_UpdateLanguagesTable")]
+    partial class UpdateLanguagesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1046,6 +1049,12 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("description");
 
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("image_path");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -1063,6 +1072,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             Id = 1L,
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Советский и российский востоковед-японист, литературовед, переводчица...",
+                            ImagePath = "none",
                             Name = "Татьяна Петровна Григорьева"
                         },
                         new
@@ -1070,6 +1080,7 @@ namespace Chronolibris.Infrastructure.Migrations
                             Id = 2L,
                             CreatedAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Французский историк, член Французской академии...",
+                            ImagePath = "Brodel/MainFile.jpeg",
                             Name = "Фернан Поль Ахилл Бродель"
                         });
                 });

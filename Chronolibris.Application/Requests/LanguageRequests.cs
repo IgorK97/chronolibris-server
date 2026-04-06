@@ -21,12 +21,10 @@ namespace Chronolibris.Application.Requests
     public class CreateLanguageCommand : IRequest<long>
     {
         public string Name { get; set; } = string.Empty;
-        public string FtsConfiguration { get; set; } = "russian";
 
-        public CreateLanguageCommand(string name, string ftsConfiguration)
+        public CreateLanguageCommand(string name)
         {
             Name = name;
-            FtsConfiguration = ftsConfiguration;
         }
     }
 
@@ -34,13 +32,11 @@ namespace Chronolibris.Application.Requests
     {
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string FtsConfiguration { get; set; } = "russian";
 
-        public UpdateLanguageCommand(long id, string name, string ftsConfiguration)
+        public UpdateLanguageCommand(long id, string name)
         {
             Id = id;
             Name = name;
-            FtsConfiguration = ftsConfiguration;
         }
     }
 

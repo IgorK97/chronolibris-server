@@ -11,7 +11,7 @@ namespace Chronolibris.Application.Models
     {
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string FtsConfiguration { get; set; } = "russian";
+        //public string FtsConfiguration { get; set; } = "russian";
     }
 
     public class CreateLanguageRequest
@@ -20,9 +20,9 @@ namespace Chronolibris.Application.Models
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(50)]
-        public string FtsConfiguration { get; set; } = "russian";
+        //[Required]
+        //[MaxLength(50)]
+        //public string FtsConfiguration { get; set; } = "russian";
     }
 
     public class UpdateLanguageRequest
@@ -34,9 +34,9 @@ namespace Chronolibris.Application.Models
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(50)]
-        public string FtsConfiguration { get; set; } = "russian";
+        //[Required]
+        //[MaxLength(50)]
+        //public string FtsConfiguration { get; set; } = "russian";
     }
 
     public class DeleteLanguageRequest

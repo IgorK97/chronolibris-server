@@ -28,7 +28,7 @@ namespace Chronolibris.Application.Handlers
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                ImageUrl = p.ImagePath,
+                //ImageUrl = p.ImagePath,
                 CreatedAt = p.CreatedAt,
                 //UpdatedAt = p.UpdatedAt
             });
