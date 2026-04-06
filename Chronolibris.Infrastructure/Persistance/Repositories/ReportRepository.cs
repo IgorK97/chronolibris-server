@@ -68,7 +68,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 
         }
 
-        public async Task<List<ReportShortDto>> GetReports(long? LastTargetId, 
+        public async Task<List<ReportShortDto>> GetReports(long moderatorId, long? LastTargetId, 
             long? LastTargetTypeId, long? LastReportTypeId, 
             int Count, bool TargetTypeFilter, bool ReportTypeFilter,
             bool ReportStatusFilter,
@@ -87,7 +87,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             if(ReportStatusFilter)
             {
                 if (ReportStatusId is not null) {
-                    query = query.Where(r => r.ModerationTaskId != null && r.ModerationTask.StatusId == ReportStatusId);
+                    if (moderatorId == 0)
+                        throw new Exception("Не указан модератор");
+                    query = query.Where(r => r.ModerationTaskId != null && r.ModerationTask.StatusId == ReportStatusId && r.ModerationTask.ModeratedBy == moderatorId);
                 }
                 else
                 {

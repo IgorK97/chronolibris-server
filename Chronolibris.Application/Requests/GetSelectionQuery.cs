@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests
 {
-    public record GetSelectionQuery(long SelectionId) : IRequest<SelectionDetails?>;
+    public record GetSelectionQuery(long SelectionId, long userId, string userRole) : IRequest<SelectionDetails?>;
 }

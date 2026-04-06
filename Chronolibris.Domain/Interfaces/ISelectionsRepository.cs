@@ -25,7 +25,7 @@ namespace Chronolibris.Domain.Interfaces
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
         /// сущность <see cref="Selection"/> или <c>null</c>, если подборка не найдена.
         /// </returns>
-        Task<Selection?> GetByIdAsync(long id, CancellationToken token = default);
+        Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken token = default);
 
         /// <summary>
         /// Асинхронно получает список всех активных подборок, которые должны отображаться пользователю.

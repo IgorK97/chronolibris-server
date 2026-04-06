@@ -21,7 +21,7 @@ namespace Chronolibris.Application.Handlers
 
         public async Task<SelectionDetails?> Handle(GetSelectionQuery request, CancellationToken ct)
         {
-            var selection = await _repository.GetByIdAsync(request.SelectionId, ct);
+            var selection = await _repository.GetByIdAsync(request.SelectionId, request.userId, request.userRole, ct);
 
             if (selection == null)
                 return null;

@@ -40,11 +40,14 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         /// Задача, которая представляет асинхронную операцию. Результат задачи — 
         /// сущность <see cref="Selection"/> со связанными книгами или <c>null</c>, если подборка не найдена или не активна.
         /// </returns>
-        public async Task<Selection?> GetByIdAsync(long id, CancellationToken ct)
+        public async Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken ct)
         {
-            return await _context.Selections
+            var selection = await _context.Selections
                 .Include(s => s.Books)
-                .FirstOrDefaultAsync(s => s.Id == id && s.IsActive, ct);
+                .FirstOrDefaultAsync(s => s.Id == id, ct);
+            if ((userId == 0 || !(userRole == "admin" || userRole == "moderator")) && selection?.IsActive == false)
+                return null;
+            return selection;
         }
 
         /// <summary>

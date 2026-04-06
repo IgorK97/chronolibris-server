@@ -40,7 +40,18 @@ namespace ChronolibrisPrototype.Controllers
         [HttpGet("{selectionId}")]
         public async Task<IActionResult> GetSelection(long selectionId)
         {
-            var selection = await _mediator.Send(new GetSelectionQuery(selectionId));
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userRole;
+            if (!long.TryParse(userIdClaim, out var userId))
+            {
+                userId = 0;
+                userRole = "";
+            }
+            else
+                userRole = User.FindFirstValue(ClaimTypes.Role) ?? "";
+
+
+            var selection = await _mediator.Send(new GetSelectionQuery(selectionId, userId, userRole));
             if (selection == null) return NotFound();
             return Ok(selection);
         }

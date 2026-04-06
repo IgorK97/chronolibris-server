@@ -10,7 +10,7 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface IReportRepository : IGenericRepository<Report>
     {
-        Task<List<ReportShortDto>> GetReports(long? LastTargetId, 
+        Task<List<ReportShortDto>> GetReports(long moderatorId, long? LastTargetId, 
             long? LastTargetTypeId, long? LastReportTypeId,
             int Count, bool TargetTypeFilter, bool ReportTypeFilter, 
             bool ReportStatusFilter, long? ReportStatusId, DateTime? LastDate);

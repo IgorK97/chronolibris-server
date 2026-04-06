@@ -9,6 +9,7 @@ using MediatR;
 namespace Chronolibris.Application.Reports.Queries
 {
     public record GetReportsQuery(
+        long moderatorId,
         long? LastTargetId,
         long? LastTargetTypeId,
         long? LastReportTypeId,

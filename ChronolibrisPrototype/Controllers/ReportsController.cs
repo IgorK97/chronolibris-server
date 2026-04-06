@@ -51,7 +51,12 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<ActionResult<GetReportsResponse>> GetReports(
             [FromQuery] GetReportsRequest request)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                userId = 0;
+
             var result = await _mediator.Send(new GetReportsQuery(
+                userId,
                 request.LastTargetId,
                 request.LastTargetTypeId,
                 request.LastReportTypeId,

@@ -60,7 +60,7 @@ namespace Chronolibris.API.Controllers.Search
         /// </summary>
         [HttpPost("advanced")]
         public async Task<ActionResult<PagedResult<BookSearchResult>>> AdvancedSearch(
-            [FromBody] AdvancedSearchInputModel request, bool mode=false,
+            [FromBody] AdvancedSearchInputModel request, bool hiddenIsAvailableMode=false,
             CancellationToken cancellationToken = default)
         {
             if (request.LastBestSimilarity.HasValue != request.LastId.HasValue)
@@ -72,7 +72,7 @@ namespace Chronolibris.API.Controllers.Search
                 //return Unauthorized();
                 userId = 0;
             var roleClaim = User.FindFirstValue(ClaimTypes.Role);
-            if (mode && (userId == 0 || roleClaim != "admin"))
+            if (hiddenIsAvailableMode && (userId == 0 || roleClaim != "admin"))
                 return BadRequest();
 
             var personFilters = request.PersonFilters
@@ -95,7 +95,7 @@ namespace Chronolibris.API.Controllers.Search
                     ExcludedTagIds: request.ExcludedTagIds,
                     ThemeId: request.ThemeId,
                     SelectionId:request.SelectionId,
-                    mode:mode),
+                    mode:hiddenIsAvailableMode),
                 cancellationToken);
 
             return Ok(result);
