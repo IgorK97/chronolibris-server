@@ -20,6 +20,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
+using Npgsql;
+using Npgsql.NameTranslation;
 
 namespace Chronolibris.Infrastructure.DependencyInjection
 {
@@ -39,11 +41,20 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         public static IServiceCollection AddDatabaseInfrastructure(this IServiceCollection services, 
             IConfiguration configuration)
         {
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration
+                .GetConnectionString("DefaultConnection"));
+
+            var translator = new NpgsqlSnakeCaseNameTranslator();
+
+            dataSourceBuilder.MapEnum<ContentNature>("content_nature_enum", translator);
+            dataSourceBuilder.MapEnum<PersonRoleKind>("person_role_kind", translator);
+
+            var dataSource = dataSourceBuilder.Build();
 
             // Регистрация DbContext для PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+                options.UseNpgsql(dataSource);
 
                 // Настройка для автоматического преобразования имен свойств в snake_case в БД
                 options.UseSnakeCaseNamingConvention();
