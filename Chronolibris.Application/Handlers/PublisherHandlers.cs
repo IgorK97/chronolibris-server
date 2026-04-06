@@ -26,13 +26,12 @@ namespace Chronolibris.Application.Handlers
             var publishers = await _unitOfWork.Publishers.GetAllAsync(cancellationToken);
             var countries = await _unitOfWork.Countries.GetAllAsync(cancellationToken);
 
-            return publishers.Select(p => new PublisherDto
+            return publishers.OrderBy(p=>p.Name).Select(p => new PublisherDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
                 CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt,
                 CountryId = p.CountryId,
                 CountryName = countries.FirstOrDefault(c => c.Id == p.CountryId)?.Name
             });
@@ -62,7 +61,6 @@ namespace Chronolibris.Application.Handlers
                 Name = publisher.Name,
                 Description = publisher.Description,
                 CreatedAt = publisher.CreatedAt,
-                UpdatedAt = publisher.UpdatedAt,
                 CountryId = publisher.CountryId,
                 CountryName = country?.Name
             };
@@ -89,7 +87,6 @@ namespace Chronolibris.Application.Handlers
                 Description = request.Description,
                 CountryId = request.CountryId,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null
             };
 
             await _repository.AddAsync(publisher, cancellationToken);
@@ -118,7 +115,6 @@ namespace Chronolibris.Application.Handlers
             publisher.Name = request.Name;
             publisher.Description = request.Description;
             publisher.CountryId = request.CountryId;
-            publisher.UpdatedAt = DateTime.UtcNow;
 
             _repository.Update(publisher);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Handlers
         public async Task<IEnumerable<PersonDto>> Handle(GetAllPersonsQuery request, CancellationToken cancellationToken)
         {
             var persons = await _repository.GetAllAsync(cancellationToken);
-            return persons.Select(p => new PersonDto
+            return persons.OrderBy(p=>p.Name).Select(p => new PersonDto
             {
                 Id = p.Id,
                 Name = p.Name,

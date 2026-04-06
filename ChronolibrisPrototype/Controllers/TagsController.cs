@@ -33,11 +33,11 @@ namespace ChronolibrisPrototype.Controllers
         public async Task<IActionResult> GetTags(
             long? tagTypeId = null,
             string? searchTerm = null,
-            int page = 1,
+            int page = 0,
             int pageSize = 20)
         {
             var result = await _mediator.Send(
-                new GetTagsQuery(tagTypeId, searchTerm, page, pageSize));
+                new GetTagsQuery(tagTypeId, searchTerm, 0, pageSize));
             return Ok(result);
         }
 
