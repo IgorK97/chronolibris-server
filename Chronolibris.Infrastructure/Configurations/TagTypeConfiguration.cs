@@ -14,8 +14,8 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<TagType> builder)
         {
             builder.HasData(
-                new TagType { Id = 1, Name = "Место" },
-                new TagType { Id = 2, Name = "Время" },
+                new TagType { Id = 1, Name = "Время" },
+                new TagType { Id = 2, Name = "Место" },
                 new TagType { Id = 3, Name = "Социум" }
             );
         }
