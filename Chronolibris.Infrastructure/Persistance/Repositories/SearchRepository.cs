@@ -66,7 +66,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         ) AS best_similarity
                     FROM books b
                     WHERE " + (!request.mode ?  @" b.is_available = true 
-                        AND " : " ") +  @" word_similarity({0}::text, b.title)>0.3
+                        AND " : " ") + @" word_similarity({0}::text, b.title)>0.3
 
                     UNION
 
@@ -84,8 +84,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                             ), 0)
                         ) AS best_similarity
                     FROM books b
-                    WHERE b.is_available = true
-                        AND EXISTS (
+                    WHERE " + (!request.mode ?  @" b.is_available = true 
+                        AND " : " ") +  @" EXISTS (
                             SELECT 1
                             FROM book_content bc
                             JOIN contents c ON c.id = bc.content_id
@@ -346,7 +346,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var sql = $"""
                     SELECT b.id AS id, 1.0 AS best_similarity
                     FROM books b 
-                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : " ") +
+                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : string.IsNullOrEmpty(filters)? " " : " WHERE ") +
                     $"""
                     {filters}
                     

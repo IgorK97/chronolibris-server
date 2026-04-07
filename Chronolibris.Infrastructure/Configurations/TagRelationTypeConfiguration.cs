@@ -26,8 +26,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .IsUnique();
 
             builder.HasData(
-                new TagRelationType { Id = 1, Name = "synonym", Description = "Синонимия" },
-                new TagRelationType { Id = 2, Name = "part_of", Description = "Часть/целое" }
+                new TagRelationType { Id = 1, Name = "Синоним", Description = "Синонимия (теги обозначают одно и то же понятие)" },
+                new TagRelationType { Id = 2, Name = "Часть", Description = "Часть/целое" }
 
             );
         }
