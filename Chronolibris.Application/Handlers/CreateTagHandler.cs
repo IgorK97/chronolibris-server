@@ -25,7 +25,9 @@ namespace Chronolibris.Application.Handlers
             {
                 Id = 0,
                 Name = request.Name,
-                TagTypeId = request.TagTypeId
+                TagTypeId = request.TagTypeId,
+                ParentTagId = request.ParentTagId,
+                RelationTypeId = request.RelationTypeId,
             };
 
             return await _repository.CreateAsync(tag, ct);

@@ -7,6 +7,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
@@ -101,6 +102,97 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             return await _context.Tags
                 .Include(t => t.TagType)
                 .FirstOrDefaultAsync(t => t.Id == id, ct);
+        }
+
+        public async Task<List<TagDetails>> GetRootTagsAsync(
+            long? tagTypeId, string? searchTerm, long? lastId, int limit,
+            CancellationToken ct)
+        {
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                IQueryable<Tag> searchQuery = _context.Tags.AsNoTracking()
+                    .Include(t => t.TagType)
+                    .Include(t => t.ParentTag)
+                    .Include(t => t.RelationType);
+
+                if (tagTypeId.HasValue)
+                    searchQuery = searchQuery.Where(t => t.TagTypeId == tagTypeId.Value);
+
+                searchQuery = searchQuery.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}"));
+
+                if (lastId.HasValue)
+                    searchQuery = searchQuery.Where(t => t.Id > lastId.Value);
+
+                var searchResults = await searchQuery
+                    .OrderBy(t => t.Id)
+                    .Take(limit + 1)
+                    .Select(t => new TagDetails
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        TagTypeId = t.TagTypeId,
+                        TagTypeName = t.TagType.Name,
+                        ParentTagId = t.ParentTagId,
+                        ParentTagName = t.ParentTag != null ? t.ParentTag.Name : null,
+                        RelationTypeId = t.RelationTypeId,
+                        RelationTypeName = t.RelationType != null ? t.RelationType.Name : null,
+                        HasChildren = _context.Tags.Any(c => c.ParentTagId == t.Id)
+                    }).ToListAsync(ct);
+
+                return searchResults;
+            }
+
+            IQueryable<Tag> query = _context.Tags.AsNoTracking()
+                .Include(t => t.TagType)
+                .Where(t => t.ParentTagId == null);
+
+            if (tagTypeId.HasValue)
+                query = query.Where(t => t.TagTypeId == tagTypeId.Value);
+
+            if (lastId.HasValue)
+                query = query.Where(t => t.Id > lastId.Value);
+
+            return await query.OrderBy(t => t.Id)
+                .Take(limit + 1)
+                .Select(t => new TagDetails
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    TagTypeId = t.TagTypeId,
+                    TagTypeName = t.TagType.Name,
+                    ParentTagId = null,
+                    ParentTagName = null,
+                    RelationTypeId = null,
+                    HasChildren = _context.Tags.Any(c => c.ParentTagId == t.Id)
+                })
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<TagDetails>> GetChildTagsAsync(long parentTagId,
+            long ?lastId, int limit, CancellationToken ct)
+        {
+            IQueryable<Tag> query = _context.Tags.AsNoTracking()
+                .Include(t => t.TagType)
+                .Include(t => t.RelationType)
+                .Where(t => t.ParentTagId == parentTagId);
+
+            if (lastId.HasValue)
+                query = query.Where(t => t.Id > lastId.Value);
+            return await query.OrderBy(t => t.Id)
+                .Take(limit + 1)
+                .Select(t => new TagDetails
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    TagTypeId = t.TagTypeId,
+                    TagTypeName = t.TagType.Name,
+                    ParentTagId = t.ParentTagId,
+                    ParentTagName = null,
+                    RelationTypeId = t.RelationTypeId,
+                    RelationTypeName = t.RelationType != null ? t.RelationType.Name : null,
+                    HasChildren = _context.Tags.Any(c => c.ParentTagId == t.Id)
+                })
+                .ToListAsync(ct);
         }
     }
 }

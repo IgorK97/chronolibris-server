@@ -10,6 +10,11 @@ namespace Chronolibris.Domain.Interfaces
 {
     public interface ITagsRepository
     {
+        Task<List<TagDetails>> GetRootTagsAsync(
+           long? tagTypeId, string? searchTerm, long? lastId, int limit,
+           CancellationToken ct);
+        Task<List<TagDetails>> GetChildTagsAsync(long parentTagId,
+            long? lastId, int limit, CancellationToken ct);
         Task<IReadOnlyList<TagType>> GetTagTypesAsync(CancellationToken ct);
         Task<List<TagDetails>> GetTagsAsync(long? tagTypeId,
     string? searchTerm,

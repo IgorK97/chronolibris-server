@@ -48,6 +48,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("reports")]
+        [Authorize(Roles ="admin, moderator")]
         public async Task<ActionResult<GetReportsResponse>> GetReports(
             [FromQuery] GetReportsRequest request)
         {
@@ -71,6 +72,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("targets/{targetTypeId:long}/{targetId:long}")]
+        [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<GetTargetInfoResponse>>
             GetTargetInfo(long targetTypeId, long targetId)
         {
@@ -79,6 +81,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("reports/target")]
+        [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<GetTargetReportsResponse>> GetTargetReports(
             [FromQuery] GetTargetReportsRequest request)
         {
@@ -93,6 +96,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost("tasks")]
+        [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<CreateModerationTaskResponse>> CreateTask(
             [FromBody] CreateModerationTaskRequest request)
         {
@@ -110,6 +114,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPut("tasks/{id:long}/resolution")]
+        [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<TaskResolutionResponse>> ResolveTask(
             long id, [FromBody] TaskResolutionRequest request)
         {

@@ -9,6 +9,8 @@ namespace Chronolibris.Application.Requests
 {
     public record CreateTagRequest(
         string Name,
-        long TagTypeId
+        long TagTypeId,
+        long? ParentTagId,
+        long? RelationTypeId
     ) : IRequest<long>;
 }
