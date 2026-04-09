@@ -14,8 +14,8 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Publisher> builder)
         {
             builder.HasData(
-                new Publisher { Id = 1, CountryId = 2, Name = "Прогресс", Description = "", CreatedAt = DateTime.MinValue },
-                new Publisher { Id = 2, CountryId = 1, Name = "Восточная литература", Description = "", CreatedAt = DateTime.MinValue }
+                new Publisher { Id = 1, CountryId = 2, Name = "Прогресс", Description = "", CreatedAt = new DateTime(2026, 4, 9) },
+                new Publisher { Id = 2, CountryId = 1, Name = "Восточная литература", Description = "", CreatedAt = new DateTime(2026, 4, 9) }
             );
         }
     }
