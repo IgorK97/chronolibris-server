@@ -83,13 +83,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .ToListAsync(ct);
         }
 
-        public Task<List<PersonRoleDto>> GetAllPersonRolesAsync(CancellationToken ct = default)
+        public async Task<List<PersonRoleDto>> GetAllPersonRolesAsync(CancellationToken ct = default)
         {
-            return _context.PersonRoles
+            var res =  await _context.PersonRoles
                 .AsNoTracking()
                 .OrderBy(r => r.Name)
-                .Select(r => new PersonRoleDto { Id = r.Id, Name = r.Name })
+                .Select(r => new { Id = r.Id, Name = r.Name, Kind = r.Kind })
                 .ToListAsync(ct);
+            return res.Select(pr => new PersonRoleDto { Kind = (int)pr.Kind, Id = pr.Id, Name = pr.Name }).ToList();
         }
 
         public Task<List<PersonSuggestionDto>> SearchPersonsAsync(

@@ -18,16 +18,15 @@ namespace Chronolibris.Infrastructure.Configurations
                 .HasDefaultValue(PersonRoleKind.Both);
 
             builder.HasData(
-                new PersonRole { Id = 1, Name = "Автор" },
-                new PersonRole { Id = 2, Name = "Переводчик" },
-                new PersonRole { Id = 3, Name = "Редактор" },
-                new PersonRole { Id = 4, Name = "Иллюстратор" },
-                new PersonRole { Id = 5, Name = "Составитель" },
-                new PersonRole { Id = 6, Name = "Корректор"  },
-                new PersonRole { Id = 7, Name = "Научный редактор"  },
-                new PersonRole { Id = 8, Name = "Редактор перевода"  },
-                new PersonRole { Id = 9, Name = "Комментатор" },
-                new PersonRole { Id = 10, Name = "Адресат"}
+                new PersonRole { Id = 1, Name = "Автор", Kind=PersonRoleKind.Content },
+                new PersonRole { Id = 2, Name = "Переводчик", Kind=PersonRoleKind.Book },
+                new PersonRole { Id = 3, Name = "Редактор", Kind=PersonRoleKind.Book },
+                new PersonRole { Id = 4, Name = "Иллюстратор", Kind=PersonRoleKind.Both },
+                new PersonRole { Id = 5, Name = "Составитель", Kind=PersonRoleKind.Book },
+                new PersonRole { Id = 6, Name = "Корректор", Kind=PersonRoleKind.Book  },
+                new PersonRole { Id = 7, Name = "Научный редактор", Kind=PersonRoleKind.Book  },
+                new PersonRole { Id = 8, Name = "Редактор перевода", Kind=PersonRoleKind.Book  },
+                new PersonRole { Id = 9, Name = "Адресат", Kind=PersonRoleKind.Content}
             );
         }
     }

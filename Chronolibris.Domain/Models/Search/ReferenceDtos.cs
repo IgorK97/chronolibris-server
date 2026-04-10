@@ -23,6 +23,7 @@ namespace Chronolibris.Domain.Models.Search
     {
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public required int Kind { get; set; }
     }
 
 

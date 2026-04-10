@@ -19,6 +19,7 @@ namespace Chronolibris.Application.Handlers
             {
                 Name = pr.Name,
                 Id = pr.Id,
+                Kind = (int)pr.Kind,
             }).ToList();
         }
     }
