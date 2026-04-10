@@ -72,7 +72,7 @@ namespace ChronolibrisPrototype.Controllers
                 );
 
                 var id = await _mediator.Send(command, cancellationToken);
-                return CreatedAtAction(nameof(GetBookById), new { id }, id);
+                return Ok(id);
             }
             catch (ArgumentException ex)
             {
