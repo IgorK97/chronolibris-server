@@ -12,13 +12,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Chronolibris.Infrastructure.Persistance
 {
-    /// <summary>
-    /// Реализация шаблона Единица Работы (Unit of Work). 
-    /// Инкапсулирует контекст базы данных (<see cref="ApplicationDbContext"/>) 
-    /// и предоставляет централизованный доступ ко всем репозиториям приложения, 
-    /// управляя сохранением изменений как единой транзакцией.
-    /// Реализует интерфейс <see cref="IUnitOfWork"/> и <see cref="IDisposable"/>.
-    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;

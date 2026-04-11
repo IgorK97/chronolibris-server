@@ -53,10 +53,6 @@ namespace ChronolibrisPrototype.Controllers
                 HasNext = hasNext,
                 LastId = result.LastOrDefault()?.Id
             });
-
-            //var result = await _mediator.Send(
-            //    new GetTagsQuery(tagTypeId, searchTerm, 0, pageSize));
-            //return Ok(result);
         }
 
         [HttpGet("{parentId}/children")]
