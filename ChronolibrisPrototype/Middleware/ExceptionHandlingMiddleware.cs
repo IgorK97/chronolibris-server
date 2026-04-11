@@ -69,15 +69,6 @@ namespace ChronolibrisPrototype.Middleware
                     detail = "Ошибка сервера";
                 }
 
-                    //var (statusCode, detail) = exception switch
-                    //{
-                    //    ChronolibrisException appEx => (MapTypeToStatusCode(appEx.ErrorType),
-                    //    appEx.Message),
-
-                    //    _ => (StatusCodes.Status500InternalServerError,
-                    //    "Ошибка сервера")
-                    //};
-
                     context.Response.StatusCode = statusCode;
 
                 await context.Response.WriteAsJsonAsync(new ProblemDetails
