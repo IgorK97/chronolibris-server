@@ -1,5 +1,7 @@
 ﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Contents;
+using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -62,7 +64,7 @@ namespace ChronolibrisPrototype.Controllers
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return BadRequest(new { message = "Search term is required" });
 
-            var query = new SearchTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
+            var query = new GetTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
             var tags = await _mediator.Send(query, cancellationToken);
             return Ok(tags);
         }

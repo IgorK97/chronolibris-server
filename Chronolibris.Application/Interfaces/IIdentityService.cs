@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Users;
 
 namespace Chronolibris.Application.Interfaces
 {

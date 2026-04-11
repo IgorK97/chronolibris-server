@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Npgsql;
 using Npgsql.NameTranslation;
@@ -55,6 +56,13 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(dataSource);
+
+                // 1. Добавляем логирование в консоль
+                options.LogTo(Console.WriteLine, LogLevel.Information);
+
+                // 2. (Опционально) Чтобы видеть значения параметров (например, сам текст комментария),
+                // а не просто @p0, добавь эту строку:
+                options.EnableSensitiveDataLogging();
 
                 // Настройка для автоматического преобразования имен свойств в snake_case в БД
                 options.UseSnakeCaseNamingConvention();

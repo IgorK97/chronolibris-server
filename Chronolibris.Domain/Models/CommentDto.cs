@@ -11,6 +11,8 @@ namespace Chronolibris.Domain.Models
         public required long Id { get; set; }
         public string? Text { get; set; }
         public required DateTime CreatedAt { get; set; }
+        public required DateTime? DeletedAt { get; set; }
+
         public string? UserLogin { get; set; }
         public long? ParentCommentId { get; set; }
         public required long RepliesCount { get; set; }

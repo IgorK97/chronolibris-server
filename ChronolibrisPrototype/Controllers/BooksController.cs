@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using System.Threading;
-using Chronolibris.Application.Commands;
+using Chronolibris.Application.Handlers.Books;
 using Chronolibris.Application.Models;
-using Chronolibris.Application.Queries;
-using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Books;
+using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,11 +46,11 @@ namespace ChronolibrisPrototype.Controllers
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
-            [FromBody] Chronolibris.Application.Requests.CreateBookRequest request, CancellationToken cancellationToken)
+            [FromBody] Chronolibris.Application.Handlers.Books.CreateBookRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var command = new Chronolibris.Application.Commands.CreateBookCommand(
+                var command = new CreateBookCommand(
                     request.Title,
                     request.Description,
                     request.CountryId,
@@ -84,7 +84,7 @@ namespace ChronolibrisPrototype.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(
             long id,
-            [FromBody] Chronolibris.Application.Requests.UpdateBookRequest request,
+            [FromBody] Chronolibris.Application.Handlers.Books.UpdateBookRequest request,
             CancellationToken cancellationToken)
         {
             if (id != request.Id)
@@ -92,7 +92,7 @@ namespace ChronolibrisPrototype.Controllers
 
             try
             {
-                var command = new Chronolibris.Application.Commands.UpdateBookCommand
+                var command = new UpdateBookCommand
                 (id,
                    request.Title,
                     request.Description,

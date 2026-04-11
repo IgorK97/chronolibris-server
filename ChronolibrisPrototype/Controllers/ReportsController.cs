@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
-using Chronolibris.Application.Reports.Commands;
-using Chronolibris.Application.Reports.Queries;
+using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

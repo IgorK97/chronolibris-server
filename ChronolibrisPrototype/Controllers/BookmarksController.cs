@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Bookmarks;
 using ChronolibrisPrototype.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;

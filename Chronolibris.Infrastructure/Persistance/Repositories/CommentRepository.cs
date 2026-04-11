@@ -23,6 +23,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                .Join(_context.Users, c => c.UserId, u => u.Id, (c, u) => new CommentDto
                {
                    CreatedAt = c.CreatedAt,
+                   DeletedAt = c.DeletedAt,
                    Id = c.Id,
                    Text = c.Text,
                    UserLogin = u.UserName,
@@ -41,10 +42,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             var query = _context.Comments
                 .AsNoTracking()
-                .Where(c => c.BookId == bookId && c.ParentCommentId == null && c.DeletedAt == null);
+                .Where(c => c.BookId == bookId && c.ParentCommentId == null);
 
             if (lastId.HasValue)
-                query = query.Where(c => c.Id < lastId.Value); // Листаем "вниз" по ID
+                query = query.Where(c => c.Id < lastId.Value);
 
             var resultQuery = query.OrderByDescending(c => c.Id).Take(limit);
 
@@ -52,6 +53,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 Id = c.Id,
                 CreatedAt = c.CreatedAt,
+                DeletedAt = c.DeletedAt,
                 ParentCommentId = c.ParentCommentId,
                 Text = c.DeletedAt==null ? c.Text : null,
                 RepliesCount = c.Replies.Count(),
@@ -80,6 +82,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 {
                     Id = c.Id,
                     CreatedAt = c.CreatedAt,
+                    DeletedAt = c.DeletedAt,
                     ParentCommentId = c.ParentCommentId,
                     Text = c.DeletedAt == null ? c.Text : null,
                     RepliesCount = c.Replies.Count(),

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Users;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

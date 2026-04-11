@@ -1,6 +1,9 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests;
+using Chronolibris.Application.Requests.Shelves;
+using Chronolibris.Application.Requests.Users;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +23,7 @@ namespace ChronolibrisPrototype.Controllers
         public record CreateShelfRequest(string Name);
 
         [HttpPost]
+        [Authorize(Roles="reader")]
         public async Task<IActionResult> CreateShelf(CreateShelfRequest request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,6 +32,29 @@ namespace ChronolibrisPrototype.Controllers
 
             var result = await _mediator.Send(new CreateShelfCommand(userId, request.Name));
             return Ok(result);
+        }
+        [HttpDelete("{shelfId}")]
+        [Authorize(Roles ="reader")]
+        public async Task<IActionResult> DeleteShelf(long shelfId)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            await _mediator.Send(new DeleteShelfCommand(userId, shelfId));
+            return Ok();
+        }
+
+        [HttpPut("{shelfId}")]
+        [Authorize(Roles ="reader")]
+        public async Task<IActionResult> UpdateShelf(long shelfId, UpdateShelf request)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            await _mediator.Send(new UpdateShelfCommand(userId, shelfId, request.Name));
+            return Ok();
         }
 
         [HttpGet("books/{bookId}")]
@@ -80,4 +107,5 @@ namespace ChronolibrisPrototype.Controllers
         }
 
     }
+    public record UpdateShelf(string Name);
 }

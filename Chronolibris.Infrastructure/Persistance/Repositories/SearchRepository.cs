@@ -5,7 +5,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Chronolibris.Application.Search.Queries;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models.Search;
 using Chronolibris.Infrastructure.Data;
