@@ -256,51 +256,29 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     p.Person.Name.Contains(filter.AuthorName)));
             }
 
-            // Включение тем
-            //if (filter.IncludeThemeIds != null && filter.IncludeThemeIds.Any())
-            //{
-            //    query = query.Where(b => b.BookContents.Content.Themes.Any(t =>
-            //        filter.IncludeThemeIds.Contains(t.Id)));
-            //}
-
-            // Включение тем (через BookContent → Content → Themes)
             if (filter.IncludeThemeIds != null && filter.IncludeThemeIds.Any())
             {
                 query = query.Where(b => b.BookContents.Any(bc =>
                     bc.Content.Themes.Any(t => filter.IncludeThemeIds.Contains(t.Id))));
             }
 
-            // Исключение тем
-            //if (filter.ExcludeThemeIds != null && filter.ExcludeThemeIds.Any())
-            //{
-            //    query = query.Where(b => !b.Themes.Any(t =>
-            //        filter.ExcludeThemeIds.Contains(t.Id)));
-            //}
             if (filter.ExcludeThemeIds != null && filter.ExcludeThemeIds.Any())
             {
                 query = query.Where(b => !b.BookContents.Any(bc =>
                     bc.Content.Themes.Any(t => filter.ExcludeThemeIds.Contains(t.Id))));
             }
 
-            // Фильтр по издательству
             if (filter.PublisherId.HasValue)
             {
                 query = query.Where(b => b.PublisherId == filter.PublisherId.Value);
             }
 
-            //// Фильтр по серии
-            //if (filter.SeriesId.HasValue)
-            //{
-            //    query = query.Where(b => b.SeriesId == filter.SeriesId.Value);
-            //}
-
-            // Фильтр по языку
             if (filter.LanguageId.HasValue)
             {
                 query = query.Where(b => b.LanguageId == filter.LanguageId.Value);
             }
 
-            // Фильтр по году
+
             if (filter.YearFrom.HasValue)
             {
                 query = query.Where(b => b.Year >= filter.YearFrom.Value);
@@ -310,17 +288,14 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(b => b.Year <= filter.YearTo.Value);
             }
 
-            // Фильтр по доступности
             if (filter.IsAvailable.HasValue)
             {
                 query = query.Where(b => b.IsAvailable == filter.IsAvailable.Value);
             }
 
 
-            // Получаем общее количество
             var totalCount = await query.CountAsync(cancellationToken);
 
-            // Курсорная пагинация
             if (!string.IsNullOrWhiteSpace(filter.Cursor))
             {
                 if (long.TryParse(filter.Cursor, out var cursorId))
@@ -434,7 +409,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task LinkContentToBookAsync(long bookId, long contentId, int order, CancellationToken cancellationToken = default)
+        public async Task LinkContentToBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default)
         {
             var bookContent = new BookContent
             {

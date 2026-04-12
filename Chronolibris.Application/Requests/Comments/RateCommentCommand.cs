@@ -9,10 +9,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Comments
 {
-    public class RateCommentCommand : IRequest<CommentDto?>
-    {
-        public long CommentId { get; init; }
-        public long UserId { get; init; }
-        public short Score { get; init; }
-    }
+    public record RateCommentCommand(long CommentId, long UserId, short Score) : IRequest<CommentDto?>;
 }

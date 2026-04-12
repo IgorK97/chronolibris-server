@@ -5,41 +5,15 @@ using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Requests.References
 {
-    public class GetAllLanguagesQuery : IRequest<IEnumerable<LanguageDto>> { }
+    public record GetAllLanguagesQuery : IRequest<IEnumerable<LanguageDto>> { }
 
-    public class GetFtsConfigurationsQuery : IRequest<IEnumerable<FtsConfigurationDto>> { }
+    public record GetFtsConfigurationsQuery : IRequest<IEnumerable<FtsConfigurationDto>> { }
 
-    public class GetLanguageByIdQuery : IRequest<LanguageDto?>
-    {
-        public long Id { get; set; }
-        public GetLanguageByIdQuery(long id) => Id = id;
-    }
+    public record GetLanguageByIdQuery(long id) : IRequest<LanguageDto?>;
 
-    public class CreateLanguageCommand : IRequest<long>
-    {
-        public string Name { get; set; } = string.Empty;
+    public record CreateLanguageCommand(string Name) : IRequest<long>;
 
-        public CreateLanguageCommand(string name)
-        {
-            Name = name;
-        }
-    }
+    public record UpdateLanguageCommand(long Id, string Name) : IRequest<bool>;
 
-    public class UpdateLanguageCommand : IRequest<bool>
-    {
-        public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-
-        public UpdateLanguageCommand(long id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-    }
-
-    public class DeleteLanguageCommand : IRequest<bool>
-    {
-        public long Id { get; set; }
-        public DeleteLanguageCommand(long id) => Id = id;
-    }
+    public record DeleteLanguageCommand(long id) : IRequest<bool>;
 }

@@ -38,7 +38,7 @@ namespace Chronolibris.Application.Handlers.References
 
         public async Task<LanguageDto?> Handle(GetLanguageByIdQuery request, CancellationToken cancellationToken)
         {
-            var language = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var language = await _repository.GetByIdAsync(request.id, cancellationToken);
             if (language == null) return null;
 
             return new LanguageDto
@@ -132,7 +132,7 @@ namespace Chronolibris.Application.Handlers.References
 
         public async Task<bool> Handle(DeleteLanguageCommand request, CancellationToken cancellationToken)
         {
-            var language = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var language = await _repository.GetByIdAsync(request.id, cancellationToken);
             if (language == null) return false;
 
             _repository.Delete(language);

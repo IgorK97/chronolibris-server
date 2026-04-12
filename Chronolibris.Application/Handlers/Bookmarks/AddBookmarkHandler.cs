@@ -24,10 +24,10 @@ namespace Chronolibris.Application.Handlers.Bookmarks
 
             var bookmark = new Bookmark
             {
-                BookFileId = request.bookFileId,
-                UserId = request.userId,
-                Note = request.noteText,
-                ParaIndex = request.paraIndex,
+                BookFileId = request.BookFileId,
+                UserId = request.UserId,
+                Note = request.NoteText,
+                ParaIndex = request.ParaIndex,
                 CreatedAt = DateTime.UtcNow,
                 Id = 0,
             };

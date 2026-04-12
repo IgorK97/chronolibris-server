@@ -23,7 +23,7 @@ namespace Chronolibris.Domain.Interfaces
 
         Task<int> GetContentsCountAsync(long bookId, CancellationToken cancellationToken = default);
         Task<List<Content>> GetContentsByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
-        Task LinkContentToBookAsync(long bookId, long contentId, int order, CancellationToken cancellationToken = default);
+        Task LinkContentToBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         Task UnlinkContentFromBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         Task<bool> IsLinkedToContentAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token = default);

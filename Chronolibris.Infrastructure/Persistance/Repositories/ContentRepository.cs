@@ -247,7 +247,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task LinkContentToBookAsync(long contentId, long bookId, int order, CancellationToken cancellationToken = default)
+        public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {
             var bookContent = new BookContent
             {

@@ -55,19 +55,14 @@ namespace ChronolibrisWeb.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles ="reader")]
+        [Authorize(Roles = "reader")]
         [HttpPost("rate")]
         public async Task<IActionResult> RateComment(RateCommentInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
             var result = await _mediator.Send(
-                new RateCommentCommand
-                {
-                    CommentId = request.CommentId,
-                    Score = request.Score,
-                    UserId = userId
-                });
+                new RateCommentCommand(request.CommentId, userId, request.Score));
 
             return Ok(result);
         }

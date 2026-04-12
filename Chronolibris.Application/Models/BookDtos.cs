@@ -105,6 +105,5 @@ namespace Chronolibris.Application.Models
         public long ContentId { get; set; }
         [Required]
         public long BookId { get; set; }
-        public int Order { get; set; } = 0;
     }
 }

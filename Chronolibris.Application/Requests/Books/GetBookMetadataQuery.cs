@@ -9,5 +9,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Books
 {
-    public record GetBookMetadataQuery(long bookId, long userId, bool mode) : IRequest<BookDetails>;
+    public record GetBookMetadataQuery(long BookId, long UserId, bool Mode) : IRequest<BookDetails>;
 }

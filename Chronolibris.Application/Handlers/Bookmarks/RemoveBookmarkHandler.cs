@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
 
         public async Task<bool> Handle(RemoveBookmarkCommand request, CancellationToken cancellationToken)
         {
-            var existing = await _unitOfWork.Bookmarks.GetByIdAsync(request.bookmarkId, cancellationToken);
+            var existing = await _unitOfWork.Bookmarks.GetByIdAsync(request.BbookmarkId, cancellationToken);
             if (existing == null)
             {
                 return false;

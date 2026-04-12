@@ -159,7 +159,7 @@ namespace ChronolibrisWeb.Controllers
             if (request.BookId != bookId || request.ContentId != contentId)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
-            var command = new LinkContentToBookCommand(bookId, contentId, request.Order);
+            var command = new LinkContentToBookCommand(bookId, contentId);
             await _mediator.Send(command, cancellationToken);
             return NoContent();
 

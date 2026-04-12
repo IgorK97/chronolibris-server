@@ -308,7 +308,7 @@ namespace Chronolibris.Application.Handlers.Contents
         public async Task<Unit> Handle(LinkBookToContentCommand request, CancellationToken cancellationToken)
         {
             await _contentRepository.LinkContentToBookAsync(
-                request.ContentId, request.BookId, request.Order, cancellationToken);
+                request.ContentId, request.BookId, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

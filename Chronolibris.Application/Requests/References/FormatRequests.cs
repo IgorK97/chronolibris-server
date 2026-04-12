@@ -4,39 +4,13 @@ using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests.References
 {
-    public class GetAllFormatsQuery : IRequest<IEnumerable<FormatDto>> { }
+    public record GetAllFormatsQuery() : IRequest<IEnumerable<FormatDto>> { }
 
-    public class GetFormatByIdQuery : IRequest<FormatDto?>
-    {
-        public int Id { get; set; }
-        public GetFormatByIdQuery(int id) => Id = id;
-    }
+    public record GetFormatByIdQuery(long Id) : IRequest<FormatDto?>;
 
-    public class CreateFormatCommand : IRequest<int>
-    {
-        public string Name { get; set; } = string.Empty;
+    public record CreateFormatCommand(string Name) : IRequest<int>;
 
-        public CreateFormatCommand(string name)
-        {
-            Name = name;
-        }
-    }
+    public record UpdateFormatCommand(long Id, string Name) : IRequest<bool>;
 
-    public class UpdateFormatCommand : IRequest<bool>
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-
-        public UpdateFormatCommand(int id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-    }
-
-    public class DeleteFormatCommand : IRequest<bool>
-    {
-        public int Id { get; set; }
-        public DeleteFormatCommand(int id) => Id = id;
-    }
+    public record DeleteFormatCommand(long Id) : IRequest<bool>;
 }

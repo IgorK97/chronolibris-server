@@ -47,8 +47,6 @@ namespace Chronolibris.Application.Models
         public long LanguageId { get; set; }
 
         public int? Year { get; set; }
-        public long? ParentContentId { get; set; }
-        public int? Position { get; set; }
         public List<long> PersonIds { get; set; } = new();
         public List<long> ThemeIds { get; set; } = new();
     }

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
-using MediatR;
+﻿using MediatR;
 
 namespace Chronolibris.Application.Requests.Bookmarks
 {
-    public record AddBookmarkCommand(long bookFileId, long userId, string? noteText, int paraIndex) : IRequest<AddBookmarkResult>;
+    public record AddBookmarkCommand(long BookFileId, long UserId, string? NoteText, int ParaIndex) : IRequest<AddBookmarkResult>;
 
-    public record AddBookmarkResult(long id, DateTime createdAt);
+    public record AddBookmarkResult(long Id, DateTime CreatedAt);
 }

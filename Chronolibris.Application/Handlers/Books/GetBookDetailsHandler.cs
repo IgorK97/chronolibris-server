@@ -22,7 +22,7 @@ namespace Chronolibris.Application.Handlers.Books
 
         public async Task<BookDetails?> Handle(GetBookMetadataQuery request, CancellationToken cancellationToken)
         {
-            return await unitOfWork.Books.GetBookWithRelationsAsync(request.bookId, request.userId, request.mode, cancellationToken);
+            return await unitOfWork.Books.GetBookWithRelationsAsync(request.BookId, request.UserId, request.Mode, cancellationToken);
         }
     }
 }

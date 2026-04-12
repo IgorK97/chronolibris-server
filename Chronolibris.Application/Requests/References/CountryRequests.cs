@@ -4,39 +4,13 @@ using System.Collections.Generic;
 
 namespace Chronolibris.Application.Requests.References
 {
-    public class GetAllCountriesQuery : IRequest<IEnumerable<CountryDto>> { }
+    public record GetAllCountriesQuery() : IRequest<IEnumerable<CountryDto>> { }
 
-    public class GetCountryByIdQuery : IRequest<CountryDto?>
-    {
-        public long Id { get; set; }
-        public GetCountryByIdQuery(long id) => Id = id;
-    }
+    public record GetCountryByIdQuery(long Id) : IRequest<CountryDto?>;
 
-    public class CreateCountryCommand : IRequest<long>
-    {
-        public string Name { get; set; } = string.Empty;
+    public record CreateCountryCommand(string Name) : IRequest<long>;
 
-        public CreateCountryCommand(string name)
-        {
-            Name = name;
-        }
-    }
+    public record UpdateCountryCommand(long Id, string Name) : IRequest<bool>;
 
-    public class UpdateCountryCommand : IRequest<bool>
-    {
-        public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-
-        public UpdateCountryCommand(long id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-    }
-
-    public class DeleteCountryCommand : IRequest<bool>
-    {
-        public long Id { get; set; }
-        public DeleteCountryCommand(long id) => Id = id;
-    }
+    public record DeleteCountryCommand(long Id) : IRequest<bool>;
 }

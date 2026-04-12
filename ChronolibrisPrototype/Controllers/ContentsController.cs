@@ -109,8 +109,6 @@ namespace ChronolibrisWeb.Controllers
                 request.ContentTypeId,
                 request.LanguageId,
                 request.Year,
-                request.ParentContentId,
-                request.Position,
                 request.PersonIds,
                 request.ThemeIds
             );
@@ -151,7 +149,7 @@ namespace ChronolibrisWeb.Controllers
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
 
-            var command = new LinkBookToContentCommand(contentId, bookId, request.Order);
+            var command = new LinkBookToContentCommand(contentId, bookId);
             await _mediator.Send(command, cancellationToken);
             return NoContent();
 

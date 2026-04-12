@@ -26,12 +26,12 @@ namespace Chronolibris.Application.Handlers.Bookmarks
             UpdateBookmarkCommand request,
             CancellationToken cancellationToken)
         {
-            var bookmark = await _bookmarkRepository.GetByIdAsync(request.bookmarkId);
-            if(bookmark == null || bookmark.UserId != request.userId)
+            var bookmark = await _bookmarkRepository.GetByIdAsync(request.BookmarkId);
+            if(bookmark == null || bookmark.UserId != request.UserId)
             {
                 return false;
             }
-            bookmark.Note = request.noteText;
+            bookmark.Note = request.NoteText;
             await _unitOfWork.SaveChangesAsync();
 
             //_bookmarkRepository.Update(bookmark);
