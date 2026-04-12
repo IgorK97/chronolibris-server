@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Bookmarks
 {
-    public record GetBookmarksQuery(long Bookid, long UserId): IRequest<List<BookmarkDetails>>;
+    public record GetBookmarksQuery(long BookId, long UserId): IRequest<List<BookmarkDetails>>;
 
 }

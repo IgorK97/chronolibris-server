@@ -16,13 +16,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
         public async Task<List<BookmarkDetails>> Handle(GetBookmarksQuery request, CancellationToken cancellationToken)
         {
             var bookmarks = await bookmarkRepository
-                                            .GetAllForBookAndUserAsync(request.Bookid, request.UserId, cancellationToken);
-
-
-            if (bookmarks == null)
-            {
-                return new List<BookmarkDetails>();
-            }
+                                            .GetAllForBookAndUserAsync(request.BookId, request.UserId, cancellationToken);
 
             return bookmarks.Select(b => new BookmarkDetails
             {

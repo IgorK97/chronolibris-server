@@ -8,6 +8,7 @@ using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
+using Hangfire.Processing;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
@@ -17,6 +18,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public BookFileRepository(ApplicationDbContext context) : base(context)
         {
+        }
+        public override async Task<BookFile?> GetByIdAsync(long id, CancellationToken token)
+        {
+            return await _context.BookFiles.Include(bf => bf.Book).Where(bf => bf.Id==id).FirstOrDefaultAsync();
         }
         public async Task SaveConversionResultAsync(
             long bookFileId,
@@ -98,9 +103,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .FirstOrDefaultAsync(bf => bf.BookId == bookId && bf.FormatId == formatId, cancellationToken);
         }
 
-        public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
-        {
-            return await _context.BookFiles.AnyAsync(bf => bf.Id == id, cancellationToken);
-        }
+        //public async Task<BookFile> ExistsAvailableAsync(long id, CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.BookFiles.AnyAsync(bf => bf.Id == id && bf.Book.IsAvailable, cancellationToken);
+        //}
     }
 }

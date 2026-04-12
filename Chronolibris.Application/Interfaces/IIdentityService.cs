@@ -16,6 +16,7 @@ namespace Chronolibris.Application.Interfaces
         Task<bool> IsUserNameUniqueAsync(string userName);
         Task<bool> IsEmailUniqueAsync(string email);
         Task<bool>IsPhoneUniqueAsync(string phone);
+        Task<bool> IsUserActiveAsync(long userId);
         Task<UserProfileResponse?> GetUserProfileAsync(long userId);
         Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request);
         Task<bool> ChangePasswordAsync(ChangePasswordCommand request);

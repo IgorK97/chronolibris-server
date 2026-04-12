@@ -10,6 +10,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.Users;
 using Chronolibris.Domain.Utils;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Exceptions;
 
 namespace Chronolibris.Application.Handlers.Users
 {
@@ -31,18 +32,23 @@ namespace Chronolibris.Application.Handlers.Users
 
         public async Task<RegistrationResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var result = await _identityService.RegisterUserAsync(new RegisterRequest
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
             {
-                Email = request.Email,
-                LastName = request.LastName,
-                UserName = request.UserName,
-                Password = request.Password,
-                FirstName = request.FirstName,
-                PhoneNumber = request.PhoneNumber,
-            });
+                var result = await _identityService.RegisterUserAsync(new RegisterRequest
+                {
+                    Email = request.Email,
+                    LastName = request.LastName,
+                    UserName = request.UserName,
+                    Password = request.Password,
+                    FirstName = request.FirstName,
+                    PhoneNumber = request.PhoneNumber,
+                });
 
-            if (result.Success)
-            {
+                if (!result.Success)
+                    throw new ChronolibrisException(result.Message
+                        ?? "Ошибка регистрации", ErrorType.Validation);
+
                 var newUserId = result.UserId;
                 var utcNow = DateTime.UtcNow;
 
@@ -66,9 +72,15 @@ namespace Chronolibris.Application.Handlers.Users
                 await _unitOfWork.Shelves.AddAsync(defaultBelovedShelf, cancellationToken);
                 await _unitOfWork.Shelves.AddAsync(defaultReadShelf, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
+                await transaction.CommitAsync();
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

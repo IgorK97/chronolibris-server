@@ -266,5 +266,12 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             return true;
         }
+
+        public async Task<bool> IsUserActiveAsync(long userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            return user != null && (!user.LockoutEnabled || user.LockoutEnd <= DateTimeOffset.UtcNow) && !user.IsDeleted;
+        }
     }
 }

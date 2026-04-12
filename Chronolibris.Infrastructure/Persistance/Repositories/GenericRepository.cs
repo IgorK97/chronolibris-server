@@ -24,11 +24,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _context = context;
             _set = context.Set<TEntity>();
         }
-        public async Task<TEntity?> GetByIdAsync(long id, CancellationToken token) =>
+        public virtual async Task<TEntity?> GetByIdAsync(long id, CancellationToken token) =>
         await _set.FindAsync(id, token);
-        public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken token) =>
+        public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken token) =>
             await _set.ToListAsync(token);
-        public async Task AddAsync(TEntity entity, CancellationToken token) =>
+        public virtual async Task AddAsync(TEntity entity, CancellationToken token) =>
             await _set.AddAsync(entity, token);
         public void Update(TEntity entity) =>
             _set.Update(entity);

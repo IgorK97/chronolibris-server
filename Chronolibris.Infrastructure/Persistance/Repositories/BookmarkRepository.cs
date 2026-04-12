@@ -16,10 +16,15 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public BookmarkRepository(ApplicationDbContext context) : base(context)
         {
         }
-        public async Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token)
+        public async Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token = default)
         {
             return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId)
                 .ToListAsync(token);
+        }
+
+        public async Task<Bookmark?> GetConcreteBookmark(long bookId, long userId, int paraIndex, CancellationToken token = default)
+        {
+            return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId && b.ParaIndex == paraIndex).FirstOrDefaultAsync(token);
         }
     }
 }

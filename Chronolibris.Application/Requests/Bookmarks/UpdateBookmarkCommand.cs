@@ -2,6 +2,6 @@
 
 namespace Chronolibris.Application.Requests.Bookmarks
 {
-    public record UpdateBookmarkCommand(long BookmarkId, long UserId, string? NoteText) : IRequest<bool>;
+    public record UpdateBookmarkCommand(long BookmarkId, long UserId, string? NoteText) : IRequest;
 
 }

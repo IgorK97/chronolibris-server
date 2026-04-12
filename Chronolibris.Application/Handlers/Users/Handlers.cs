@@ -5,21 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
+using Chronolibris.Application.Requests.Users;
+using Chronolibris.Domain.Exceptions;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.Users
 {
-    public class RegisterStaffCommand : IRequest<RegistrationResult>
-    {
-        public string UserName { get; set; } = string.Empty;
-        public required string LastName { get; set; }
-        public required string FirstName { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public required string PhoneNumber { get; set; }
-
-        public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-    }
 
     public class RegisterStaffHandler : IRequestHandler<RegisterStaffCommand, RegistrationResult>
     {
@@ -36,25 +27,17 @@ namespace Chronolibris.Application.Handlers.Users
             RegisterStaffCommand request, CancellationToken ct)
         {
             if (!AllowedRoles.Contains(request.Role))
-                return new RegistrationResult
-                {
-                    UserId= 0,
-                    Success = false,
-                    Message = $"Недопустимая роль «{request.Role}». Допустимые: Moderator, Admin.",
-                };
-            if (!await _identityService.IsUserNameUniqueAsync(request.UserName))
-                return new RegistrationResult
-                {
-                    UserId=0,
-                    Success = false,
-                    Message = "Это имя пользователя уже занято.",
-                };
+                throw new ChronolibrisException("Недопустимая роль", ErrorType.Validation);
 
-            if (!await _identityService.IsEmailUniqueAsync(request.Email))
-                return new RegistrationResult {UserId=0, Success = false, Message = "Этот email уже зарегистрирован." };
+            //if (!await _identityService.IsUserNameUniqueAsync(request.UserName))
+            //    throw new ChronolibrisException("Такое имя пользователя уже используется", ErrorType.Conflict);
 
-            if (!await _identityService.IsPhoneUniqueAsync(request.PhoneNumber!))
-                return new RegistrationResult { UserId=0, Success = false, Message = "Этот номер телефона уже зарегистрирован." };
+            //if (!await _identityService.IsEmailUniqueAsync(request.Email))
+            //    throw new ChronolibrisException("Такой адрес электронной почты уже занят", ErrorType.Conflict);
+
+            //if (!await _identityService.IsPhoneUniqueAsync(request.PhoneNumber!))
+            //    throw new ChronolibrisException("Такой номер телефона уже занят", ErrorType.Conflict);
+
             return await _identityService.RegisterUserAsync(new RegisterRequest
             {
             
