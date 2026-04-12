@@ -1,12 +1,12 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Bookmarks;
-using ChronolibrisPrototype.Models;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -20,7 +20,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] AddBookmarkRequest command)
+        public async Task<IActionResult> Add([FromBody] AddBookmarkInputModel command)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
@@ -45,7 +45,7 @@ namespace ChronolibrisPrototype.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<bool>> UpdateBookmark(
             long id,
-            [FromBody] UpdateBookmarkRequest request,
+            [FromBody] UpdateBookmarkInputModel request,
             CancellationToken cancellationToken)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

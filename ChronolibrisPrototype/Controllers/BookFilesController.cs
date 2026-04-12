@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

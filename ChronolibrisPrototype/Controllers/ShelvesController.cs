@@ -2,12 +2,13 @@
 using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Shelves;
 using Chronolibris.Application.Requests.Users;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -47,7 +48,7 @@ namespace ChronolibrisPrototype.Controllers
 
         [HttpPut("{shelfId}")]
         [Authorize(Roles ="reader")]
-        public async Task<IActionResult> UpdateShelf(long shelfId, UpdateShelf request)
+        public async Task<IActionResult> UpdateShelf(long shelfId, UpdateShelfInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
@@ -93,6 +94,7 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost("{shelfId}/books/{bookId}")]
+        [Authorize(Roles ="reader")]
         public async Task<IActionResult> AddBook(long shelfId, long bookId)
         {
             bool res = await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
@@ -100,6 +102,8 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpDelete("{shelfId}/books/{bookId}")]
+        [Authorize(Roles = "reader")]
+
         public async Task<IActionResult> RemoveBook(long shelfId, long bookId)
         {
             bool res = await _mediator.Send(new RemoveBookFromShelfCommand(shelfId, bookId));
@@ -107,5 +111,4 @@ namespace ChronolibrisPrototype.Controllers
         }
 
     }
-    public record UpdateShelf(string Name);
 }

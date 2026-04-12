@@ -4,13 +4,13 @@ using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Reviews;
 using Chronolibris.Application.Requests.Users;
 using Chronolibris.Infrastructure.Data;
-using ChronolibrisPrototype.Models;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -41,7 +41,7 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(reviews);
         }
 
-        [Authorize]
+        [Authorize(Roles ="reader")]
         [HttpGet("my/{bookId}")]
         public async Task<IActionResult> GetMyReview(long bookId)
         {
@@ -61,9 +61,9 @@ namespace ChronolibrisPrototype.Controllers
             return long.TryParse(claim, out userId);
         }
 
-        [Authorize]
+        [Authorize(Roles ="reader")]
         [HttpPost]
-        public async Task<IActionResult> CreateReview(CreateReviewRequest request)
+        public async Task<IActionResult> CreateReview(CreateReviewInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
@@ -79,9 +79,9 @@ namespace ChronolibrisPrototype.Controllers
             return Ok(reviewId);
         }
 
-        [Authorize]
+        [Authorize(Roles ="reader")]
         [HttpPut("{reviewId}")]
-        public async Task<IActionResult> UpdateReview(long reviewId, UpdateReviewRequest request)
+        public async Task<IActionResult> UpdateReview(long reviewId, UpdateReviewInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
@@ -106,9 +106,9 @@ namespace ChronolibrisPrototype.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles ="reader")]
         [HttpPost("rate")]
-        public async Task<IActionResult> RateReview(RateReviewRequest request)
+        public async Task<IActionResult> RateReview(RateReviewInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 

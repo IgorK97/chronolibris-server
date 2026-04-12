@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace ChronolibrisPrototype.Middleware
+namespace ChronolibrisWeb.Middleware
 {
     public class ExceptionHandlingMiddleware
     {
@@ -20,13 +20,9 @@ namespace ChronolibrisPrototype.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
 
-
-            //await _next(context);
-
-
             try
             {
-                _logger.LogInformation("➡️ {Method} {Path} | Query: {Query} | User: {User}",
+                _logger.LogInformation(" {Method} {Path} | Запрос: {Query} | Пользователь: {User}",
                     context.Request.Method,
                     context.Request.Path,
                     context.Request.QueryString,
@@ -37,7 +33,7 @@ namespace ChronolibrisPrototype.Middleware
 
                 sw.Stop();
 
-                _logger.LogInformation("✅ {Method} {Path} → {StatusCode} ({Elapsed}ms)",
+                _logger.LogInformation(" {Method} {Path} {StatusCode} ({Elapsed}ms)",
                     context.Request.Method,
                     context.Request.Path,
                     context.Response.StatusCode,
@@ -48,8 +44,8 @@ namespace ChronolibrisPrototype.Middleware
             {
                 _logger.LogError(
                      exception,
-                    "Error processing {Method} {Path}." +
-                    " Query: {QueryString}. Message: {Message}",
+                    "Ошибка{Method} {Path}." +
+                    " Запрос: {QueryString}. Сообщение: {Message}",
                     context.Request.Method,
                     context.Request.Path,
                     context.Request.QueryString,

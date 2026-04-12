@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Chronolibris.API.Controllers.Search
+namespace ChronolibrisWeb.InputModels
 {
 
-    public class SimpleSearchHttpRequest
+    public class SimpleSearchInputModel
     {
         [Required(ErrorMessage = "Параметр query обязателен")]
-        [MaxLength(200, ErrorMessage = "Поисковый запрос слишком длинный")]
+        [MaxLength(500, ErrorMessage = "Поисковый запрос слишком длинный")]
         public required string Query { get; set; }
 
         [Range(1, 100, ErrorMessage = "Размер страницы должен быть от 1 до 100")]
@@ -15,7 +15,7 @@ namespace Chronolibris.API.Controllers.Search
         public long? LastId { get; set; }
     }
 
-    public class PersonRoleFilterHttpRequest
+    public class PersonRoleFilterModel
     {
         [Required]
         public long RoleId { get; set; }
@@ -36,7 +36,7 @@ namespace Chronolibris.API.Controllers.Search
         public double? LastBestSimilarity { get; set; }
         public long? LastId { get; set; }
 
-        public List<PersonRoleFilterHttpRequest> PersonFilters { get; set; } = [];
+        public List<PersonRoleFilterModel> PersonFilters { get; set; } = [];
         public long ThemeId { get; set; }
         public long SelectionId { get; set; }
         public List<long> RequiredTagIds { get; set; } = [];

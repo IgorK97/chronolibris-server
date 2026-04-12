@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -52,12 +52,11 @@ namespace ChronolibrisPrototype.Controllers
 
 
             var selection = await _mediator.Send(new GetSelectionQuery(selectionId, userId, userRole));
-            if (selection == null) return NotFound();
             return Ok(selection);
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> CreateSelection([FromBody] CreateSelectionInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -70,39 +69,35 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPut("{selectionId}")]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> UpdateSelection(long selectionId, [FromBody] UpdateSelectionRequest request)
         {
             request = request with { SelectionId = selectionId };
             var result = await _mediator.Send(request);
-            if (!result) return NotFound();
             return NoContent();
         }
 
         [HttpDelete("{selectionId}")]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> DeleteSelection(long selectionId)
         {
             var result = await _mediator.Send(new DeleteSelectionRequest(selectionId));
-            if (!result) return NotFound();
             return NoContent();
         }
 
         [HttpPost("{selectionId}/books/{bookId}")]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> AddBook(long selectionId, long bookId)
         {
             var result = await _mediator.Send(new AddBookToSelectionRequest(selectionId, bookId));
-            if (!result) return BadRequest();
             return NoContent();
         }
 
         [HttpDelete("{selectionId}/books/{bookId}")]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> RemoveBook(long selectionId, long bookId)
         {
             var result = await _mediator.Send(new RemoveBookFromSelectionRequest(selectionId, bookId));
-            if (!result) return NotFound();
             return NoContent();
         }
 

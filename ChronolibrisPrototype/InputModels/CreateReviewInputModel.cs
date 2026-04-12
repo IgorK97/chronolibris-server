@@ -1,6 +1,6 @@
-﻿namespace ChronolibrisPrototype.Models
+﻿namespace ChronolibrisWeb.InputModels
 {
-    public class CreateReviewRequest
+    public class CreateReviewInputModel
     {
         public long BookId { get; init; }
         public string? ReviewText { get; init; }

@@ -5,13 +5,13 @@ using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Comments;
 using Chronolibris.Domain.Models;
-using ChronolibrisPrototype.Models;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -41,7 +41,7 @@ namespace ChronolibrisPrototype.Controllers
 
         [Authorize(Roles ="reader")]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCommentRequest request)
+        public async Task<IActionResult> Create(CreateCommentInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 
@@ -61,7 +61,7 @@ namespace ChronolibrisPrototype.Controllers
 
         [Authorize(Roles ="reader")]
         [HttpPost("rate")]
-        public async Task<IActionResult> RateComment(RateCommentRequest request)
+        public async Task<IActionResult> RateComment(RateCommentInputModel request)
         {
             if (!TryGetUserId(out var userId)) return Unauthorized();
 

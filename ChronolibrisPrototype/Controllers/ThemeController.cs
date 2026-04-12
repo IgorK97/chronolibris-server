@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -48,86 +48,49 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ThemeDto>> GetById(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ThemeDto?>> GetById(long id, CancellationToken cancellationToken)
         {
             var query = new GetThemeByIdQuery(id);
             var theme = await _mediator.Send(query, cancellationToken);
 
-            if (theme == null)
-                return NotFound(new { message = $"Тема с ID {id} не найдена" });
-
             return Ok(theme);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPost]
         public async Task<ActionResult<long>> Create([FromBody] CreateThemeRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
 
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название темы обязательно" });
-
-            try
-            {
                 var command = new CreateThemeCommand(request.Name, request.ParentThemeId);
                 var id = await _mediator.Send(command, cancellationToken);
-                return CreatedAtAction(nameof(GetById), new { id = id }, id);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(id);
+
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Некорректные данные запроса", errors = ModelState });
 
             if (id != request.Id)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest(new { message = "Название темы обязательно" });
 
-            try
-            {
                 var command = new UpdateThemeCommand(id, request.Name, request.ParentThemeId);
                 await _mediator.Send(command, cancellationToken);
                 return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Тема с ID {id} не найдена" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+           
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(long id, CancellationToken cancellationToken)
         {
-            try
-            {
+
                 var command = new DeleteThemeCommand(id);
                 await _mediator.Send(command, cancellationToken);
                 return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"Тема с ID {id} не найдена" });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
         }
     }
 }

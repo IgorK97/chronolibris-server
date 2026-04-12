@@ -1,6 +1,6 @@
-﻿namespace ChronolibrisPrototype.Models
+﻿namespace ChronolibrisWeb.InputModels
 {
-    public class UpdateReviewRequest
+    public class UpdateReviewInputModel
     {
         public string? ReviewText { get; init; }
         public short Score { get; init; }

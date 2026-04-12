@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -77,31 +77,25 @@ namespace ChronolibrisPrototype.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateTag([FromBody] CreateTagRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest("Name is required");
 
-            // Если указан родитель — тип отношения обязателен
             if (request.ParentTagId.HasValue && !request.RelationTypeId.HasValue)
-                return BadRequest("RelationTypeId is required when ParentTagId is specified");
+                return BadRequest("Не указан тип отношения между тегами");
 
-            // Если тип отношения указан — родитель обязателен
             if (request.RelationTypeId.HasValue && !request.ParentTagId.HasValue)
-                return BadRequest("ParentTagId is required when RelationTypeId is specified");
+                return BadRequest("Не указан родительский тег");
 
             var tagId = await _mediator.Send(request);
-            return CreatedAtAction(nameof(GetTags), new { }, tagId);
+            return Ok(tagId);
         }
 
         [HttpDelete("{tagId}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteTag(long tagId)
         {
             var result = await _mediator.Send(new DeleteTagRequest(tagId));
-            if (!result)
-                return NotFound();
             return NoContent();
         }
     }

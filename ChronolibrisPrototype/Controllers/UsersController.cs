@@ -5,13 +5,14 @@ using Chronolibris.Application.Handlers.Users;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests;
 using Chronolibris.Application.Requests.Users;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YamlDotNet.Core.Tokens;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -75,22 +76,18 @@ namespace ChronolibrisPrototype.Controllers
                 return Unauthorized();
 
             //long parsedUserId = long.Parse(userId);
-            try
-            {
+
                 var result = await _mediator.Send(new GetUserProfileQuery(parsedUserId));
                 
                 return result !=null ? Ok(result): NotFound();
 
-            }
-            catch (Exception ex) {
-                return StatusCode(500, "Ошибка при получении профиля");
-            }
+
         }
 
         [Authorize]
         //[HttpPost("profile")]
         [HttpPut]
-        public async Task<IActionResult> UpdateProfile(UpdateUserProfileRequest request)
+        public async Task<IActionResult> UpdateProfile(UpdateUserProfileInputModel request)
         {
 
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -112,7 +109,7 @@ namespace ChronolibrisPrototype.Controllers
 
         [Authorize]
         [HttpPost("password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request) 
+        public async Task<IActionResult> ChangePassword(ChangePasswordInputModel request) 
         {
 
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -127,7 +124,7 @@ namespace ChronolibrisPrototype.Controllers
             };
             await _mediator.Send(command);
 
-            return Ok(new { success = true, message = "Password changed successfully" });
+            return Ok();
         }
 
         [HttpPost("logout")]
@@ -153,24 +150,8 @@ namespace ChronolibrisPrototype.Controllers
             if (!result.Success)
                 return BadRequest(new { message = result.Message });
 
-            return Ok(new { message = "Пользователь успешно зарегистрирован." });
+            return Ok();
         }
-    }
-
-    public class UpdateUserProfileRequest
-    {
-        public required string FirstName { get; init; }
-        public required string LastName {get;init;}
-        public string? Email { get; init;}
-        public string? PhoneNumber { get; init; }
-        public required string UserName { get; init; }
-
-    }
-
-    public class ChangePasswordRequest
-    {
-        public required string CurrentPassword { get; init; }
-        public required string NewPassword { get; init; }
     }
 }
 

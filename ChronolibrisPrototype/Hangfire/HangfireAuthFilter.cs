@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire.Dashboard;
 
-namespace ChronolibrisPrototype.Hangfire
+namespace ChronolibrisWeb.Hangfire
 {
     public class HangfireAuthFilter : IDashboardAuthorizationFilter
     {

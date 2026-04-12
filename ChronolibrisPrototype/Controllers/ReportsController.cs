@@ -1,13 +1,13 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Models;
-using ChronolibrisWeb.Models;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChronolibrisPrototype.Controllers
+namespace ChronolibrisWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -23,7 +23,7 @@ namespace ChronolibrisPrototype.Controllers
 
         [HttpPost]
         [Authorize(Roles = "reader")]
-        public async Task<IActionResult> CreateReport([FromBody] CreateReportModel request)
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))
