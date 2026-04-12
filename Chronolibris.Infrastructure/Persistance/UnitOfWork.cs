@@ -26,7 +26,7 @@ namespace Chronolibris.Infrastructure.Persistance
         public ISelectionsRepository Selections { get; }
         public IShelfRepository Shelves { get; }
         public IGenericRepository<Person> Persons { get; }
-        public ILanguageRepository Languages { get; }
+        public IGenericRepository<Language> Languages { get; }
         public IGenericRepository<Content> Contents { get; }
         public IGenericRepository<Country> Countries { get; }
         public IGenericRepository<Format> Formats { get; }
@@ -43,7 +43,7 @@ namespace Chronolibris.Infrastructure.Persistance
             IReviewRepository reviewRepository,
             ISelectionsRepository selections, IShelfRepository shelves, ICommentRepository comments,
             IGenericRepository<PersonRole> personRoles, IReadingProgressRepository readingProgresses, 
-            ICommentReactionsRepository commentReactions, ILanguageRepository languages,
+            ICommentReactionsRepository commentReactions, IGenericRepository<Language> languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
             IModerationTasksRepository moderationTasks,
             IBookFileRepository bookFiles, IReportRepository reports)

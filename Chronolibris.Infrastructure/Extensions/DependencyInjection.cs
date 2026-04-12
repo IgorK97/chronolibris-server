@@ -14,6 +14,7 @@ using Chronolibris.Infrastructure.Persistence.Repositories;
 using Chronolibris.Infrastructure.Services.Fb2Converter;
 using Chronolibris.Infrastructure.Services.Files;
 using Chronolibris.Infrastructure.Services.IdentityService;
+using Chronolibris.Infrastructure.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -103,7 +104,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IShelfRepository, ShelvesRepository>();
             services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
-            services.AddScoped<ILanguageRepository, LanguageRepository>();
+            //services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddScoped<IThemeRepository, ThemeRepository>();
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IBookFileRepository, BookFileRepository>();

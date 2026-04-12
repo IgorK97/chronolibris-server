@@ -1,21 +1,15 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.WebSockets;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
 using Chronolibris.Application.Extensions;
-using Chronolibris.Application.Handlers;
-using ChronolibrisWeb.Hangfire;
 using ChronolibrisWeb.Middleware;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+
 using Microsoft.IdentityModel.Tokens;
 using Chronolibris.Infrastructure.DependencyInjection;
-using Chronolibris.Infrastructure.DataAccess.DependencyInjection;
 using Chronolibris.Infrastructure.DataAccess.Hangfire;
 using Chronolibris.Infrastructure.DatabaseChecker;
+using ChronolibrisWeb.Middleware.Hangfire;
 
 
 var builder = WebApplication.CreateBuilder(args);
