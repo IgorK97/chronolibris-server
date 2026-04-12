@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Handlers;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Infrastructure.Data;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;

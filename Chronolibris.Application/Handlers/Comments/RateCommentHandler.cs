@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Comments;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using MediatR;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Reports;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using MediatR;
 

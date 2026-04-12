@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Shelves;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.Shelves

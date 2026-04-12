@@ -1,5 +1,6 @@
 ﻿using Chronolibris.Application.Requests;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
+
 //using Chronolibris.Domain.Interfaces.Repositories;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
-using Chronolibris.Domain.Interfaces;
 using MediatR;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.Selections;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Selections
 {

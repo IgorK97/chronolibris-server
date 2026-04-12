@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Options;
 using FluentValidation;
 using MediatR;

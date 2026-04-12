@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
+    public static class BookFileStatuses
+    {
+        public static readonly int PENDING = 1;
+        public static readonly int UPLOADED = 2;
+        public static readonly int PROCESSING = 3;
+        public static readonly int COMPLETED = 4;
+        public static readonly int FAILED = 5;
+    }
     public class BookFileStatus
     {
         public required long Id { get; set; }

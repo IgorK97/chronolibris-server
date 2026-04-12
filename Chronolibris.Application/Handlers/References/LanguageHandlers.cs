@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.References;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.References
 {
@@ -75,24 +75,24 @@ namespace Chronolibris.Application.Handlers.References
         }
     }
 
-    public class GetFtsConfigurationsHandler : IRequestHandler<GetFtsConfigurationsQuery, IEnumerable<FtsConfigurationDto>>
-    {
-        private readonly IUnitOfWork _unitOfWork;
+    //public class GetFtsConfigurationsHandler : IRequestHandler<GetFtsConfigurationsQuery, IEnumerable<FtsConfigurationDto>>
+    //{
+    //    private readonly IUnitOfWork _unitOfWork;
 
-        public GetFtsConfigurationsHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    //    public GetFtsConfigurationsHandler(IUnitOfWork unitOfWork)
+    //    {
+    //        _unitOfWork = unitOfWork;
+    //    }
 
-        public async Task<IEnumerable<FtsConfigurationDto>> Handle(GetFtsConfigurationsQuery request, CancellationToken cancellationToken)
-        {
+    //    public async Task<IEnumerable<FtsConfigurationDto>> Handle(GetFtsConfigurationsQuery request, CancellationToken cancellationToken)
+    //    {
 
 
-            var configurations = await _unitOfWork.Languages.GetFtsConfigurationLanguages(cancellationToken);
+    //        var configurations = await _unitOfWork.Languages.GetFtsConfigurationLanguages(cancellationToken);
 
-            return configurations;
-        }
-    }
+    //        return configurations;
+    //    }
+    //}
 
     public class UpdateLanguageHandler : IRequestHandler<UpdateLanguageCommand, bool>
     {

@@ -13,7 +13,6 @@ namespace Chronolibris.Domain.Entities
 
         public long ShelfId { get; set; }
         public Shelf Shelf { get; set; } = null!;
-
         public DateTime AddedAt { get; set; }
     }
 }

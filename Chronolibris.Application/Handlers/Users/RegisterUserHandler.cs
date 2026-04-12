@@ -7,9 +7,9 @@ using Chronolibris.Application.Models;
 using Chronolibris.Application.Interfaces;
 using MediatR;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
 using Chronolibris.Application.Requests.Users;
 using Chronolibris.Domain.Utils;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Users
 {

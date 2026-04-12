@@ -1,5 +1,5 @@
 ﻿using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.References

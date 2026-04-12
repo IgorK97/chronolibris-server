@@ -8,13 +8,6 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Entities
 {
-    public static class BookFileStatuses{
-        public static readonly int PENDING = 1;
-        public static readonly int UPLOADED = 2;
-        public static readonly int PROCESSING = 3;
-        public static readonly int COMPLETED = 4;
-        public static readonly int FAILED = 5;
-    }
     public class BookFile
     {
         [Key]
@@ -37,10 +30,10 @@ namespace Chronolibris.Domain.Entities
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;
         //public MediaType MediaType { get; set; } = null!;
-        public ICollection<BookFragment> Fragments { get; set; }
+        public ICollection<BookFragment> Fragments { get; set; } = [];
         public BookFileStatus BookFileStatus { get; set; }
         public ICollection<Bookmark> Bookmarks { get; set; } = [];
-        public ICollection<ReadingProgress> Readings { get; set; }
+        public ICollection<ReadingProgress> Readings { get; set; } = [];
 
     }
 }

@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using MediatR;
-using Chronolibris.Domain.Interfaces;
 using Chronolibris.Application.Requests.Reviews;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Reviews
 {

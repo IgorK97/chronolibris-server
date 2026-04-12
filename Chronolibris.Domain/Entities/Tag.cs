@@ -19,7 +19,6 @@ namespace Chronolibris.Domain.Entities
         public long? ParentTagId { get; set; }
         public Tag? ParentTag { get; set; }
         public ICollection<Tag> ChildTags { get; set; } = new List<Tag>();
-
         public long? RelationTypeId { get; set; }
         public TagRelationType? RelationType { get; set; }
         public TagType TagType { get; set; }

@@ -20,10 +20,10 @@ namespace Chronolibris.Domain.Entities
         public long ReasonTypeId { get; set; }
         [MaxLength(1000)]
         public string? Comment { get; set; }
-        public ICollection<Report> Reports { get; set; }
-        public ReportStatus Status { get; set; }
-        public ReportReasonType ReasonType { get; set; }
-        public ReportTargetType TargetType { get; set; }
+        public ICollection<Report> Reports { get; set; } = [];
+        public ReportStatus Status { get; set; } = null!;
+        public ReportReasonType ReasonType { get; set; } = null!;
+        public ReportTargetType TargetType { get; set; } = null!;
 
     }
 }

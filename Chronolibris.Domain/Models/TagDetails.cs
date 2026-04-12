@@ -20,10 +20,10 @@ namespace Chronolibris.Domain.Models
         public bool HasChildren { get; set; }
     }
 
-    public class TagRelationTypeDto
-    {
-        public long Id { get; set; }
-        public required string Name { get; set; }
-        public string? Description { get; set; }
-    }
+    //public class TagRelationTypeDto
+    //{
+    //    public long Id { get; set; }
+    //    public required string Name { get; set; }
+    //    public string? Description { get; set; }
+    //}
 }

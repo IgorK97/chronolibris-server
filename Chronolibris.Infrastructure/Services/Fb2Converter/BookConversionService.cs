@@ -1,6 +1,6 @@
 ﻿using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using Hangfire;
 

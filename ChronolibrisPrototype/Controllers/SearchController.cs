@@ -20,7 +20,7 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<BookSearchResult>>> Search(
+        public async Task<ActionResult<PagedBooks<BookSearchResult>>> Search(
             [FromQuery] SimpleSearchInputModel request, bool mode = false,
             CancellationToken cancellationToken = default)
         {
@@ -51,7 +51,7 @@ namespace ChronolibrisWeb.Controllers
 
 
         [HttpPost("advanced")]
-        public async Task<ActionResult<PagedResult<BookSearchResult>>> AdvancedSearch(
+        public async Task<ActionResult<PagedBooks<BookSearchResult>>> AdvancedSearch(
             [FromBody] AdvancedSearchInputModel request, bool hiddenIsAvailableMode=false,
             CancellationToken cancellationToken = default)
         {

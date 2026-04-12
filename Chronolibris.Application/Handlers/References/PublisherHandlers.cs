@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
 using Chronolibris.Application.Requests.References;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.References
 {

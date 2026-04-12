@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models.Search;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +22,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         
 
 
-        public async Task<PagedResult<BookSearchResult>>SearchKeysetAsync(
+        public async Task<PagedBooks<BookSearchResult>>SearchKeysetAsync(
             SimpleSearchKeysetRequest request, CancellationToken token)
         {
             var query = request.Query.Trim();
@@ -99,7 +99,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var pageItems = pagedIds.Take(request.PageSize).ToList();
 
             if (pageItems.Count == 0)
-                return new PagedResult<BookSearchResult>
+                return new PagedBooks<BookSearchResult>
                 {
                     Items = [],
                     HasNext = false,
@@ -114,7 +114,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .ToList();
 
             var last = pageItems.Last();
-            return new PagedResult<BookSearchResult>
+            return new PagedBooks<BookSearchResult>
             {
                 Items = items,
                 HasNext = hasNext,
@@ -126,7 +126,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
        
 
 
-        public async Task<PagedResult<BookSearchResult>> AdvancedSearchKeysetAsync(
+        public async Task<PagedBooks<BookSearchResult>> AdvancedSearchKeysetAsync(
             AdvancedSearchKeysetRequest request, CancellationToken token)
         {
             var (stringSQL, parameters) = BuildString(request.Query, request);
@@ -161,7 +161,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var pageItems = pagedIds.Take(request.PageSize).ToList();
 
             if (pageItems.Count == 0)
-                return new PagedResult<BookSearchResult>
+                return new PagedBooks<BookSearchResult>
                 {
                     Items = [],
                     HasNext = false,
@@ -176,7 +176,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .ToList();
 
             var last = pageItems.Last();
-            return new PagedResult<BookSearchResult>
+            return new PagedBooks<BookSearchResult>
             {
                 Items = items,
                 HasNext = hasNext,

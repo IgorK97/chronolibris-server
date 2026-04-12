@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Models.Search
 {
-   //public class PersonRoleFilter
-   // {
-   //     public long RoleId { get; set; }
-   //     public List<long> PersonIds { get; set; } = [];
-
-   // }
     public class SimpleSearchKeysetRequest
     {
         public required string Query { get; set; }

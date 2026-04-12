@@ -19,7 +19,6 @@ namespace Chronolibris.Domain.Entities
         public long Id { get; set; }
         [MaxLength(100)]
         public required string Name { get; set; }
-
         public ContentNature Nature { get; set; } = ContentNature.Unknown;
         public ICollection<Content> Contents { get; set; } = [];
     }

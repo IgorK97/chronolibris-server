@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.Contents;
+using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Contents
 {

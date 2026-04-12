@@ -7,7 +7,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
 
