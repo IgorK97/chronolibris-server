@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
     {
         Task<bool> IsInFavorite(long userId, long bookId);
         Task<bool> IsRead(long userId, long bookId);
-        Task<bool> IsInShelf(long userId, long shelfId);
+        Task<bool> IsInShelf(long bookId, long shelfId);
         Task<long[]> SeekBookInShelves(long userId, long bookId);
     }
 }

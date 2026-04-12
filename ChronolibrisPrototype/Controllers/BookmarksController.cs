@@ -35,13 +35,12 @@ namespace ChronolibrisWeb.Controllers
             if (!long.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
 
-            var result = await _mediator.Send(new RemoveBookmarkCommand(id, userId));
-            if (!result) return NotFound(0);
+            await _mediator.Send(new RemoveBookmarkCommand(id, userId));
             return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<bool>> UpdateBookmark(
+        public async Task<ActionResult> UpdateBookmark(
             long id,
             [FromBody] UpdateBookmarkInputModel request,
             CancellationToken cancellationToken)
@@ -51,9 +50,9 @@ namespace ChronolibrisWeb.Controllers
                 return Unauthorized();
 
             var command = new UpdateBookmarkCommand(id, userId, request.Note);
-            var result = await _mediator.Send(command, cancellationToken);
+            await _mediator.Send(command, cancellationToken);
 
-            return result ? Ok() : NotFound();
+            return Ok();
         }
 
         [HttpGet("{bookId}")]

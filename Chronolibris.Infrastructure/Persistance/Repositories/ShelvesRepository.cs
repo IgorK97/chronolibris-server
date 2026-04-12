@@ -70,7 +70,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                             .Select(p => p.Person.Name))
                         .ToList()
                 })
-                .Take(limit + 1)
+                .Take(limit)
                 .ToListAsync(ct);
 
             return books;
@@ -119,10 +119,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     s.Books.Any(b => b.Id == bookId));
         }
 
-        public async Task<bool> IsInShelf(long userId, long shelfId)
+        public async Task<bool> IsInShelf(long bookId, long shelfId)
         {
             return await _context.Shelves
-                .AnyAsync(s => s.UserId == userId && s.Id == shelfId);
+                .AnyAsync(s => s.Id == shelfId && s.Books.Any(b=>b.Id == bookId));
         }
 
         public async Task<long[]> SeekBookInShelves(long userId, long bookId)

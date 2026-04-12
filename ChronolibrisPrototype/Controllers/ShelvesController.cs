@@ -95,8 +95,13 @@ namespace ChronolibrisWeb.Controllers
         [Authorize(Roles ="reader")]
         public async Task<IActionResult> AddBook(long shelfId, long bookId)
         {
-            bool res = await _mediator.Send(new AddBookToShelfCommand(shelfId, bookId));
-            return Ok(res);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            await _mediator.Send(
+                new AddBookToShelfCommand(shelfId, bookId, userId));
+            return Ok();
         }
 
         [HttpDelete("{shelfId}/books/{bookId}")]
@@ -104,8 +109,11 @@ namespace ChronolibrisWeb.Controllers
 
         public async Task<IActionResult> RemoveBook(long shelfId, long bookId)
         {
-            bool res = await _mediator.Send(new RemoveBookFromShelfCommand(shelfId, bookId));
-            return Ok(res);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+            await _mediator.Send(new RemoveBookFromShelfCommand(shelfId, bookId, userId));
+            return Ok();
         }
 
     }

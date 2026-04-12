@@ -21,7 +21,7 @@ namespace Chronolibris.Application.Handlers.Shelves
         {
             var shelf = await _uow.Shelves.GetByIdAsync(request.ShelfId, ct);
             if (shelf == null)
-                throw new ChronolibrisException("Книжная полка не найдена", ErrorType.NotFound);
+                return Unit.Value;
 
             if (shelf.UserId != request.UserId)
                 throw new ChronolibrisException("Нет прав на совершение данной операции", ErrorType.Forbidden);

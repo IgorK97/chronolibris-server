@@ -24,7 +24,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Country> Countries { get; }
         IGenericRepository<Format> Formats { get; }
-        IGenericRepository<Language> Languages { get; },
+        IGenericRepository<Language> Languages { get; }
         IGenericRepository<Content> Contents { get; }
         IGenericRepository<Publisher> Publishers { get; }
         IGenericRepository<PersonRole> PersonRoles { get; }
