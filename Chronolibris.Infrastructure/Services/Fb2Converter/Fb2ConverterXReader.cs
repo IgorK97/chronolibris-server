@@ -7,13 +7,12 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using Chronolibris.Application.Fb2Converter;
-using Chronolibris.Application.Fb2Converter.Interfaces;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
+namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
     public class Fb2ConverterXReader : IFb2Converter
     {
@@ -795,7 +794,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Fb2Converter
                 Annotation = annotation,
                 Authors = authors.Count > 0 ? authors : null,
                 Sequences = sequences.Count > 0 ? sequences : null,
-                Written = (yearWritten != null || yearPublic != null)
+                Written = yearWritten != null || yearPublic != null
                     ? new WrittenInfo { Date = yearWritten, DatePublic = yearPublic }
                     : null,
                 Uuid = uuid,

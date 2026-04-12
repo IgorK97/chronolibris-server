@@ -9,7 +9,6 @@ namespace Chronolibris.Application.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
         public long CountryId { get; set; }
         public string? CountryName { get; set; }
     }
@@ -41,11 +40,5 @@ namespace Chronolibris.Application.Models
 
         [Required]
         public long CountryId { get; set; }
-    }
-
-    public class DeletePublisherRequest
-    {
-        [Required]
-        public long Id { get; set; }
     }
 }

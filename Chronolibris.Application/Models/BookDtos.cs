@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Chronolibris.Application.Models
 {
@@ -28,68 +26,6 @@ namespace Chronolibris.Application.Models
         public List<ThemeDto> Themes { get; set; } = new();
     }
 
-    public class CreateBookRequest
-    {
-        [Required]
-        [MaxLength(500)]
-        public string Title { get; set; } = string.Empty;
-
-        [Required]
-        public string Description { get; set; } = string.Empty;
-
-        [Required]
-        public long CountryId { get; set; }
-
-        [Required]
-        public long LanguageId { get; set; }
-
-        public int? Year { get; set; }
-        [MaxLength(17)]
-        public string? ISBN { get; set; }
-        [MaxLength(2048)]
-        public string? FilePath { get; set; }
-        [MaxLength(2048)]
-        public string? CoverPath { get; set; }
-        public bool IsAvailable { get; set; } = true;
-        public bool IsReviewable { get; set; } = false;
-        public long? PublisherId { get; set; }
-        public long? SeriesId { get; set; }
-        public List<long> PersonIds { get; set; } = new();
-        public List<long> ThemeIds { get; set; } = new();
-    }
-
-    public class UpdateBookRequest
-    {
-        [Required]
-        public long Id { get; set; }
-
-        [Required]
-        [MaxLength(500)]
-        public string Title { get; set; } = string.Empty;
-
-        [Required]
-        public string Description { get; set; } = string.Empty;
-
-        [Required]
-        public long CountryId { get; set; }
-
-        [Required]
-        public long LanguageId { get; set; }
-
-        public int? Year { get; set; }
-        [MaxLength(17)]
-        public string? ISBN { get; set; }
-        [MaxLength(2048)]
-        public string? FilePath { get; set; }
-        [MaxLength(2048)]
-        public string? CoverPath { get; set; }
-        public bool IsAvailable { get; set; } = true;
-        public bool IsReviewable { get; set; } = false;
-        public long? PublisherId { get; set; }
-        public long? SeriesId { get; set; }
-        public List<long> PersonIds { get; set; } = new();
-        public List<long> ThemeIds { get; set; } = new();
-    }
     public class BookListResponse
     {
         public List<BookDto> Items { get; set; } = new();
@@ -99,11 +35,5 @@ namespace Chronolibris.Application.Models
         public bool HasMore { get; set; }
     }
 
-    public class BookContentLinkRequest
-    {
-        [Required]
-        public long ContentId { get; set; }
-        [Required]
-        public long BookId { get; set; }
-    }
+
 }

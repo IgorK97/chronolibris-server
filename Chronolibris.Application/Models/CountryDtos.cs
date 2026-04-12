@@ -24,10 +24,4 @@ namespace Chronolibris.Application.Models
         [MaxLength(255)]
         public string Name { get; set; } = string.Empty;
     }
-
-    public class DeleteCountryRequest
-    {
-        [Required]
-        public long Id { get; set; }
-    }
 }

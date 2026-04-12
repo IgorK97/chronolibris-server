@@ -2,12 +2,8 @@
 using System.Text.Json.Serialization;
 using Chronolibris.Domain.Models;
 
-namespace Chronolibris.Application.Fb2Converter
+namespace Chronolibris.Application.Interfaces
 {
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Параметры конвертации
-    // ─────────────────────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Настройки процесса конвертации.
@@ -15,10 +11,9 @@ namespace Chronolibris.Application.Fb2Converter
     public sealed class ConversionOptions
     {
         /// <summary>
-        /// Целевое число элементов (абзацев, разрывов, заголовков) в одном фрагменте.
-        /// По умолчанию 88 — как в образце.
+        /// Целевое число элементов (абзацев, разрывов, заголовков) в одном фрагменте
         /// </summary>
-        public int TargetPartSize { get; init; } = 88;
+        public int TargetPartSize { get; init; } = 100;
 
         /// <summary>
         /// Версия формата toc.json.

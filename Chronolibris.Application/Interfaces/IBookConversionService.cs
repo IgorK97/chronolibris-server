@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Application.Jobs
+namespace Chronolibris.Application.Interfaces
 {
-    public interface IBookConversionJob
+    public interface IBookConversionService
     {
         Task ProcessAsync(long bookFileId);
     }

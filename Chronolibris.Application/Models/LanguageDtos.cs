@@ -37,10 +37,4 @@ namespace Chronolibris.Application.Models
         //[MaxLength(50)]
         //public string FtsConfiguration { get; set; } = "russian";
     }
-
-    public class DeleteLanguageRequest
-    {
-        [Required]
-        public long Id { get; set; }
-    }
 }

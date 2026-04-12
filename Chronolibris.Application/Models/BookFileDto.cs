@@ -38,31 +38,5 @@ namespace Chronolibris.Application.Models
             return $"{size:0.##} {sizes[order]}";
         }
     }
-    public class UploadBookFileRequest
-    {
-        [Required]
-        public long BookId { get; set; }
 
-        [Required]
-        public int FormatId { get; set; }
-
-        public bool IsReadable { get; set; } = false;
-    }
-
-    public class UpdateBookFileRequest
-    {
-        [Required]
-        public long BookId { get; set; }
-
-        [Required]
-        public int FormatId { get; set; }
-
-        public bool IsReadable { get; set; } = false;
-    }
-
-    public class BookFileListResponse
-    {
-        public List<BookFileDto> Items { get; set; } = new();
-        public int TotalCount { get; set; }
-    }
 }

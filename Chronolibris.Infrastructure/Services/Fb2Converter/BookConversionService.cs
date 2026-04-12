@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Fb2Converter;
-using Chronolibris.Application.Fb2Converter.Interfaces;
-using Chronolibris.Application.Jobs;
+﻿using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Hangfire;
-using Microsoft.Extensions.Logging;
 
-namespace Chronolibris.Infrastructure.DataAccess.Jobs
+namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
-    public sealed class BookConversionJob : IBookConversionJob
+    public class BookConversionService : IBookConversionService
     {
         private readonly IFb2Converter _converter;
         private readonly IStorageService _storage;       
         private readonly IBookFileRepository _bookFiles;
         //private readonly ILogger<BookConversionJob> _log;
 
-        public BookConversionJob(
+        public BookConversionService(
             IFb2Converter converter,
             IStorageService storage,
             IBookFileRepository bookFiles

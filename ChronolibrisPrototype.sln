@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Domain", "Chro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Application", "Chronolibris.Application\Chronolibris.Application.csproj", "{AE7B4E23-AF3B-48E3-9DFC-3D2A1580AC20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure.DataAccess", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.DataAccess.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

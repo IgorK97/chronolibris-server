@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Chronolibris.Application\Chronolibris.Application.csproj" />
-    <ProjectReference Include="..\Chronolibris.Infrastructure\Chronolibris.Infrastructure.DataAccess.csproj" />
+    <ProjectReference Include="..\Chronolibris.Infrastructure\Chronolibris.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

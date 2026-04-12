@@ -12,19 +12,19 @@ namespace Chronolibris.Application.Extensions
     {
         /// <summary>
         /// Добавляет MediatR и регистрирует все Handlers, Behaviors и Notifications 
-        /// из Application-сборки.
+        /// из Application-сборки
         /// </summary>
-        /// <param name="services">Коллекция сервисов.</param>
-        /// <returns>Текущая коллекция сервисов.</returns>
+        /// <param name="services">Коллекция сервисов</param>
+        /// <returns>Текущая коллекция сервисов</returns>
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            // Получаем ссылку на текущую сборку (Application-слой)
+            // ссылка на текущую сборку (Application-слой)
             Assembly applicationAssembly = typeof(ServiceCollectionExtensions).Assembly;
 
             // Регистрируем MediatR
             services.AddMediatR(cfg =>
             {
-                // Регистрируем все Handlers, Queries, Commands и Behaviors 
+                // Регистрация все Handlers, Queries, Commands и Behaviors 
                 // из Application-сборки.
                 cfg.RegisterServicesFromAssembly(applicationAssembly);
             });

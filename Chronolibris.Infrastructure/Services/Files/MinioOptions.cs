@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chronolibris.Infrastructure.DataAccess.Files
+namespace Chronolibris.Infrastructure.Services.Files
 {
     public sealed class MinioOptions
     {

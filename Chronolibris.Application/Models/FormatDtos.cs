@@ -24,10 +24,4 @@ namespace Chronolibris.Application.Models
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
     }
-
-    public class DeleteFormatRequest
-    {
-        [Required]
-        public int Id { get; set; }
-    }
 }

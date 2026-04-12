@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Chronolibris.Infrastructure.Identity
+namespace Chronolibris.Infrastructure.Services.IdentityService
 {
 
     public class IdentityService : IIdentityService

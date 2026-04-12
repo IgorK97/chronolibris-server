@@ -5,7 +5,7 @@ using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
-namespace Chronolibris.Infrastructure.DataAccess.Files
+namespace Chronolibris.Infrastructure.Services.Files
 {
     public sealed class StorageService : IStorageService
     {

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Chronolibris.Application.Fb2Converter.Interfaces;
-using Chronolibris.Application.Jobs;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Entities;
@@ -105,14 +104,14 @@ namespace Chronolibris.Application.Handlers.Books
         private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBookConversionJob _bookConversionJob;
+        private readonly IBookConversionService _bookConversionJob;
         //private readonly IBackgroundJobClient _backgroundJobs;
 
         public UploadBookFileHandler(
             IBookFileRepository bookFileRepository,
             IStorageService bookStorage,
             IUnitOfWork unitOfWork,
-            IBookConversionJob bookConversionJob)
+            IBookConversionService bookConversionJob)
         {
             _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
@@ -226,13 +225,13 @@ namespace Chronolibris.Application.Handlers.Books
         private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBookConversionJob _bookConversionJob;
+        private readonly IBookConversionService _bookConversionJob;
 
         public UpdateBookFileHandler(
             IBookFileRepository bookFileRepository,
             IStorageService bookStorage,
             IUnitOfWork unitOfWork,
-            IBookConversionJob bookConversionJob)
+            IBookConversionService bookConversionJob)
         {
             _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;

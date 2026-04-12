@@ -2,6 +2,7 @@
 using Chronolibris.Application.Requests.Contents;
 using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Models;
+using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -143,7 +144,7 @@ namespace ChronolibrisWeb.Controllers
         [Authorize(Roles = "admin")]
         [HttpPost("{contentId}/books/{bookId}")]
         public async Task<ActionResult> LinkBookToContent(long contentId, long bookId,
-            [FromBody] BookContentLinkRequest request, CancellationToken cancellationToken)
+            [FromBody] BookContentLinkInputModel request, CancellationToken cancellationToken)
         {
             if (request.ContentId != contentId || request.BookId != bookId)
                 return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });

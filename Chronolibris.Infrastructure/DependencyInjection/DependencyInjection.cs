@@ -1,20 +1,19 @@
 ﻿using Chronolibris.Application.Interfaces;
-using Chronolibris.Application.Jobs;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Options;
 using Chronolibris.Infrastructure.Data;
 //using Chronolibris.Infrastructure.DataAccess.BackgroundServices;
-using Chronolibris.Infrastructure.DataAccess.Files;
-using Chronolibris.Infrastructure.DataAccess.Jobs;
 using Chronolibris.Infrastructure.DataAccess.Persistance;
 using Chronolibris.Infrastructure.DataAccess.Persistance.Repositories;
 //using Chronolibris.Infrastructure.Files;
-using Chronolibris.Infrastructure.Identity;
 using Chronolibris.Infrastructure.Persistance;
 using Chronolibris.Infrastructure.Persistance.Repositories;
 using Chronolibris.Infrastructure.Persistence.Repositories;
+using Chronolibris.Infrastructure.Services.Fb2Converter;
+using Chronolibris.Infrastructure.Services.Files;
+using Chronolibris.Infrastructure.Services.IdentityService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -197,7 +196,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
     IConfiguration configuration)
         {
 
-            services.AddScoped<IBookConversionJob, BookConversionJob>();
+            services.AddScoped<IBookConversionService, BookConversionService>();
 
 
 
