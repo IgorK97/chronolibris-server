@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.Contents;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Exceptions;
 
 namespace Chronolibris.Application.Handlers.Contents
 {
@@ -40,107 +41,25 @@ namespace Chronolibris.Application.Handlers.Contents
 
         public async Task<ContentDto?> Handle(GetContentByIdQuery request, CancellationToken cancellationToken)
         {
-            var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (content == null) return null;
+            var contentDto = await _contentRepository.GetDtoByIdAsync(request.Id, cancellationToken);
 
-            var authors = await _contentRepository.GetAuthorNamesByContentIdAsync(content.Id, cancellationToken);
-            var themes = await _contentRepository.GetThemesByContentIdAsync(content.Id, cancellationToken);
-            var booksCount = await _contentRepository.GetBooksCountAsync(content.Id, cancellationToken);
-
-            var participants = content.Participations.GroupBy(p => p.PersonRoleId)
-                .Select(g => new PersonRoleFilter
-                {
-                    RoleId = g.Key,
-                    PersonIds = g.Select(p => p.PersonId).ToList(),
-                    PersonNames = g.Select(p=> p.Person.Name).ToList(),
-                })
-                .ToList();
-
-            return new ContentDto
-            {
-                Id = content.Id,
-                Title = content.Title,
-                Description = content.Description,
-                CountryId = content.CountryId,
-                CountryName = content.Country?.Name,
-                ContentTypeId = content.ContentTypeId,
-                ContentType = content.ContentType?.Name,
-                LanguageId = content.LanguageId,
-                LanguageName = content.Language?.Name,
-                Year = content.Year,
-                //ParentContentId = content.ParentContentId,
-                //Position = content.Position,
-                CreatedAt = content.CreatedAt,
-                //UpdatedAt = content.UpdatedAt,
-                Authors = authors,
-                Themes = themes.Select(t => new ThemeDto
-                {
-                    Id = t.Id,
-                    Name = t.Name
-                }).ToList(),
-                BooksCount = booksCount,
-                Participants = participants
-            };
+            return contentDto;
         }
     }
 
     public class GetContentBooksHandler : IRequestHandler<GetContentBooksQuery, List<BookDto>>
     {
         private readonly IContentRepository _contentRepository;
-        private readonly IBookRepository _bookRepository;
 
         public GetContentBooksHandler(
-            IContentRepository contentRepository,
-            IBookRepository bookRepository)
+            IContentRepository contentRepository)
         {
             _contentRepository = contentRepository;
-            _bookRepository = bookRepository;
         }
 
         public async Task<List<BookDto>> Handle(GetContentBooksQuery request, CancellationToken cancellationToken)
         {
-            var books = await _contentRepository.GetBooksByContentIdAsync(request.ContentId, cancellationToken);
-
-            var bookDtos = new List<BookDto>();
-            foreach (var book in books)
-            {
-                // Авторы книги берутся через BookParticipation → Person
-                var authors = await _bookRepository.GetAuthorNamesByBookIdAsync(book.Id, cancellationToken);
-
-                // Темы книги берутся через BookContent → Content → Themes
-                // Поскольку книга связана с этим контентом, темы будут включать темы этого контента
-                var themes = await _bookRepository.GetThemesByBookIdAsync(book.Id, cancellationToken);
-
-                bookDtos.Add(new BookDto
-                {
-                    Id = book.Id,
-                    Title = book.Title,
-                    Description = book.Description,
-                    CountryId = book.CountryId,
-                    CountryName = book.Country?.Name,
-                    LanguageId = book.LanguageId,
-                    LanguageName = book.Language?.Name,
-                    Year = book.Year,
-                    ISBN = book.ISBN,
-                    CoverPath = book.CoverPath,
-                    IsAvailable = book.IsAvailable,
-                    IsReviewable = book.IsReviewable,
-                    PublisherId = book.PublisherId,
-                    PublisherName = book.Publisher?.Name,
-                    //SeriesId = book.SeriesId,
-                    //SeriesName = book.Series?.Name,
-                    CreatedAt = book.CreatedAt,
-                    UpdatedAt = book.UpdatedAt,
-                    Authors = authors,
-                    Themes = themes.Select(t => new ThemeDto
-                    {
-                        Id = t.Id,
-                        Name = t.Name
-                    }).ToList()
-                });
-            }
-
-            return bookDtos;
+            return await _contentRepository.GetBooksDtoByContentIdAsync(request.ContentId, cancellationToken);
         }
     }
 
@@ -166,17 +85,37 @@ namespace Chronolibris.Application.Handlers.Contents
                 ContentTypeId = request.ContentTypeId,
                 LanguageId = request.LanguageId,
                 Year = request.Year,
-                //ParentContentId = request.ParentContentId,
-                //Position = request.Position,
                 CreatedAt = DateTime.UtcNow,
-                //UpdatedAt = null
+                Participations = new List<ContentParticipation>(),
+                Themes = new List<Theme>()
             };
+
+            //if (request.PersonFilters != null)
+            //{
+            //    foreach (var filter in request.PersonFilters)
+            //    {
+            //        foreach (var personId in filter.PersonIds)
+            //        {
+            //            content.Participations.Add(new ContentParticipation
+            //            {
+            //                PersonId = personId,
+            //                PersonRoleId = filter.RoleId
+            //            });
+            //        }
+            //    }
+            //}
+
+            if (request.PersonFilters != null)
+                _contentRepository.SyncParticipations(content, request.PersonFilters);
+
+            if (request.ThemeIds != null)
+            {
+                _contentRepository.SyncThemes(content, request.ThemeIds);
+            }
+
 
             await _contentRepository.AddAsync(content, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            // Здесь можно добавить связь с персонами и темами через отдельные репозитории
-            // Для краткости опущено
 
             return content.Id;
         }
@@ -196,7 +135,8 @@ namespace Chronolibris.Application.Handlers.Contents
         public async Task<Unit> Handle(UpdateContentRequest request, CancellationToken cancellationToken)
         {
             var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (content == null) throw new KeyNotFoundException($"Content with ID {request.Id} not found");
+            if (content == null) 
+                throw new ChronolibrisException($"Такого контента нет", ErrorType.NotFound);
 
             if(request.Title!=null)
                 content.Title = request.Title;
@@ -216,12 +156,13 @@ namespace Chronolibris.Application.Handlers.Contents
             if(request.YearProvided)
                 content.Year = request.Year;
 
-            if(request.PersonFilters!=null)
-                await _contentRepository.SyncPersonsAsync(content.Id, request.PersonFilters, cancellationToken);
-            if(request.ThemeIds!=null)
-                await _contentRepository.SyncThemesAsync(content.Id, request.ThemeIds, cancellationToken);
-            if(request.TagIds!=null)
-                await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
+            if (request.ThemeIds != null)
+                _contentRepository.SyncThemes(content, request.ThemeIds);
+
+            if (request.PersonFilters != null)
+                _contentRepository.SyncParticipations(content, request.PersonFilters);
+            //if(request.TagIds!=null)
+            //    await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
 
             //_contentRepository.Update(content);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

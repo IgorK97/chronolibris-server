@@ -44,7 +44,7 @@ namespace ChronolibrisWeb.Controllers
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
-            [FromBody] Chronolibris.Application.Handlers.Books.CreateBookRequest request, CancellationToken cancellationToken)
+            [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
         {
 
             var command = new CreateBookCommand(

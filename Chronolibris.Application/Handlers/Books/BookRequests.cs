@@ -7,7 +7,7 @@ namespace Chronolibris.Application.Handlers.Books
     public class CreateBookRequest
     {
         public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
+        public string Description { get; set; }
         public int CountryId { get; set; }
         public int LanguageId { get; set; }
         public int? Year { get; set; }

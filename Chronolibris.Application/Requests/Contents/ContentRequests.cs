@@ -11,7 +11,7 @@ namespace Chronolibris.Application.Requests.Contents
 
     public record GetContentBooksQuery(long ContentId) : IRequest<List<BookDto>>;
     public record CreateContentCommand(string Title, string Description, long CountryId, long ContentTypeId,
-        long LanguageId, int? Year, List<long> PersonIds, List<long>ThemeIds) : IRequest<long>;
+        long LanguageId, int? Year, List<PersonRoleFilter> PersonFilters, List<long>ThemeIds) : IRequest<long>;
     
 
     public record DeleteContentCommand(long Id) : IRequest<Unit>;

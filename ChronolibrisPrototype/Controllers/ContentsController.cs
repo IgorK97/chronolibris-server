@@ -30,12 +30,12 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ContentDto>> GetContentById(long id, CancellationToken cancellationToken)
+        public async Task<ContentDto?> GetContentById(long id, CancellationToken cancellationToken)
         {
             var query = new GetContentByIdQuery(id);
             var content = await _mediator.Send(query, cancellationToken);
 
-            return Ok(content);
+            return content;
         }
 
         [HttpGet("{id}/books")]
@@ -101,7 +101,7 @@ namespace ChronolibrisWeb.Controllers
                 request.ContentTypeId,
                 request.LanguageId,
                 request.Year,
-                request.PersonIds,
+                request.PersonFilters,
                 request.ThemeIds
             );
 
