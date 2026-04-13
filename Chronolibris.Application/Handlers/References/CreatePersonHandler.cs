@@ -26,7 +26,7 @@ namespace Chronolibris.Application.Handlers.References
             var person = new Person
             {
                 Id = 0,
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 Description = request.Description,
                 //ImagePath = imagePath,
                 CreatedAt = DateTime.UtcNow

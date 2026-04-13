@@ -78,7 +78,7 @@ namespace Chronolibris.Application.Handlers.References
             var publisher = new Publisher
             {
                 Id=0,
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 Description = request.Description,
                 CountryId = request.CountryId,
                 CreatedAt = DateTime.UtcNow,
@@ -107,7 +107,7 @@ namespace Chronolibris.Application.Handlers.References
             var publisher = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (publisher == null) return false;
 
-            publisher.Name = request.Name;
+            publisher.Name = request.Name.Trim();
             publisher.Description = request.Description;
             publisher.CountryId = request.CountryId;
 

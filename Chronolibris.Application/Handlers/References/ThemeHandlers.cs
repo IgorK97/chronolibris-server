@@ -3,6 +3,7 @@ using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Exceptions;
 
 namespace Chronolibris.Application.Handlers.References
 {
@@ -14,6 +15,8 @@ namespace Chronolibris.Application.Handlers.References
         {
             _themeRepository = themeRepository;
         }
+
+
 
         public async Task<IEnumerable<ThemeDto>> Handle(GetAllThemesQuery request, CancellationToken cancellationToken)
         {
@@ -109,14 +112,14 @@ namespace Chronolibris.Application.Handlers.References
                 var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);
                 if (parentTheme == null)
                 {
-                    throw new ArgumentException($"Родительская тема с ID {request.ParentThemeId} не найдена");
+                    throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
                 }
             }
 
             var theme = new Theme
             {
                 Id=0,
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 ParentThemeId = request.ParentThemeId
             };
 
@@ -138,32 +141,38 @@ namespace Chronolibris.Application.Handlers.References
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(UpdateThemeCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateThemeCommand request, CancellationToken ct)
         {
-            var theme = await _themeRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (theme == null) throw new KeyNotFoundException($"Тема с ID {request.Id} не найдена");
+            var theme = await _themeRepository.GetByIdAsync(request.Id, ct);
+            if (theme == null) throw new ChronolibrisException($"Тема с ID {request.Id} не найдена", ErrorType.NotFound);
 
-            // Нельзя сделать тему дочерней самой себя
-            if (request.ParentThemeId == request.Id)
-            {
-                throw new ArgumentException("Тема не может быть дочерней самой себя");
-            }
-
-            // Проверяем, существует ли родительская тема (если указана)
             if (request.ParentThemeId.HasValue)
             {
-                var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);
+                bool createsCycle = await _themeRepository.IsAncestorAsync(
+                    request.Id,
+                    request.ParentThemeId,
+                    ct);
+
+                if (createsCycle)
+                    throw new ChronolibrisException(
+                        "Невозможно переместить тему: выбранный родитель является потомком текущей темы",
+                        ErrorType.Conflict);
+            }
+
+            if (request.ParentThemeId.HasValue)
+            {
+                var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, ct);
                 if (parentTheme == null)
                 {
-                    throw new ArgumentException($"Родительская тема с ID {request.ParentThemeId} не найдена");
+                    throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
                 }
             }
 
-            theme.Name = request.Name;
+            theme.Name = request.Name.Trim();
             theme.ParentThemeId = request.ParentThemeId;
 
             _themeRepository.Update(theme);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(ct);
 
             return Unit.Value;
         }
@@ -183,13 +192,14 @@ namespace Chronolibris.Application.Handlers.References
         public async Task<Unit> Handle(DeleteThemeCommand request, CancellationToken cancellationToken)
         {
             var theme = await _themeRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (theme == null) throw new KeyNotFoundException($"Тема с ID {request.Id} не найдена");
+            if (theme == null) return Unit.Value;
 
-            // Проверяем, есть ли дочерние темы
             var hasSubThemes = await _themeRepository.HasSubThemesAsync(request.Id, cancellationToken);
             if (hasSubThemes)
             {
-                throw new InvalidOperationException("Нельзя удалить тему, у которой есть дочерние темы. Сначала удалите или переместите дочерние темы.");
+                throw new ChronolibrisException(
+                    "Нельзя удалить тему, у которой есть дочерние темы. Сначала удалите или переместите дочерние темы",
+                    ErrorType.Unprocessable);
             }
 
             _themeRepository.Delete(theme);

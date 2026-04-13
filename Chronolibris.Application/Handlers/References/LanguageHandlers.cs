@@ -65,7 +65,7 @@ namespace Chronolibris.Application.Handlers.References
             var language = new Language
             {
                 Id=0,
-                Name = request.Name,
+                Name = request.Name.Trim(),
             };
 
             await _repository.AddAsync(language, cancellationToken);
@@ -74,25 +74,6 @@ namespace Chronolibris.Application.Handlers.References
             return language.Id;
         }
     }
-
-    //public class GetFtsConfigurationsHandler : IRequestHandler<GetFtsConfigurationsQuery, IEnumerable<FtsConfigurationDto>>
-    //{
-    //    private readonly IUnitOfWork _unitOfWork;
-
-    //    public GetFtsConfigurationsHandler(IUnitOfWork unitOfWork)
-    //    {
-    //        _unitOfWork = unitOfWork;
-    //    }
-
-    //    public async Task<IEnumerable<FtsConfigurationDto>> Handle(GetFtsConfigurationsQuery request, CancellationToken cancellationToken)
-    //    {
-
-
-    //        var configurations = await _unitOfWork.Languages.GetFtsConfigurationLanguages(cancellationToken);
-
-    //        return configurations;
-    //    }
-    //}
 
     public class UpdateLanguageHandler : IRequestHandler<UpdateLanguageCommand, bool>
     {
@@ -110,7 +91,7 @@ namespace Chronolibris.Application.Handlers.References
             var language = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (language == null) return false;
 
-            language.Name = request.Name;
+            language.Name = request.Name.Trim();
 
             _repository.Update(language);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

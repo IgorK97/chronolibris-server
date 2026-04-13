@@ -26,7 +26,7 @@ public class UpdatePersonHandler : IRequestHandler<UpdatePersonCommand>
         var person = await _repository.GetByIdAsync(request.Id, token);
         if (person == null) throw new KeyNotFoundException("Person not found");
 
-        person.Name = request.Name;
+        person.Name = request.Name.Trim();
         person.Description = request.Description;
 
 

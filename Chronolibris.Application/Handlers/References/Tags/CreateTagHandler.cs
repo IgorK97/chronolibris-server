@@ -16,10 +16,11 @@ namespace Chronolibris.Application.Handlers.References.Tags
 
         public async Task<long> Handle(CreateTagRequest request, CancellationToken ct)
         {
+
             var tag = new Tag
             {
                 Id = 0,
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 TagTypeId = request.TagTypeId,
                 ParentTagId = request.ParentTagId,
                 RelationTypeId = request.RelationTypeId,

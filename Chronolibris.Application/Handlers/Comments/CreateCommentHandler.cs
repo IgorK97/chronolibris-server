@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
@@ -14,17 +16,26 @@ namespace Chronolibris.Application.Handlers.Comments
     public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, long>
     {
         private readonly IUnitOfWork _uow;
-        public CreateCommentHandler(IUnitOfWork uow) => _uow = uow;
+        private readonly IIdentityService _identityService;
 
+        public CreateCommentHandler(IUnitOfWork uow, IIdentityService identityService)
+        {
+            _uow = uow;
+            _identityService = identityService;
+        }
         public async Task<long> Handle(CreateCommentCommand request, CancellationToken ct)
         {
 
             var book = await _uow.Books.GetByIdAsync(request.BookId);
 
-            if (book == null)
-                throw new Exception("Такая книга не найдена");
+            if (book == null || !book.IsAvailable)
+                throw new ChronolibrisException("Книга отсутствует или недоступна", ErrorType.NotFound);
 
-            //var user = await _uow.U
+            bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
+            if (!userExists)
+            {
+                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
+            }
 
             var comment = new Comment
             {

@@ -63,7 +63,7 @@ namespace Chronolibris.Application.Handlers.References
             var country = new Country
             {
                 Id = 0,
-                Name = request.Name
+                Name = request.Name.Trim()
             };
 
             await _unitOfWork.Countries.AddAsync(country, cancellationToken);
@@ -89,7 +89,7 @@ namespace Chronolibris.Application.Handlers.References
             var country = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (country == null) return false;
 
-            country.Name = request.Name;
+            country.Name = request.Name.Trim();
 
             _repository.Update(country);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -16,5 +16,6 @@ namespace Chronolibris.Domain.Interfaces.Repository
         void Delete(Theme theme);
         Task<int> GetSubThemesCountAsync(long themeId, CancellationToken cancellationToken = default);
         Task<bool> HasSubThemesAsync(long themeId, CancellationToken cancellationToken = default);
+        Task<bool> IsAncestorAsync(long potentialAncestorId, long? startParentId, CancellationToken ct);
     }
 }

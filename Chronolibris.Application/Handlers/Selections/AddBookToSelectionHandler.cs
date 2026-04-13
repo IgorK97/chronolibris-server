@@ -38,7 +38,7 @@ namespace Chronolibris.Application.Handlers.Selections
             if (bookInSelection)
                 return;
 
-            return await _unitOfWork.Selections.AddBookToSelectionAsync(
+            await _unitOfWork.Selections.AddBookToSelectionAsync(
                 request.SelectionId,
                 request.BookId,
                 ct
