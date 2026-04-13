@@ -215,61 +215,55 @@ namespace Chronolibris.Application.Handlers.Books
             return Unit.Value;
         }
     }
-    public class UpdateBookFileHandler : IRequestHandler<UpdateBookFileCommand, long>
-    {
-        private readonly IBookFileRepository _bookFileRepository;
-        private readonly IStorageService _bookStorage;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IBookConversionService _bookConversionJob;
+    //public class UpdateBookFileHandler : IRequestHandler<UpdateBookFileCommand, long>
+    //{
+    //    private readonly IBookFileRepository _bookFileRepository;
+    //    private readonly IStorageService _bookStorage;
+    //    private readonly IUnitOfWork _unitOfWork;
+    //    private readonly IBookConversionService _bookConversionJob;
 
-        public UpdateBookFileHandler(
-            IBookFileRepository bookFileRepository,
-            IStorageService bookStorage,
-            IUnitOfWork unitOfWork,
-            IBookConversionService bookConversionJob)
-        {
-            _bookFileRepository = bookFileRepository;
-            _bookStorage = bookStorage;
-            _unitOfWork = unitOfWork;
-            _bookConversionJob = bookConversionJob;
-        }
-        public async Task<long> Handle(UpdateBookFileCommand request, CancellationToken cancellationToken)
-        {
-            const long MAX_FILE_SIZE = 100 * 1024 * 1024;
-            if (request.FileSizeBytes > MAX_FILE_SIZE)
-                throw new ArgumentException("Размер файла не должен превышать 100 MB");
+    //    public UpdateBookFileHandler(
+    //        IBookFileRepository bookFileRepository,
+    //        IStorageService bookStorage,
+    //        IUnitOfWork unitOfWork,
+    //        IBookConversionService bookConversionJob)
+    //    {
+    //        _bookFileRepository = bookFileRepository;
+    //        _bookStorage = bookStorage;
+    //        _unitOfWork = unitOfWork;
+    //        _bookConversionJob = bookConversionJob;
+    //    }
+    //    public async Task<long> Handle(UpdateBookFileCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var existingFile = await _bookFileRepository.GetByBookIdAndFormatIdAsync(
+    //            request.BookId, request.FormatId, cancellationToken);
+    //        if (existingFile == null)
+    //            throw new ChronolibrisException($"Файл книги для книги {request.BookId} и формата {request.FormatId} не найден", ErrorType.NotFound);
 
-            var existingFile = await _bookFileRepository.GetByBookIdAndFormatIdAsync(
-                request.BookId, request.FormatId, cancellationToken);
-            if (existingFile == null)
-                throw new KeyNotFoundException($"BookFile not found for book {request.BookId} and format {request.FormatId}");
+    //        //string oldPath = existingFile.StorageUrl;
+    //        await _bookStorage.DeleteFileAsync(existingFile.StorageUrl, cancellationToken);
+    //        var extension = Path.GetExtension(request.FileName).ToLowerInvariant();
+    //        var storageUrl = await _bookStorage.SaveBookSourceAsync(
+    //            existingFile.BookId.ToString(),
+    //            extension,
+    //            request.FileStream,
+    //            cancellationToken);
 
-            // Удаляем старый файл — DeleteFileAsync идемпотентен, catch не нужен
-            await _bookStorage.DeleteFileAsync(existingFile.StorageUrl, cancellationToken);
+    //        existingFile.StorageUrl = storageUrl;
+    //        existingFile.FileSizeBytes = request.FileSizeBytes;
+    //        existingFile.IsReadable = request.IsReadable;
+    //        existingFile.BookFileStatusId = BookFileStatuses.UPLOADED;
+    //        existingFile.CompletedAt = DateTime.UtcNow;
 
-            var extension = Path.GetExtension(request.FileName).ToLowerInvariant();
-            var storageUrl = await _bookStorage.SaveBookSourceAsync(
-                existingFile.BookId.ToString(),
-                extension,
-                request.FileStream,
-                cancellationToken);
+    //        _bookFileRepository.Update(existingFile);
+    //        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            existingFile.StorageUrl = storageUrl;
-            existingFile.FileSizeBytes = request.FileSizeBytes;
-            existingFile.IsReadable = request.IsReadable;
-            //existingFile.Version++;
-            existingFile.BookFileStatusId = BookFileStatuses.UPLOADED;
-            existingFile.CompletedAt = DateTime.UtcNow;
+    //        if (request.IsReadable)
+    //            await _bookConversionJob.ProcessAsync(existingFile.Id);
 
-            _bookFileRepository.Update(existingFile);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (request.IsReadable)
-                await _bookConversionJob.ProcessAsync(existingFile.Id);
-
-            return existingFile.Id;
-        }
-    }
+    //        return existingFile.Id;
+    //    }
+    //}
     //public class ProcessBookFileHandler : IRequestHandler<ProcessBookFileCommand, Unit>
     //{
     //    private readonly IBookFileRepository _bookFileRepository;

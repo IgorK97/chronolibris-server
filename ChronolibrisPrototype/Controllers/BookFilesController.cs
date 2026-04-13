@@ -75,28 +75,28 @@ namespace ChronolibrisWeb.Controllers
         }
 
 
-        [Authorize(Roles = "admin, moderator")]
-        [HttpPut("book/{bookId}/format/{formatId}")]
-        [RequestSizeLimit(100 * 1024 * 1024)]
-        public async Task<ActionResult> UpdateBookFile(
-            long bookId,
-            int formatId,
-            [FromForm] bool isReadable,
-            IFormFile file,
-            CancellationToken cancellationToken)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest(new { message = "Файл не предоставлен" });
+        //[Authorize(Roles = "admin, moderator")]
+        //[HttpPut("book/{bookId}/format/{formatId}")]
+        //[RequestSizeLimit(100 * 1024 * 1024)]
+        //public async Task<ActionResult> UpdateBookFile(
+        //    long bookId,
+        //    int formatId,
+        //    [FromForm] bool isReadable,
+        //    IFormFile file,
+        //    CancellationToken cancellationToken)
+        //{
+        //    if (file == null || file.Length == 0)
+        //        return BadRequest(new { message = "Файл не предоставлен" });
 
-            if (!TryGetUserId(out var userId))
-                return Unauthorized(new { message = "Пользователь не авторизован" });
+        //    if (!TryGetUserId(out var userId))
+        //        return Unauthorized(new { message = "Пользователь не авторизован" });
 
 
-            var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
-            var id = await _mediator.Send(command, cancellationToken);
-            return Ok(new { id = id });
+        //    var command = new UpdateBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
+        //    var id = await _mediator.Send(command, cancellationToken);
+        //    return Ok(new { id = id });
 
-        }
+        //}
 
 
         [Authorize(Roles = "admin, moderator")]
