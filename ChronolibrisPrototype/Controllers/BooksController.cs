@@ -100,7 +100,7 @@ namespace ChronolibrisWeb.Controllers
             );
 
             await _mediator.Send(command, cancellationToken);
-            return NoContent();
+            return Ok();
 
         }
 
@@ -132,9 +132,7 @@ namespace ChronolibrisWeb.Controllers
                 return BadRequest();
             }
             var metadata = await _mediator.Send(new GetBookMetadataQuery(bookId, userId, mode));
-            if (metadata != null)
-                return Ok(metadata);
-            return NotFound();
+            return Ok(metadata);
         }
 
         [HttpGet("{id}/contents")]
@@ -184,7 +182,7 @@ namespace ChronolibrisWeb.Controllers
 
         }
 
-        [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")] //:инт можно ещё писать
+        [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")]
         public async Task<ActionResult> GetChunk(long bookFileId, string chunkIndex)
         {
 

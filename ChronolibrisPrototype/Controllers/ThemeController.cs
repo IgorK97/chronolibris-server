@@ -62,29 +62,26 @@ namespace ChronolibrisWeb.Controllers
 
         }
 
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeRequest request, CancellationToken cancellationToken)
         {
 
-            if (id != request.Id)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
+            var command = new UpdateThemeCommand(id, request.Name, request.ParentThemeId);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
 
-                var command = new UpdateThemeCommand(id, request.Name, request.ParentThemeId);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
-           
         }
 
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(long id, CancellationToken cancellationToken)
         {
 
-                var command = new DeleteThemeCommand(id);
-                await _mediator.Send(command, cancellationToken);
-                return NoContent();
+            var command = new DeleteThemeCommand(id);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
 
         }
     }

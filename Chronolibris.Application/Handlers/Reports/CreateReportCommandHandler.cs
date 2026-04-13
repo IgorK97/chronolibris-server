@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Options;
 using FluentValidation;
@@ -37,9 +38,8 @@ namespace Chronolibris.Application.Handlers.Reports
                 request.TargetTypeId, request.TargetId, request.ReasonTypeId);
 
             if (isOnCooldown is not null && isOnCooldown.CreatedAt >= cooldownThreshold)
-                return new CreateReportResult(
-                    false, $"Вы уже отправляли подобную жалобу. Жалобы можно отправлять" +
-                    $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.");
+                throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы можно отправлять" +
+                    $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,
                 request.TargetTypeId);

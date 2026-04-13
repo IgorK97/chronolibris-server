@@ -27,16 +27,6 @@ namespace ChronolibrisWeb.Controllers
             return Ok(roles);
         }
 
-        //[HttpGet("fts-configurations")]
-        //public async Task<ActionResult<IEnumerable<FtsConfigurationDto>>> GetFtsConfigurations(CancellationToken cancellationToken)
-        //{
-        //    var query = new GetFtsConfigurationsQuery();
-        //    var configurations = await _mediator.Send(query, cancellationToken);
-        //    return Ok(configurations);
-        //}
-
-
-
         [HttpGet("languages")]
         public async Task<ActionResult<IEnumerable<LanguageDto>>> GetAllLanguages(CancellationToken cancellationToken)
         {
@@ -44,7 +34,6 @@ namespace ChronolibrisWeb.Controllers
             var languages = await _mediator.Send(query, cancellationToken);
             return Ok(languages);
         }
-
 
         [HttpGet("languages/{id}")]
         public async Task<ActionResult<LanguageDto>> GetLanguageById(long id, CancellationToken cancellationToken)
@@ -63,7 +52,7 @@ namespace ChronolibrisWeb.Controllers
             var command = new CreateLanguageCommand(request.Name);
             var id = await _mediator.Send(command, cancellationToken);
 
-            return CreatedAtAction(nameof(GetLanguageById), new { id = id }, id);
+            return Ok(id);
         }
 
         [Authorize(Roles ="admin")]
@@ -136,9 +125,6 @@ namespace ChronolibrisWeb.Controllers
         {
             var command = new DeleteCountryCommand(id);
             var result = await _mediator.Send(command, cancellationToken);
-
-            if (!result)
-                return NotFound(new { message = $"Страна с ID {id} не найдена" });
 
             return NoContent();
         }

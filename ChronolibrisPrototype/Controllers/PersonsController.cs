@@ -27,7 +27,7 @@ namespace ChronolibrisWeb.Controllers
         public async Task<IActionResult> GetById(long id, CancellationToken token)
         {
             var person = await _mediator.Send(new GetPersonByIdQuery(id));
-            return person != null ? Ok(person) : NotFound();
+            return Ok(person);
         }
 
         [Authorize(Roles = "admin")]
@@ -41,7 +41,7 @@ namespace ChronolibrisWeb.Controllers
             );
 
             var id = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id }, id);
+            return Ok(id);
         }
 
 
@@ -63,6 +63,7 @@ namespace ChronolibrisWeb.Controllers
 
         }
 
+        //Можно ли вообще так писать?
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
@@ -70,6 +71,7 @@ namespace ChronolibrisWeb.Controllers
             var command = new DeletePersonCommand(id);
             await _mediator.Send(command);
             return NoContent();
+            
         }
     }
 }
