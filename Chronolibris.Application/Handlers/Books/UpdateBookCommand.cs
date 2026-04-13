@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Application.Requests;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 
@@ -33,23 +34,59 @@ namespace Chronolibris.Application.Handlers.Books
 
     public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand>
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IStorageService _storageService;
 
         public UpdateBookCommandHandler(
-            IBookRepository bookRepository,
+            IUnitOfWork bookRepository,
             IStorageService storageService)
         {
-            _bookRepository = bookRepository;
+            _unitOfWork = bookRepository;
             _storageService = storageService;
         }
 
         public async Task Handle(UpdateBookCommand cmd, CancellationToken ct)
         {
-            var book = await _bookRepository.GetByIdAsync(cmd.Id, ct)
-                ?? throw new ChronolibrisException($"Такая книга не найдена", ErrorType.NotFound);
+            var book = await _unitOfWork.Books.GetByIdAsync(cmd.Id, ct)
+                ?? throw new ChronolibrisException("Книга не найдена", ErrorType.NotFound);
 
+            UpdateBookFields(book, cmd);
 
+            if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
+            {
+                var imageBytes = DecodeCover(cmd.CoverBase64);
+                var newExt = Path.GetExtension(cmd.CoverFileName ?? ".jpg").ToLowerInvariant();
+                var fileName = $"cover{newExt}";
+                var newCoverPath = $"covers/{cmd.Id}/{fileName}";
+
+                try
+                {
+                    await _storageService.SavePublicBookImageAsync(
+                    cmd.Id.ToString(), fileName, imageBytes, cmd.CoverContentType ?? "image/jpeg", ct);
+                    var oldPath = book.CoverPath;
+                    book.CoverPath = newCoverPath;
+
+                    if (oldPath != null && !oldPath.EndsWith(newExt))
+                    {
+                        await _storageService.DeleteAsync(_storageService.PublicCoversBucket, oldPath, ct);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            if (cmd.PersonFilters != null)
+            {
+                _unitOfWork.Books.SyncParticipations(book, cmd.PersonFilters);
+            }
+
+            await _unitOfWork.SaveChangesAsync(ct);
+        }
+
+        private void UpdateBookFields(Book book, UpdateBookCommand cmd)
+        {
             book.Title = cmd.Title.Trim();
             book.Description = cmd.Description.Trim();
             book.IsAvailable = cmd.IsAvailable;
@@ -65,36 +102,60 @@ namespace Chronolibris.Application.Handlers.Books
             if (cmd.UdkProvided) book.Udk = cmd.Udk?.Trim();
             if (cmd.SourceProvided) book.Source = cmd.Source?.Trim();
             if (cmd.PublisherIdProvided) book.PublisherId = cmd.PublisherId;
-            //if (cmd.SeriesIdProvided) book.SeriesId = cmd.SeriesId;
 
             book.UpdatedAt = DateTime.UtcNow;
-
-            await _bookRepository.UpdateAsync(book, cmd.PersonFilters,ct);
-
-            if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
-            {
-                var imageBytes = DecodeCover(cmd.CoverBase64);
-                var newExt = Path.GetExtension(cmd.CoverFileName ?? "cover.jpg").ToLowerInvariant();
-                var fileName = $"cover{newExt}";
-
-                var existingExt = book.CoverPath is not null
-                    ? Path.GetExtension(book.CoverPath).ToLowerInvariant()
-                    : newExt;
-
-                if (existingExt != newExt && !string.IsNullOrWhiteSpace(book.CoverPath))
-                {
-                    await _storageService.DeleteAsync(_storageService.PublicCoversBucket, book.CoverPath, ct);
-                    var newCoverPath = $"covers/{cmd.Id}/{fileName}";
-                    book.CoverPath = newCoverPath;
-                    _bookRepository.Update(book);
-                    await _bookRepository.SaveChangesAsync();
-                }
-
-                // Загружаем новый файл (перезапись при совпадении имени MinIO обеспечивает сам)
-                await _storageService.SavePublicBookImageAsync(
-                    cmd.Id.ToString(), fileName, imageBytes, cmd.CoverContentType ?? "image/jpeg", ct);
-            }
         }
+
+        //public async Task Handle(UpdateBookCommand cmd, CancellationToken ct)
+        //{
+        //    var book = await _bookRepository.GetByIdAsync(cmd.Id, ct)
+        //        ?? throw new ChronolibrisException($"Такая книга не найдена", ErrorType.NotFound);
+
+
+        //    book.Title = cmd.Title.Trim();
+        //    book.Description = cmd.Description.Trim();
+        //    book.IsAvailable = cmd.IsAvailable;
+        //    book.IsReviewable = cmd.IsReviewable;
+
+
+        //    if (cmd.CountryId != null) book.CountryId = cmd.CountryId.Value;
+        //    if (cmd.LanguageId != null) book.LanguageId = cmd.LanguageId.Value;
+
+        //    if (cmd.YearProvided) book.Year = cmd.Year;
+        //    if (cmd.IsbnProvided) book.ISBN = cmd.ISBN?.Trim();
+        //    if (cmd.BbkProvided) book.Bbk = cmd.Bbk?.Trim();
+        //    if (cmd.UdkProvided) book.Udk = cmd.Udk?.Trim();
+        //    if (cmd.SourceProvided) book.Source = cmd.Source?.Trim();
+        //    if (cmd.PublisherIdProvided) book.PublisherId = cmd.PublisherId;
+
+        //    book.UpdatedAt = DateTime.UtcNow;
+
+        //    await _bookRepository.UpdateAsync(book, cmd.PersonFilters,ct);
+
+        //    if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
+        //    {
+        //        var imageBytes = DecodeCover(cmd.CoverBase64);
+        //        var newExt = Path.GetExtension(cmd.CoverFileName ?? "cover.jpg").ToLowerInvariant();
+        //        var fileName = $"cover{newExt}";
+
+        //        var existingExt = book.CoverPath is not null
+        //            ? Path.GetExtension(book.CoverPath).ToLowerInvariant()
+        //            : newExt;
+
+        //        if (existingExt != newExt && !string.IsNullOrWhiteSpace(book.CoverPath))
+        //        {
+        //            await _storageService.DeleteAsync(_storageService.PublicCoversBucket, book.CoverPath, ct);
+        //            var newCoverPath = $"covers/{cmd.Id}/{fileName}";
+        //            book.CoverPath = newCoverPath;
+        //            _bookRepository.Update(book);
+        //            await _bookRepository.SaveChangesAsync();
+        //        }
+
+        //        // Загружаем новый файл (перезапись при совпадении имени MinIO обеспечивает сам)
+        //        await _storageService.SavePublicBookImageAsync(
+        //            cmd.Id.ToString(), fileName, imageBytes, cmd.CoverContentType ?? "image/jpeg", ct);
+        //    }
+        //}
 
         private static byte[] DecodeCover(string base64)
         {

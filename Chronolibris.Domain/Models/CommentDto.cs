@@ -10,6 +10,7 @@ namespace Chronolibris.Domain.Models
     {
         public required long Id { get; set; }
         public string? Text { get; set; }
+        public long UserId { get; set; }
         public required DateTime CreatedAt { get; set; }
         public required DateTime? DeletedAt { get; set; }
 
@@ -19,6 +20,7 @@ namespace Chronolibris.Domain.Models
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
         public bool? UserVote { get; set; }
+        public required bool IsDeleted { get; set; }
         //List<CommentDto>? Replies = null
     }
         

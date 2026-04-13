@@ -79,7 +79,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             });
 
 
-            // Регистрация обобщенных репозиториев (Scoped lifetime)
+            // Регистрация обобщенных репозиториев
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
@@ -89,7 +89,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Language>, GenericRepository<Language>>();
             services.AddScoped<IGenericRepository<Country>, GenericRepository<Country>>();
             services.AddScoped<IGenericRepository<Format>, GenericRepository<Format>>();
-            //services.AddScoped<IGenericRepository<Series>, GenericRepository<Series>>();
             services.AddScoped<IGenericRepository<BookFile>, GenericRepository<BookFile>>();
             services.AddScoped<IGenericRepository<Report>,  GenericRepository<Report>>();
             services.AddScoped<IGenericRepository<ModerationTask>, GenericRepository<ModerationTask>>();
@@ -104,7 +103,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IShelfRepository, ShelvesRepository>();
             services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
-            //services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddScoped<IThemeRepository, ThemeRepository>();
             services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<IBookFileRepository, BookFileRepository>();
@@ -114,7 +112,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IBookSearchRepository, SearchRepository>();
             services.AddScoped<IReferenceSearchRepository, ReferenceSearchRepository>();
 
-            // Регистрация Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

@@ -435,7 +435,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .SelectMany(f => f.PersonIds.Select(pid => (PersonId: pid, RoleId: f.RoleId)))
                 .ToHashSet();
 
-            // 1. Убираем лишние связи
             var toRemove = content.Participations
                 .Where(p => !desiredPairs.Contains((p.PersonId, p.PersonRoleId)))
                 .ToList();
@@ -443,7 +442,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             foreach (var participation in toRemove)
                 content.Participations.Remove(participation);
 
-            // 2. Добавляем новые
             var currentPairs = content.Participations
                 .Select(p => (p.PersonId, p.PersonRoleId))
                 .ToHashSet();

@@ -208,7 +208,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(b => b.Id == id, token);
         }
 
-        public async Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+        public override async Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             return await _set
                 .Include(b => b.Country)
@@ -223,7 +223,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+        public override async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _set.ToListAsync(cancellationToken);
         }
@@ -429,6 +429,33 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             if (bookContent != null)
             {
                 _context.Set<BookContent>().Remove(bookContent);
+            }
+        }
+
+        public void SyncParticipations(Book book , List<PersonRoleFilter> personFilters)
+        {
+            var desiredPairs = personFilters
+                .SelectMany(f => f.PersonIds.Select(pid => (PersonId: pid, RoleId: f.RoleId)))
+                .ToHashSet();
+
+            var toRemove = book.Participations
+                .Where(p => !desiredPairs.Contains((p.PersonId, p.PersonRoleId)))
+                .ToList();
+
+            foreach (var participation in toRemove)
+                book.Participations.Remove(participation);
+
+            var currentPairs = book.Participations
+                .Select(p => (p.PersonId, p.PersonRoleId))
+                .ToHashSet();
+
+            foreach (var pair in desiredPairs.Where(dp => !currentPairs.Contains(dp)))
+            {
+                book.Participations.Add(new BookParticipation
+                {
+                    PersonId = pair.PersonId,
+                    PersonRoleId = pair.RoleId
+                });
             }
         }
 

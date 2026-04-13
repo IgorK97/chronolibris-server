@@ -1,8 +1,11 @@
 ﻿using System.Text;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Infrastructure.Utils;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
@@ -13,16 +16,19 @@ namespace Chronolibris.Infrastructure.Services.Files
         private readonly IMinioClient _minioClient;
         private readonly BookStorageOptions _bookOpts;
         private readonly UploadStorageOptions _uploadOpts;
+        private readonly ILogger<StorageService> _logger;
         public string PublicCoversBucket => _bookOpts.CoversBucket;
 
         public StorageService(
             IMinioClient minioClient,
             IOptions<BookStorageOptions> bookOpts,
-            IOptions<UploadStorageOptions> uploadOpts)
+            IOptions<UploadStorageOptions> uploadOpts,
+            ILogger<StorageService> logger)
         {
             _minioClient = minioClient;
             _bookOpts = bookOpts.Value;
             _uploadOpts = uploadOpts.Value;
+            _logger = logger;
         }
 
 
@@ -123,8 +129,12 @@ namespace Chronolibris.Infrastructure.Services.Files
                 await _minioClient.RemoveObjectAsync(
                     new RemoveObjectArgs().WithBucket(bucketName).WithObject(objectKey), ct);
             }
-            catch (ObjectNotFoundException) { }
-            catch (InvalidObjectNameException) { }
+            catch (ObjectNotFoundException) { } //Уже удален ресурс
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при удалении файла в MinIO. Bucket: {Bucket}, Key: {Key}", bucketName, objectKey);
+                throw;
+            }
         }
 
 
@@ -132,13 +142,21 @@ namespace Chronolibris.Infrastructure.Services.Files
             string bucket, string key, Stream data, long size, string contentType,
             CancellationToken ct)
         {
-            await _minioClient.PutObjectAsync(
+            try
+            {
+                await _minioClient.PutObjectAsync(
                 new PutObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(key)
                     .WithStreamData(data)
                     .WithObjectSize(size)
                     .WithContentType(contentType), ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при записи файла в MinIO. Bucket: {Bucket}, Key: {Key}", bucket, key);
+                throw;
+            }
         }
 
         private async Task<MemoryStream?> ReadAsync(string bucket, string key, CancellationToken ct)

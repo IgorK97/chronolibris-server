@@ -50,7 +50,6 @@ namespace Chronolibris.Application.Handlers.References
 
     public class CreateCountryHandler : IRequestHandler<CreateCountryCommand, long>
     {
-        //private readonly IGenericRepository<Country> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateCountryHandler(IGenericRepository<Country> repository, IUnitOfWork unitOfWork)

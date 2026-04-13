@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Comments;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using MediatR;
@@ -25,15 +26,15 @@ namespace Chronolibris.Application.Handlers.Comments
         public async Task<CommentDto?> Handle(RateCommentCommand request, CancellationToken cancellationToken)
         {
             if (request.Score != 1 && request.Score != -1)
-                throw new Exception("Неверная оценка");
+                throw new ChronolibrisException("Неверная оценка", ErrorType.Validation);
 
             var comment = await _unitOfWork.Comments.GetByIdWithVotesAsync(request.CommentId, request.UserId, cancellationToken);
-            if (comment == null)
-                return null;
+            if (comment == null || comment.IsDeleted)
+                throw new ChronolibrisException("Комментарий не найден", ErrorType.NotFound);
 
-            //Потом разблокировать
-            //if(review.Review.UserId == request.UserId) 
-            //    return null;
+            if (comment.UserId == request.UserId) //Само по себе не критично, если будут проблемы с производительностью,
+                //можно будет убрать
+                throw new ChronolibrisException("Недоступно", ErrorType.Unprocessable);
 
 
             var rating = await _unitOfWork.CommentReactions.GetCommentReactionByUserIdAsync(request.CommentId,

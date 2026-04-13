@@ -27,7 +27,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         }
         public virtual async Task<TEntity?> GetByIdAsync(long id, CancellationToken token) =>
         await _set.FindAsync(id, token);
-        public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken token) =>
+        public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken token) =>
             await _set.ToListAsync(token);
         public virtual async Task AddAsync(TEntity entity, CancellationToken token) =>
             await _set.AddAsync(entity, token);

@@ -10,8 +10,11 @@ namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface IBookRepository : IGenericRepository<Book>
     {
-        Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
+        //Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+        //Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
+
+        void SyncParticipations(Book book, List<PersonRoleFilter> personFilters);
+
         Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
             BookFilterRequest filter, CancellationToken cancellationToken = default);
         Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken cancellationToken = default);

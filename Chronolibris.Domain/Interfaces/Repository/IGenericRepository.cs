@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
     public interface IGenericRepository<TEntity> where TEntity:class
     {
         Task<TEntity?> GetByIdAsync(long id, CancellationToken token = default);
-        Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken token = default);
+        Task<List<TEntity>> GetAllAsync(CancellationToken token = default);
         Task AddAsync(TEntity entity, CancellationToken token = default);
 
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate,
