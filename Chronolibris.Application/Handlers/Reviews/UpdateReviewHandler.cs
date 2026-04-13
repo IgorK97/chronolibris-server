@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Reviews;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
@@ -17,30 +18,18 @@ namespace Chronolibris.Application.Handlers.Reviews
 
         public async Task<Unit> Handle(UpdateReviewCommand cmd, CancellationToken ct)
         {
-            var review = await _uow.Reviews.GetByIdAsync(cmd.ReviewId, ct)
-                ?? throw new Exception("Review not found.");
+            var review = await _uow.Reviews.GetByIdAsync(cmd.ReviewId, ct);
+            if (review == null || !review.IsDeleted)
+            {
+                throw new ChronolibrisException("Отзыв не найден", ErrorType.NotFound);
+            }
 
             if (review.UserId != cmd.UserId)
-                throw new Exception("You can only edit your own reviews.");
+                throw new ChronolibrisException("Нет доступа", ErrorType.Forbidden);
 
-            if (review.DeletedAt != null)
-                throw new Exception("Cannot update a deleted review. Create a new one.");
-
-            bool hadText = !string.IsNullOrWhiteSpace(review.ReviewText);
-            bool hasText = !string.IsNullOrWhiteSpace(cmd.ReviewText);
-            bool textAdded = !hadText && hasText; // Scenario 3: first added text to a score-only review
 
             review.Score = cmd.Score;
-            review.ReviewText = cmd.ReviewText?.Trim();
             review.UpdatedAt = DateTime.UtcNow;
-
-            //if (textAdded)
-            //{
-            //    // Scenario 3: adding text to a published score-only review → must go to moderation
-            //    review.ReviewStatusId = 1;
-            //}
-            // Scenario 4: changing score on a review that already has text → status unchanged
-            // (stays Published or Pending as it was — moderator's decision is respected)
 
             await _uow.SaveChangesAsync(ct);
             return Unit.Value;

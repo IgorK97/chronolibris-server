@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Handlers.Selections
         {
             var selection = new Selection
             {
-                Id = 0, // Auto-generated
+                Id = 0,
                 Name = request.Name,
                 Description = request.Description,
                 UserId = request.UserId,

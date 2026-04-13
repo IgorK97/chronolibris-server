@@ -12,6 +12,7 @@ namespace Chronolibris.Domain.Exceptions
         Forbidden = 403,
         NotFound = 404,
         Conflict = 409,
+        Unprocessable = 422,
         TooManyRequests = 429,
         ServerException = 500,
     }

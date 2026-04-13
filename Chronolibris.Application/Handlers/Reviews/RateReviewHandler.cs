@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Reviews;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Chronolibris.Application.Handlers.Reviews
 {
@@ -23,22 +25,20 @@ namespace Chronolibris.Application.Handlers.Reviews
         }
 
 
-        public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ReviewDetails?> Handle(RateReviewCommand request, CancellationToken ct)
         {
             if (request.Score != 1 && request.Score != -1)
-                throw new Exception("Неверная оценка");
+                throw new ChronolibrisException("Неверная оценка", ErrorType.Validation);
 
-            var review = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, cancellationToken);
-            if (review == null)
-                return null;
+            var reviewDto = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, ct);
+            if (reviewDto == null || reviewDto.IsDeleted)
+                throw new ChronolibrisException("Отзыв не найден", ErrorType.NotFound);
 
-            //Потом разблокировать
-            //if(review.Review.UserId == request.UserId) 
-            //    return null;
+            if (reviewDto.Review.UserId == request.UserId)
+                throw new ChronolibrisException("Нельзя оценивать собственный отзыв", ErrorType.Forbidden);
 
-            
             var rating = await _unitOfWork.ReviewReactions.GetReviewReactionByUserIdAsync(request.ReviewId,
-                request.UserId, cancellationToken);
+                request.UserId, ct);
 
             if (rating is null)
             {
@@ -49,42 +49,28 @@ namespace Chronolibris.Application.Handlers.Reviews
                     ReactionType = request.Score,
                     UserId = request.UserId,
                 };
-                await _unitOfWork.ReviewReactions.AddAsync(rating, cancellationToken);
+                await _unitOfWork.ReviewReactions.AddAsync(rating, ct);
             }
             else
             {
                 rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score;
             }
 
-
-
-
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            //await _unitOfWork.Reviews.RecalculateRatingAsync(request.ReviewId, cancellationToken);
-
-
-            _unitOfWork.Reviews.Detach(review.Review);
-            var newReview = await _unitOfWork.Reviews.GetByIdAsync(request.ReviewId, cancellationToken);
-
-            if (review == null) return null;
-
+            await _unitOfWork.SaveChangesAsync(ct);
+            //reviewDto = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, ct);
+            //if(reviewDto is null) return null; // В принципе, логика не особо важная,
+            //можно и не возвращать актуальное количество лайков или дизлайков.
+            //Самое главное, что голос читателя был учтен
 
             return new ReviewDetails
             {
-                Id = review.Review.Id,
-
-                //AverageRating = review.AverageRating,
-                DislikesCount = review.DislikesCount,
-                LikesCount = review.LikesCount,
-
-
-                CreatedAt = review.Review.CreatedAt,
-                Score = review.Review.Score,
-                Text = review.Review.ReviewText,
-                UserName = review.UserName,
-                //Title = review.Title,
-                //UserName = review.Name,
+                Id = reviewDto.Review.Id,
+                DislikesCount = reviewDto.DislikesCount,
+                LikesCount = reviewDto.LikesCount,
+                CreatedAt = reviewDto.Review.CreatedAt,
+                Score = reviewDto.Review.Score,
+                Text = reviewDto.Review.ReviewText,
+                UserName = reviewDto.UserName,
                 UserVote = request.Score switch
                 {
                     1 => true,

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Reviews;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
@@ -17,17 +18,13 @@ namespace Chronolibris.Application.Handlers.Reviews
 
         public async Task<Unit> Handle(DeleteReviewCommand cmd, CancellationToken ct)
         {
-            var review = await _uow.Reviews.GetByIdAsync(cmd.ReviewId, ct)
-                ?? throw new Exception("Review not found.");
+            var review = await _uow.Reviews.GetByIdAsync(cmd.ReviewId, ct);
+            if (review is null || review.DeletedAt!=null) return Unit.Value;
 
             if (review.UserId != cmd.UserId)
-                throw new Exception("You can only delete your own reviews.");
-
-            if (review.DeletedAt != null)
-                throw new Exception("Review is already deleted.");
+                throw new ChronolibrisException("Нет доступа", ErrorType.Forbidden);
 
             review.DeletedAt = DateTime.UtcNow;
-            //review.ReviewStatusId = 4;
             review.IsDeleted = true;
 
             await _uow.SaveChangesAsync(ct);

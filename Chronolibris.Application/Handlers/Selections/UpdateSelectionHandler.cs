@@ -20,6 +20,7 @@ namespace Chronolibris.Application.Handlers.Selections
 
         public async Task<bool> Handle(UpdateSelectionRequest request, CancellationToken ct)
         {
+
             return await _repository.UpdateAsync(
                 request.SelectionId,
                 request.Name,

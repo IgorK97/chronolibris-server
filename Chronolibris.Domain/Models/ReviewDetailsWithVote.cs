@@ -14,5 +14,6 @@ namespace Chronolibris.Domain.Models
         public required long LikesCount { get; set; }
         public required long DislikesCount { get; set; }
         public bool? UserVote { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -30,6 +31,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             await _set.ToListAsync(token);
         public virtual async Task AddAsync(TEntity entity, CancellationToken token) =>
             await _set.AddAsync(entity, token);
+
+        public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>>
+            predicate, CancellationToken token = default)
+            => await _set.AnyAsync(predicate, token);
         public void Update(TEntity entity) =>
             _set.Update(entity);
         public void Delete(TEntity entity) =>

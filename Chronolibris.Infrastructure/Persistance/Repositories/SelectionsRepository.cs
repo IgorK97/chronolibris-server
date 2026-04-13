@@ -14,16 +14,26 @@ using Microsoft.EntityFrameworkCore;
 namespace Chronolibris.Infrastructure.Persistance.Repositories
 {
 
-    public class SelectionsRepository : ISelectionsRepository
+    public class SelectionsRepository : GenericRepository<Selection>, ISelectionsRepository
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
 
+        public SelectionsRepository(ApplicationDbContext context) : base(context) { }
 
-        public SelectionsRepository(ApplicationDbContext context)
+        public async Task<bool> IsBookInSelection(long bookId, long selectionId, CancellationToken token = default)
         {
-            _context = context;
+            return await _context.Selections
+                        .Where(s => s.Id == selectionId)
+                        .AnyAsync(s => s.Books.Any(b => b.Id == bookId), token);
         }
+        public async Task<bool> DeleteAsync(long id, CancellationToken ct)
+        {
+            var rowsAffected = await _context.Selections
+                .Where(s => s.Id == id)
+                .ExecuteDeleteAsync(ct);
 
+            return rowsAffected > 0;
+        }
 
         public async Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken ct)
         {
@@ -192,15 +202,15 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return false;
         }
 
-        public async Task<bool> DeleteAsync(long selectionId, CancellationToken ct)
-        {
-            var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
-            if (selection == null) return false;
+        //public async Task<bool> DeleteAsync(long selectionId, CancellationToken ct)
+        //{
+        //    var selection = await _context.Selections.FindAsync(new object[] { selectionId }, ct);
+        //    if (selection == null) return false;
 
-            _context.Selections.Remove(selection);
-            await _context.SaveChangesAsync(ct);
-            return true;
-        }
+        //    _context.Selections.Remove(selection);
+        //    await _context.SaveChangesAsync(ct);
+        //    return true;
+        //}
     }
 
 }

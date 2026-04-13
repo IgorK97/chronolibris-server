@@ -82,6 +82,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 {
                     Review = r,
                     UserName = u.UserName,
+                    IsDeleted = r.IsDeleted,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)

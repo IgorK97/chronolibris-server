@@ -13,8 +13,6 @@ namespace Chronolibris.Application.Handlers.Reviews
     public class GetReviewsHandler(IReviewRepository reviewRepository) : IRequestHandler<GetReviewsQuery, PagedResult<ReviewDetails>>
     {
 
-        // Примечание: Внедрение зависимости через первичный конструктор (Primary Constructor)
-        // автоматически создает приватное поле только для чтения `reviewRepository`.
         public async Task<PagedResult<ReviewDetails>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
         {
 
