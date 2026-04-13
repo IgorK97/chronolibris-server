@@ -14,6 +14,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         //Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
 
         void SyncParticipations(Book book, List<PersonRoleFilter> personFilters);
+        Task<List<Content>> GetContentsWithDetailsByBookIdAsync(long bookId, CancellationToken ct);
 
         Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
             BookFilterRequest filter, CancellationToken cancellationToken = default);

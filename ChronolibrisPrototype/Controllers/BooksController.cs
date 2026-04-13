@@ -20,31 +20,28 @@ namespace ChronolibrisWeb.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<BookListResponse>> GetBooks(
-            [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
-        {
-            var query = new GetBooksQuery(filter);
-            var result = await _mediator.Send(query, cancellationToken);
-            return Ok(result);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<BookListResponse>> GetBooks(
+        //    [FromQuery] BookFilterRequest filter, CancellationToken cancellationToken)
+        //{
+        //    var query = new GetBooksQuery(filter);
+        //    var result = await _mediator.Send(query, cancellationToken);
+        //    return Ok(result);
+        //}
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetBookById(long id, CancellationToken cancellationToken)
-        {
-            var query = new GetBookByIdQuery(id);
-            var book = await _mediator.Send(query, cancellationToken);
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<BookDto?>> GetBookById(long id, CancellationToken cancellationToken)
+        //{
+        //    var query = new GetBookByIdQuery(id);
+        //    var book = await _mediator.Send(query, cancellationToken);
 
-            if (book == null)
-                return NotFound(new { message = $"Книга с ID {id} не найдена" });
-
-            return Ok(book);
-        }
+        //    return Ok(book);
+        //}
 
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<long>> CreateBook(
-            [FromBody] CreateBookRequest request, CancellationToken cancellationToken)
+            [FromBody] CreateBookInputModel request, CancellationToken cancellationToken)
         {
 
             var command = new CreateBookCommand(
@@ -76,7 +73,7 @@ namespace ChronolibrisWeb.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(
             long id,
-            [FromBody] UpdateBookRequest request,
+            [FromBody] UpdateBookInputModel request,
             CancellationToken cancellationToken)
         {
 
@@ -107,16 +104,16 @@ namespace ChronolibrisWeb.Controllers
 
         }
 
-        [Authorize(Roles = "admin, moderator")]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
-        {
+        //[Authorize(Roles = "admin, moderator")]
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
+        //{
 
-            var command = new DeleteBookCommand(id);
-            await _mediator.Send(command, cancellationToken);
-            return NoContent();
+        //    var command = new DeleteBookCommand(id);
+        //    await _mediator.Send(command, cancellationToken);
+        //    return NoContent();
 
-        }
+        //}
 
         [HttpGet("{bookId}/info")]
         public async Task<ActionResult> GetBookMetadata(long bookId, bool mode)
@@ -148,32 +145,32 @@ namespace ChronolibrisWeb.Controllers
             return Ok(contents);
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpPost("{bookId}/contents/{contentId}")]
+        //[Authorize(Roles = "admin")]
+        //[HttpPost("{bookId}/contents/{contentId}")]
 
-        public async Task<ActionResult> LinkContentToBook(long bookId, long contentId,
-            [FromBody] BookContentLinkInputModel request, CancellationToken cancellationToken)
-        {
-            if (request.BookId != bookId || request.ContentId != contentId)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
+        //public async Task<ActionResult> LinkContentToBook(long bookId, long contentId,
+        //    [FromBody] BookContentLinkInputModel request, CancellationToken cancellationToken)
+        //{
+        //    if (request.BookId != bookId || request.ContentId != contentId)
+        //        return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
 
-            var command = new LinkContentToBookCommand(bookId, contentId);
-            await _mediator.Send(command, cancellationToken);
-            return NoContent();
+        //    var command = new LinkContentToBookCommand(bookId, contentId);
+        //    await _mediator.Send(command, cancellationToken);
+        //    return NoContent();
 
-        }
+        //}
 
-        [Authorize(Roles = "admin")]
-        [HttpDelete("{bookId}/contents/{contentId}")]
-        public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,
-            CancellationToken cancellationToken)
-        {
+        //[Authorize(Roles = "admin")]
+        //[HttpDelete("{bookId}/contents/{contentId}")]
+        //public async Task<ActionResult> UnlinkContentFromBook(long bookId, long contentId,
+        //    CancellationToken cancellationToken)
+        //{
 
-            var command = new UnlinkContentFromBookCommand(bookId, contentId);
-            await _mediator.Send(command, cancellationToken);
-            return NoContent();
+        //    var command = new UnlinkContentFromBookCommand(bookId, contentId);
+        //    await _mediator.Send(command, cancellationToken);
+        //    return NoContent();
 
-        }
+        //}
 
         [HttpGet("files/{bookFileId}/toc")]
         public async Task<ActionResult> GetToc(long bookFileId)

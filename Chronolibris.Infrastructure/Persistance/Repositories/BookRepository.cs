@@ -18,6 +18,21 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
     {
         private readonly DbSet<Book> _set;
         public BookRepository(ApplicationDbContext context) : base(context) { _set = context.Set<Book>(); }
+
+        public async Task<List<Content>> GetContentsWithDetailsByBookIdAsync(long bookId, CancellationToken ct)
+        {
+            return await _context.Contents
+                .AsNoTracking()
+                .Where(c => c.Id == bookId)
+                .Include(c => c.Country)
+                .Include(c => c.ContentType)
+                .Include(c => c.Language)
+                .Include(c => c.Themes)
+                .Include(c => c.Participations)
+                    .ThenInclude(p => p.Person)
+                .OrderBy(c => c.CreatedAt)
+                .ToListAsync(ct);
+        }
         public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token)
         {
             var raw = await _context.Books

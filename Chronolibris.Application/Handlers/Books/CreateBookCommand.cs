@@ -1,10 +1,11 @@
 ﻿using Chronolibris.Application.Requests;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
+using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
-using Chronolibris.Domain.Entities;
 using MediatR;
-using Chronolibris.Domain.Interfaces.Repository;
 
 namespace Chronolibris.Application.Handlers.Books
 {
@@ -43,11 +44,6 @@ namespace Chronolibris.Application.Handlers.Books
 
         public async Task<long> Handle(CreateBookCommand cmd, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(cmd.Title))
-                throw new ArgumentException("Название книги не может быть пустым.");
-
-            if (string.IsNullOrWhiteSpace(cmd.CoverBase64))
-                throw new ArgumentException("Файл обложки обязателен при создании книги.");
             var book = new Book
             {
                 Id=0,
@@ -60,7 +56,7 @@ namespace Chronolibris.Application.Handlers.Books
                 Bbk = cmd.Bbk?.Trim(),
                 Udk = cmd.Udk?.Trim(),
                 Source = cmd.Source?.Trim(),
-                CoverPath = "",
+                CoverPath = "covers/default.jpg",
                 IsAvailable = cmd.IsAvailable,
                 IsReviewable = cmd.IsReviewable,
                 PublisherId = cmd.PublisherId,
@@ -70,17 +66,26 @@ namespace Chronolibris.Application.Handlers.Books
 
             var bookId = await _bookRepository.CreateAsync(book, cmd.PersonFilters, ct);
 
-            var imageBytes = DecodeCover(cmd.CoverBase64);
-            var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
-            var fileName = $"cover{extension}";
-            var coverPath = $"covers/{bookId}/{fileName}";
+            try
+            {
+                var imageBytes = DecodeCover(cmd.CoverBase64);
+                var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
+                var fileName = $"cover{extension}";
+                var coverPath = $"covers/{bookId}/{fileName}";
 
-            await _storageService.SaveCoverAsync(
-                bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
+                await _storageService.SaveCoverAsync(
+                    bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
 
-            book.CoverPath = coverPath;
-            _bookRepository.Update(book);
-            await _bookRepository.SaveChangesAsync();
+            //    await _storageService.SavePublicBookImageAsync(
+            //bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
+
+                book.CoverPath = coverPath;
+                _bookRepository.Update(book);
+                await _bookRepository.SaveChangesAsync();
+            } catch(Exception ex)
+            {
+                throw new ChronolibrisException("Ошибка при сохранении файла обложки", ErrorType.Conflict);
+            }
 
             return bookId;
         }

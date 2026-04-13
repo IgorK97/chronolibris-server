@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Chronolibris.Domain.Models;
 
-namespace Chronolibris.Application.Handlers.Books
+namespace ChronolibrisWeb.InputModels
 {
-
-    public class CreateBookRequest
+    public class CreateBookInputModel
     {
         [Required(ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500)]
@@ -20,6 +18,7 @@ namespace Chronolibris.Application.Handlers.Books
         public string? Bbk { get; set; }
         public string? Udk { get; set; }
         public string? Source { get; set; }
+        [Required(ErrorMessage = "Обложка обязательна")]
         public string CoverBase64 { get; set; } = string.Empty;
         public string CoverContentType { get; set; } = "image/jpeg";
         public string CoverFileName { get; set; } = "cover";
@@ -29,7 +28,7 @@ namespace Chronolibris.Application.Handlers.Books
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<int>? ThemeIds { get; set; }
     }
-    public class UpdateBookRequest
+    public class UpdateBookInputModel
     {
         public long Id { get; set; }
         [Required(ErrorMessage = "Название книги отсутствует")]

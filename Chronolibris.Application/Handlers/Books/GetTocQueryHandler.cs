@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Application.Requests.Books;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
@@ -24,7 +25,7 @@ namespace Chronolibris.Application.Handlers.Books
         public async Task<string?> Handle(GetTocQuery request, CancellationToken ct)
         {
             var bookFile = await _bookFiles.GetByIdAsync(request.BookFileId, ct)
-                ?? throw new KeyNotFoundException($"BookFile {request.BookFileId} не найден");
+                ?? throw new ChronolibrisException("Книга не найдена", ErrorType.NotFound);
 
             return await _storage.ReadChunkAsync(bookFile.Id.ToString(), "toc.json", "toc", ct);
         }

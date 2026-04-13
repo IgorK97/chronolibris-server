@@ -23,15 +23,15 @@ namespace Chronolibris.Domain.Interfaces.Repository
         //Task SyncThemesAsync(long contentId, List<long> newThemeIds, CancellationToken cancellationToken = default);
         //Task SyncPersonsAsync(long contentId, List<PersonRoleFilter> newPersons, CancellationToken cancellationToken = default);
         Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken);
-        Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default);
-        Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
+        //Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default);
+        //Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
         Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default);
         Task UnlinkContentFromBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default);
-        Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
-        Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
+        //Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
+        //Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
 
         Task<List<TagDetails>> GetTagsAsync(long contentId, CancellationToken ct);
-        Task<List<TagDetails>> SearchTagsAsync(string searchTerm, long? tagTypeId, int limit, CancellationToken ct);
+        //Task<List<TagDetails>> SearchTagsAsync(string searchTerm, long? tagTypeId, int limit, CancellationToken ct);
         Task<bool> AddTagAsync(long contentId, long tagId, CancellationToken ct);
         Task<bool> RemoveTagAsync(long contentId, long tagId, CancellationToken ct);
     }
