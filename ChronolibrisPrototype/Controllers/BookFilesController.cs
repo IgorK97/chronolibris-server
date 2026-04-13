@@ -26,17 +26,17 @@ namespace ChronolibrisWeb.Controllers
             return Ok(files);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
-        {
-            var query = new GetBookFileDtoQuery(id);
-            var file = await _mediator.Send(query, cancellationToken);
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<BookFileDto>> GetBookFile(long id, CancellationToken cancellationToken)
+        //{
+        //    var query = new GetBookFileDtoQuery(id);
+        //    var file = await _mediator.Send(query, cancellationToken);
 
-            //if (file == null)
-            //    return NotFound(new { message = $"Файл с ID {id} не найден" });
+        //    //if (file == null)
+        //    //    return NotFound(new { message = $"Файл с ID {id} не найден" });
 
-            return Ok(file);
-        }
+        //    return Ok(file);
+        //}
 
 
         [HttpGet("{id}/download")]
@@ -70,7 +70,7 @@ namespace ChronolibrisWeb.Controllers
 
             var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
             var id = await _mediator.Send(command, cancellationToken);
-            return CreatedAtAction(nameof(GetBookFile), new { id = id }, id);
+            return Ok(id);
 
         }
 

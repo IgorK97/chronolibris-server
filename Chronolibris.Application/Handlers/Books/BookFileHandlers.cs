@@ -7,6 +7,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
@@ -45,38 +46,38 @@ namespace Chronolibris.Application.Handlers.Books
         }
     }
 
-    public class GetBookFileDtoHandler : IRequestHandler<GetBookFileDtoQuery, BookFileDto?>
-    {
-        private readonly IBookFileRepository _bookFileRepository;
+    //public class GetBookFileDtoHandler : IRequestHandler<GetBookFileDtoQuery, BookFileDto?>
+    //{
+    //    private readonly IBookFileRepository _bookFileRepository;
 
-        public GetBookFileDtoHandler(IBookFileRepository bookFileRepository)
-        {
-            _bookFileRepository = bookFileRepository;
-        }
+    //    public GetBookFileDtoHandler(IBookFileRepository bookFileRepository)
+    //    {
+    //        _bookFileRepository = bookFileRepository;
+    //    }
 
-        public async Task<BookFileDto?> Handle(GetBookFileDtoQuery request, CancellationToken cancellationToken)
-        {
-            var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null) return null;
+    //    public async Task<BookFileDto?> Handle(GetBookFileDtoQuery request, CancellationToken cancellationToken)
+    //    {
+    //        var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
+    //        if (bookFile == null) return null;
 
-            return new BookFileDto
-            {
-                Id = bookFile.Id,
-                BookId = bookFile.BookId,
-                FormatId = bookFile.FormatId,
-                FormatName = bookFile.Format?.Name,
-                StorageUrl = bookFile.StorageUrl,
-                FileSizeBytes = bookFile.FileSizeBytes,
-                IsReadable = bookFile.IsReadable,
-                CreatedAt = bookFile.CreatedAt,
-                CompletedAt = bookFile.CompletedAt,
-                CreatedBy = bookFile.CreatedBy,
-                //Version = bookFile.Version,
-                BookFileStatusId = bookFile.BookFileStatusId,
-                BookFileStatusName = bookFile.BookFileStatus?.Name
-            };
-        }
-    }
+    //        return new BookFileDto
+    //        {
+    //            Id = bookFile.Id,
+    //            BookId = bookFile.BookId,
+    //            FormatId = bookFile.FormatId,
+    //            FormatName = bookFile.Format?.Name,
+    //            StorageUrl = bookFile.StorageUrl,
+    //            FileSizeBytes = bookFile.FileSizeBytes,
+    //            IsReadable = bookFile.IsReadable,
+    //            CreatedAt = bookFile.CreatedAt,
+    //            CompletedAt = bookFile.CompletedAt,
+    //            CreatedBy = bookFile.CreatedBy,
+    //            //Version = bookFile.Version,
+    //            BookFileStatusId = bookFile.BookFileStatusId,
+    //            BookFileStatusName = bookFile.BookFileStatus?.Name
+    //        };
+    //    }
+    //}
 
     public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, Stream?>
     {
@@ -92,7 +93,7 @@ namespace Chronolibris.Application.Handlers.Books
         public async Task<Stream?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
         {
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null) return null;
+            if (bookFile == null || string.IsNullOrEmpty(bookFile.StorageUrl)) return null;
 
             return await _bookStorage.ReadByStorageUrlAsync(bookFile.StorageUrl, cancellationToken);
         }
@@ -104,8 +105,7 @@ namespace Chronolibris.Application.Handlers.Books
         private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBookConversionService _bookConversionJob;
-        //private readonly IBackgroundJobClient _backgroundJobs;
+        private readonly IBookConversionService _bookConversionService;
 
         public UploadBookFileHandler(
             IBookFileRepository bookFileRepository,
@@ -116,19 +116,20 @@ namespace Chronolibris.Application.Handlers.Books
             _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
             _unitOfWork = unitOfWork;
-            _bookConversionJob = bookConversionJob;
+            _bookConversionService = bookConversionJob;
         }
 
         public async Task<long> Handle(UploadBookFileCommand request, CancellationToken cancellationToken)
         {
-            const long MAX_FILE_SIZE = 100 * 1024 * 1024;
-            if (request.FileSizeBytes > MAX_FILE_SIZE)
-                throw new ArgumentException("Размер файла не должен превышать 100 MB");
-
             var existingFile = await _bookFileRepository.GetByBookIdAndFormatIdAsync(
                 request.BookId, request.FormatId, cancellationToken);
             if (existingFile != null)
-                throw new ArgumentException($"Файл формата {request.FormatId} уже существует для этой книги");
+                throw new ChronolibrisException($"Файл формата {request.FormatId} уже существует для этой книги. " +
+                    $"Сначала удалите старый файл, чтобы загрузить новый такого же формата", ErrorType.Conflict);
+
+            if (request.IsReadable && request.FormatId != 1 ||
+                !request.IsReadable && request.FormatId == 1)
+                throw new ChronolibrisException("Неверно указан формат и режим использования книги", ErrorType.Validation);
 
             var bookFile = new BookFile
             {
@@ -140,7 +141,6 @@ namespace Chronolibris.Application.Handlers.Books
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = request.CreatedBy,
-                //Version = 0,
                 BookFileStatusId = BookFileStatuses.PENDING
             };
 
@@ -160,26 +160,30 @@ namespace Chronolibris.Application.Handlers.Books
                     cancellationToken);
 
                 bookFile.StorageUrl = storageUrl;
-                bookFile.BookFileStatusId = BookFileStatuses.UPLOADED;
+                bookFile.BookFileStatusId = request.IsReadable ? BookFileStatuses.UPLOADED : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
 
                 _bookFileRepository.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (request.IsReadable)
-                    await _bookConversionJob.ProcessAsync(bookFile.Id);
-                //{
-                //    if (request.IsReadable)
-                //        _bookConversionJob.Enqueue<IBookConversionJob>(job => job.ProcessAsync(bookFile.Id));
-                //}
+                    await _bookConversionService.ProcessAsync(bookFile.Id);
 
                 return bookFile.Id;
             }
             catch
             {
-                _bookFileRepository.Delete(bookFile);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-                throw;
+                string message = "";
+                try
+                {
+                    _bookFileRepository.Delete(bookFile);
+                    await _unitOfWork.SaveChangesAsync(CancellationToken.None); //чтобы удаление не отменилось при отмене основного токена
+                }
+                catch (Exception ex)
+                {
+                    message = $"Ошибка при очистке данных о файле после неудачной загрузки";
+                }
+                throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов. " + message, ErrorType.ServerException);
             }
         }
     }
@@ -201,21 +205,12 @@ namespace Chronolibris.Application.Handlers.Books
         public async Task<Unit> Handle(DeleteBookFileCommand request, CancellationToken cancellationToken)
         {
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null) throw new KeyNotFoundException($"BookFile with ID {request.BookFileId} not found");
+            if (bookFile == null) 
+                return Unit.Value;
 
-            // Удаляем файл из MinIO
-            try
-            {
-                await _bookStorage.DeleteFileAsync(bookFile.StorageUrl, cancellationToken);
-            }
-            catch
-            {
-                // Игнорируем ошибки удаления из хранилища
-            }
-
-            // Удаляем запись из БД
             _bookFileRepository.Delete(bookFile);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _bookStorage.DeleteFileAsync(bookFile.StorageUrl, cancellationToken);
 
             return Unit.Value;
         }
@@ -275,53 +270,53 @@ namespace Chronolibris.Application.Handlers.Books
             return existingFile.Id;
         }
     }
-    public class ProcessBookFileHandler : IRequestHandler<ProcessBookFileCommand, Unit>
-    {
-        private readonly IBookFileRepository _bookFileRepository;
-        private readonly IFb2Converter _fb2Converter;
-        private readonly IUnitOfWork _unitOfWork;
+    //public class ProcessBookFileHandler : IRequestHandler<ProcessBookFileCommand, Unit>
+    //{
+    //    private readonly IBookFileRepository _bookFileRepository;
+    //    private readonly IFb2Converter _fb2Converter;
+    //    private readonly IUnitOfWork _unitOfWork;
 
-        public ProcessBookFileHandler(
-            IBookFileRepository bookFileRepository,
-            IFb2Converter fb2Converter,
-            IUnitOfWork unitOfWork)
-        {
-            _bookFileRepository = bookFileRepository;
-            _fb2Converter = fb2Converter;
-            _unitOfWork = unitOfWork;
-        }
-        public async Task<Unit> Handle(ProcessBookFileCommand request, CancellationToken cancellationToken)
-        {
-            var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null) throw new KeyNotFoundException($"BookFile with ID {request.BookFileId} not found");
+    //    public ProcessBookFileHandler(
+    //        IBookFileRepository bookFileRepository,
+    //        IFb2Converter fb2Converter,
+    //        IUnitOfWork unitOfWork)
+    //    {
+    //        _bookFileRepository = bookFileRepository;
+    //        _fb2Converter = fb2Converter;
+    //        _unitOfWork = unitOfWork;
+    //    }
+    //    public async Task<Unit> Handle(ProcessBookFileCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
+    //        if (bookFile == null) throw new KeyNotFoundException($"BookFile with ID {request.BookFileId} not found");
 
-            // Обновляем статус на PROCESSING (3)
-            bookFile.BookFileStatusId = BookFileStatuses.PROCESSING;
-            _bookFileRepository.Update(bookFile);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+    //        // Обновляем статус на PROCESSING (3)
+    //        bookFile.BookFileStatusId = BookFileStatuses.PROCESSING;
+    //        _bookFileRepository.Update(bookFile);
+    //        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            try
-            {
-                // Конвертация FB2
-                // var stream = await _bookStorage.ReadStreamAsync(bookFile.StorageUrl, cancellationToken);
-                // await _fb2Converter.ConvertAsync(stream, bookFile.BookId, null, cancellationToken);
+    //        try
+    //        {
+    //            // Конвертация FB2
+    //            // var stream = await _bookStorage.ReadStreamAsync(bookFile.StorageUrl, cancellationToken);
+    //            // await _fb2Converter.ConvertAsync(stream, bookFile.BookId, null, cancellationToken);
 
-                // Обновляем статус на COMPLETED (4)
-                bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
-                bookFile.CompletedAt = DateTime.UtcNow;
-                _bookFileRepository.Update(bookFile);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                // Обновляем статус на FAILED (5)
-                bookFile.BookFileStatusId = BookFileStatuses.FAILED;
-                _bookFileRepository.Update(bookFile);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-                throw;
-            }
+    //            // Обновляем статус на COMPLETED (4)
+    //            bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
+    //            bookFile.CompletedAt = DateTime.UtcNow;
+    //            _bookFileRepository.Update(bookFile);
+    //            await _unitOfWork.SaveChangesAsync(cancellationToken);
+    //        }
+    //        catch (Exception)
+    //        {
+    //            // Обновляем статус на FAILED (5)
+    //            bookFile.BookFileStatusId = BookFileStatuses.FAILED;
+    //            _bookFileRepository.Update(bookFile);
+    //            await _unitOfWork.SaveChangesAsync(cancellationToken);
+    //            throw;
+    //        }
 
-            return Unit.Value;
-        }
-    }
+    //        return Unit.Value;
+    //    }
+    //}
 }
