@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Models
 {
-    public sealed class ConversionResult
+    public class ConversionResult
     {
         public required string BookId { get; init; }
         public int TotalElements { get; init; }
@@ -16,7 +16,7 @@ namespace Chronolibris.Domain.Models
         public DateTime CompletedAt { get; init; } = DateTime.UtcNow;
     }
 
-    public sealed class StoredFileInfo
+    public class StoredFileInfo
     {
         public required string BookId { get; init; }
         public required string FileName { get; init; }
@@ -34,13 +34,13 @@ namespace Chronolibris.Domain.Models
         Part
     }
 
-    //У всех файлов одинаковые названия, поэтому внутрь поместил BookMeta
-    public sealed record BookMeta
+    //У всех файлов фрагментов одинаковые названия, поэтому внутрь поместил BookMeta
+    public class BookMeta
     {
         [JsonPropertyName("Title")]
         public string? Title { get; init; }
 
         [JsonPropertyName("ID")]
-        public string? Id { get; init; }
+        public string? Id { get; set; }
     }
 }

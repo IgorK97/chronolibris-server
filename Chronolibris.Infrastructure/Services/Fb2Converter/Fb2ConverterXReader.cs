@@ -30,7 +30,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             ConversionOptions? options = null,
             CancellationToken ct = default)
         {
-            //Алгоритм двупроходный, поэтому поток должен быть атким, чтобы
+            //Алгоритм двупроходный, поэтому поток должен быть таким, чтобы
             //можно было дважды по нему пройтись.
             //на всякий случай проверка, вдруг httpResponseStream
             Stream workStream;
@@ -64,7 +64,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         private async Task<ConversionResult> ConvertSeekableAsync(
             Stream stream, string bookId, ConversionOptions options, CancellationToken ct)
         {
-            // ПРОХОД 1
+            //первый проход - метаданные, сбор сносок (они в конце файла, но
+            //ссылки в середине) и ссылки на картинки, получаю все это
+            //деконструкцией кортежа
             stream.Position = 0;
             var (rawMeta, notes, imageMap) =
                 await FirstPassAsync(stream, bookId, options, ct);
@@ -77,22 +79,24 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 };
             }
 
-            else rawMeta = rawMeta with { Id = bookId };
+            else rawMeta.Id = bookId;
 
-            // ПРОХОД 2
+            //второй проход - сами фрагменты и содержание
             stream.Position = 0;
             var (elements, tocDoc) = await SecondPassAsync(
                 stream, bookId, rawMeta, notes, imageMap, options, ct);
 
-            // toc.json
+            //Сериализация в JSON содержания и его сохранение
             var tocJson = JsonSerializer.Serialize(tocDoc, JsonOpts);
             var tocBytes = Encoding.UTF8.GetByteCount(tocJson);
             await _storage.SaveChunkAsync(bookId, "toc.json", tocJson, true, ct);
 
+            //Возвращение результатов конвертации
+            //(в данном сервисе зависимость только от сервиса файлов,
+            //в бд пусть сам хендлер сохраняет)
             return new ConversionResult
             {
                 BookId = bookId,
-                //Meta = meta,
                 TotalElements = elements,
                 TocFile = new StoredFileInfo
                 {
@@ -110,14 +114,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     GlobalEnd = p.E,
                     XpStart = p.Xps,
                     XpEnd = p.Xpe,
-                    SizeBytes = 0   // уже сохранено в проходе 2; для БД достаточно
                 }).ToList(),
                 CompletedAt = DateTime.UtcNow
             };
         }
 
-        // ПРОХОД 1: метаданные + сноски + картинки
-
+        //Метод первого прохода
         private async Task<(BookMeta? meta,
                              Dictionary<string, ParsedNote> notes,
                              Dictionary<string, string> imageMap
@@ -126,25 +128,23 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                            CancellationToken ct)
         {
             BookMeta? meta = null;
-            var notes = new Dictionary<string, ParsedNote>(StringComparer.Ordinal);
-            var imageMap = new Dictionary<string, string>(StringComparer.Ordinal);  // fb2-id → fileName
-            
+            //идентификатор и значение (объект сноски или имя файла в хранилище)
+            var notes = new Dictionary<string, ParsedNote>(StringComparer.Ordinal); //сравнение по кодам символов посимвольно
+            var imageMap = new Dictionary<string, string>(StringComparer.Ordinal);            
 
-            // Используем временный bookId для именования — потом заменим
             var tempBookId = bookId;
-            int imageIndex = 1;
+            int imageIndex = 1; //для уникальных имен в рамках данного файла книги
 
-            // Контекст состояния парсера прохода 1
-            bool inDescription = false;
-            bool inNotesBody = false;
-            bool inNoteSection = false;
-            string currentNoteId = "";
-            int noteSectionIdx = 0;
-            int noteElemIdx = 0;
-            int noteBodyIdx = 0;
-            int bodyCount = 0;
+            bool inDescription = false; //для шапки книги с метаданными (пока только название считываю)
+            bool inNotesBody = false; //Fb2 содержит два боди - обычный и body name=notes
+            bool inNoteSection = false; //внутри боди со сносками для каждой сноски обычно используется секция
+            string currentNoteId = ""; //идентификатор абзаца сноски, найденной в тексте
+            int noteSectionIdx = 0; //идентификатор секции скноски
+            int noteElemIdx = 0; //счетчик параграфов внутри секции
+            int noteBodyIdx = 0; //счетчик для боди
+            int bodyCount = 0; //счетчик для боди
 
-            using var reader = CreateXmlReader(stream);
+            using var reader = CreateXmlReader(stream); //последовательное чтение потока
 
             while (await reader.ReadAsync())
             {
@@ -164,7 +164,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    // body — считаем номер, ищем notes
+                    // боди для контента и боди для сносок может быть
+                    //пока не нужно считывать контент, поэтому континуе
                     if (localName == "body")
                     {
                         bodyCount++;
@@ -177,55 +178,59 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    // notes body → section
+                    //если в боди сносок и вошли в секцию для конкретной сноски
                     if (inNotesBody && localName == "section")
                     {
                         inNoteSection = true;
                         noteSectionIdx++;
-                        noteElemIdx = 0;
+                        noteElemIdx = 0; //новая секция - новая нумерация параграфов
+                        //(хотя может быть всего один)
                         continue;
                     }
 
-                    // notes body → <p id="nX">
+                    //параграф в сноске <p id="nX">
                     if (inNotesBody && inNoteSection && localName == "p")
                     {
                         var id = reader.GetAttribute("id");
                         noteElemIdx++;
 
+                        //извлечение содержимого тега и текста из тега
                         var pXml = await reader.ReadOuterXmlAsync();
                         var text = ExtractTextFromXmlString(pXml);
 
-                        if (!string.IsNullOrEmpty(id))
+                        if (!string.IsNullOrEmpty(id)) //id будет у первого параграфа только
                         {
                             currentNoteId = id;
-                            notes[id] = new ParsedNote
+                            notes[id] = new ParsedNote //поэтому запись в словаре создается при первом обнаружении
                             {
                                 NoteId = id,
-                                Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx],
+                                Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx], //пока трех уровней, надеюсь, будет достаточно
                                 Paragraphs = string.IsNullOrEmpty(text) ? [] : [text]
                             };
                         }
+                        //если это уже не первый абзац
                         else if (!string.IsNullOrEmpty(currentNoteId)
-                                 && notes.TryGetValue(currentNoteId, out var existing)
+                                 //&& notes.TryGetValue(currentNoteId, out var existing)
                                  && !string.IsNullOrEmpty(text))
                         {
-                            existing.Paragraphs.Add(text);
+                            notes[currentNoteId].Paragraphs.Add(text); 
                         }
                         continue;
                     }
 
-                    // <binary id="..." content-type="...">
+                    // картинка! <binary id="..." content-type="...">
                     if (localName == "binary")
                     {
                         var binaryId = reader.GetAttribute("id") ?? "";
                         var contentType = reader.GetAttribute("content-type") ?? "image/jpeg";
 
+                        //только валидную запись смотрю
                         if (!string.IsNullOrEmpty(binaryId))
                         {
                             var ext = ContentTypeToExtension(contentType);
                             var fileName = $"{imageIndex}{ext}";
 
-                            // Читаем base64-содержимое и стримим в MinIO
+                            //чтение строки картинки
                             var base64 = await reader.ReadElementContentAsStringAsync();
                             base64 = base64.Trim();
 
@@ -233,7 +238,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             {
                                 try
                                 {
-                                    var bytes = Convert.FromBase64String(base64);
+                                    var bytes = Convert.FromBase64String(base64); //строку в массив байт,
+                                    //а потом обернуть в поток и сохранить в хранилище
 
                                     using (var coverStream = new MemoryStream(bytes))
                                     {
@@ -244,7 +250,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                     imageMap[binaryId] = fileName;
                                     imageIndex++;
                                 }
-                                catch (FormatException) { /* повреждённый base64 */ }
+                                catch (FormatException) { /* повреждённый base64 */ } //можно и прервать,
+                                //но картинки того не стоит (но как тогда уведомить админа?)
+                                //потом можно добавить строку в класс результата и, если она не пустая,
+                                //то вместе с ответом и ее возвращать тоже
                             }
                         }
                         continue;
