@@ -53,7 +53,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult<long>> Create([FromBody] CreateThemeRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<long>> Create([FromBody] CreateThemeInputModel request, CancellationToken cancellationToken)
         {
 
             var command = new CreateThemeCommand(request.Name, request.ParentThemeId);
@@ -64,7 +64,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeInputModel request, CancellationToken cancellationToken)
         {
 
 

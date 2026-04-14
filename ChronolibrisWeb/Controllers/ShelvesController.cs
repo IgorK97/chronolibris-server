@@ -19,11 +19,9 @@ namespace ChronolibrisWeb.Controllers
             _mediator = mediator;
         }
 
-        public record CreateShelfRequest(string Name);
-
         [HttpPost]
         [Authorize(Roles="reader")]
-        public async Task<IActionResult> CreateShelf(CreateShelfRequest request)
+        public async Task<IActionResult> CreateShelf(CreateShelfInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!long.TryParse(userIdClaim, out var userId))

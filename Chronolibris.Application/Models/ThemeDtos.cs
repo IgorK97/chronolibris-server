@@ -5,7 +5,7 @@ namespace Chronolibris.Application.Models
 {
 
 
-    public class CreateThemeRequest
+    public class CreateThemeInputModel
     {
         [Required]
         [MaxLength(500)]
@@ -14,7 +14,7 @@ namespace Chronolibris.Application.Models
         public long? ParentThemeId { get; set; }
     }
 
-    public class UpdateThemeRequest
+    public class UpdateThemeInputModel
     {
         [Required]
         public long Id { get; set; }

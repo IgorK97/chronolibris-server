@@ -2,7 +2,6 @@
 
 namespace ChronolibrisWeb.InputModels
 {
-    public record UpdateShelfInputModel(
-        [MaxLength(256)]string Name);
-
+    public record CreateShelfInputModel([MaxLength(256)]
+        string Name);
 }
