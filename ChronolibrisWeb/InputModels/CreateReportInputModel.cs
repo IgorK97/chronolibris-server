@@ -1,6 +1,11 @@
-﻿namespace ChronolibrisWeb.InputModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ChronolibrisWeb.InputModels
 {
     public record CreateReportInputModel(long TargetId, long TargetTypeId, 
-        long ReasonTypeId, string Description);
+        long ReasonTypeId,
+        [MaxLength(2000)]
+        [MinLength(20)]
+        string Description);
 
 }

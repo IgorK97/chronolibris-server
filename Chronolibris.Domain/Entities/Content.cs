@@ -13,7 +13,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(500)]
         public required string Title { get; set; }
-        [MaxLength(2000)]
+        [MaxLength(5000)]
         public required string Description { get; set; }
         public required long CountryId { get; set; }
         public required long ContentTypeId { get; set; }

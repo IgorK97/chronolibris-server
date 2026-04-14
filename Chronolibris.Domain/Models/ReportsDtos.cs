@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,6 +105,8 @@ namespace Chronolibris.Domain.Models
     {
         //public long Id { get; set; }
         public bool Resolution { get; set; }
+        [MinLength(20)]
+        [MaxLength(2000)]
         public required string Comment { get; set; }
     }
     public class TaskResolutionResponse

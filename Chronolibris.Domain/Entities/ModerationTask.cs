@@ -18,7 +18,7 @@ namespace Chronolibris.Domain.Entities
         public long StatusId { get; set; }
         public int CheckNumber { get; set; }
         public long ReasonTypeId { get; set; }
-        [MaxLength(1000)]
+        [MaxLength(2000)]
         public string? Comment { get; set; }
         public ICollection<Report> Reports { get; set; } = [];
         public ReportStatus Status { get; set; } = null!;

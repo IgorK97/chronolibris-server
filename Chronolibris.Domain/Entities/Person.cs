@@ -12,7 +12,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         [MaxLength(256)]
         public required string Name { get; set; }
-        [MaxLength(2000)]
+        [MaxLength(5000)]
         public required string Description { get; set; }
         //[MaxLength(2048)]
         //public required string ImagePath { get; set; }

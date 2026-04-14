@@ -140,53 +140,21 @@ namespace ChronolibrisWeb.Controllers
 
             return await _mediator.Send(new SearchTagsQuery(name, limit), ct);
         }
-        //Валидацию потом подправить везде здесь
+
         [HttpGet("persons-batch")]
         public async Task<ActionResult<List<PersonSuggestionDto>>> GetPersonsByIds(
-            [FromQuery] string ids,
+            [FromQuery] PersonInputModel personInputModel,
             CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(ids))
-                return BadRequest("Не переданы данные о персоналиях");
-
-            var parsedIds = ParseLongIds(ids);
-            if (parsedIds is null)
-                return BadRequest("ids должны быть целыми числами, разделёнными запятой.");
-
-            if (parsedIds.Count > 100)
-                return BadRequest("Максимум 100 id за запрос.");
-
-            return await _mediator.Send(new GetPersonsByIdsQuery(parsedIds), ct);
+            return await _mediator.Send(new GetPersonsByIdsQuery(personInputModel.ParsedIds), ct);
         }
 
         [HttpGet("tags-batch")]
         public async Task<ActionResult<List<TagSuggestionDto>>> GetTagsByIds(
-            [FromQuery] string ids,
+            [FromQuery] TagsInputModel tagsInputModel,
             CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(ids))
-                return BadRequest("Параметр ids обязателен.");
-
-            var parsedIds = ParseLongIds(ids);
-            if (parsedIds is null)
-                return BadRequest("ids должны быть целыми числами, разделёнными запятой.");
-
-            if (parsedIds.Count > 100)
-                return BadRequest("Максимум 100 id за запрос.");
-
-            return await _mediator.Send(new GetTagsByIdsQuery(parsedIds), ct);
-        }
-
-        private static List<long>? ParseLongIds(string raw)
-        {
-            var result = new List<long>();
-            foreach (var part in raw.Split(',', StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (!long.TryParse(part.Trim(), out var id))
-                    return null;
-                result.Add(id);
-            }
-            return result.Count > 0 ? result : null;
+            return await _mediator.Send(new GetTagsByIdsQuery(tagsInputModel.ParsedIds), ct);
         }
     }
 }

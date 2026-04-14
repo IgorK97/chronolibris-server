@@ -14,6 +14,7 @@ namespace Chronolibris.Application.Models
         public string Title { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(5000)]
         public string Description { get; set; } = string.Empty;
 
         [Required]
@@ -33,9 +34,9 @@ namespace Chronolibris.Application.Models
     public class UpdateContentRequest : IRequest<Unit>
     {
         public long Id { get; set; }
-
+        [MaxLength(500)]
         public string? Title { get; set; }
-
+        [MaxLength(5000)]
         public string? Description { get; set; }
 
         public long? CountryId { get; set; }
