@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronolibrisWeb", "ChronolibrisPrototype\ChronolibrisWeb.csproj", "{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronolibrisWeb", "ChronolibrisWeb\ChronolibrisWeb.csproj", "{BF383E6C-18BB-4693-92B2-38BC6D0BCD2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Domain", "Chronolibris.Domain\Chronolibris.Domain.csproj", "{A9826F1D-D726-4C07-B697-090273FC7F4C}"
 EndProject
