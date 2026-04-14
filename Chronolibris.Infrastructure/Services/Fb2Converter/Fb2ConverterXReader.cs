@@ -11,7 +11,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
     public class Fb2ConverterXReader : IFb2Converter
     {
-        private static readonly JsonSerializerOptions JsonOpts = new()
+        private static readonly JsonSerializerOptions JsonOpts = new JsonSerializerOptions()
         {
             WriteIndented = true, //отступы
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, //не записывать поля со значением null
@@ -550,6 +550,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     }]
                     : [], //в файле fb2 один боди, но потом можно либо сохранять просто фрагменты,
                 //либо несколько боди - если будет иной формат, типа fb3 или epub (там их уже несколько)
+                //кроме того, здесь сохраняются главы-чаптеры (ААА, нужно потом дополнить!!!)
                 Parts = tocParts //список фрагментов нужен обязательно - для быстрого перехода по оглавлению к нужному фрагменту
             };
 
@@ -702,13 +703,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             int partIndex,
             CancellationToken ct)
         {
-            if (part.Count == 0) return partIndex;
+            if (part.Count == 0) return partIndex; //проверка на пустой фрагмент - изменений нет
 
             var first = part[0];
             var last = part[^1];
-            var fileName = $"{partIndex:D3}.json";
+            var fileName = $"{partIndex:D3}.json"; //000.json,..., строка формата, целое число, 3 цифры
 
-            var items = part.Select(MapToPartElement).ToList();
+            var items = part.Select(MapToPartElement).ToList(); //преобразовать ParsedElement в PartElement для сохранения, группа методов или делегат (стрелочная функция)
             var json = JsonSerializer.Serialize(items, JsonOpts);
             var bytes = Encoding.UTF8.GetByteCount(json);
 
@@ -727,23 +728,25 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return partIndex;
         }
 
+        //обновляет список глав
         private static void UpdateChapters(
             List<TocChapter> chapters,
             ParsedElement titleElement,
             int globalIdx)
         {
-            // Закрываем предыдущую главу
+            //закрытие предыдущей главы
             if (chapters.Count > 0)
             {
-                var prev = chapters[^1];
-                chapters[^1] = new TocChapter
-                {
-                    S = prev.S,
-                    E = globalIdx - 1,
-                    T = prev.T
-                };
+                //var prev = chapters[^1];
+                //chapters[^1] = new TocChapter
+                //{
+                //    S = prev.S,
+                //    E = globalIdx - 1,
+                //    T = prev.T
+                //};
+                chapters[^1].E = globalIdx - 1;
             }
-            // Открываем новую
+            //открытие новой
             chapters.Add(new TocChapter
             {
                 S = globalIdx,
@@ -752,7 +755,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             });
         }
 
-        // Метаданные (название книги) (парсим outerXml блока description)
+        // Метаданные (название книги) (парсинг outerXml блока description)
 
         private static BookMeta ParseMetaFromXml(string descXml)
         {
@@ -777,11 +780,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             };
         }
 
-        // Helpers
-
+        //парсинг номера страницы - обязательно как pN
         private static int? TryParsePageNumber(string? id)
         {
             if (id is null || id.Length < 2|| id[0]!='p') return null;
+            //взять строку без первого символа без аллокации
             return int.TryParse(id.AsSpan(1), out var n) && n > 0 ? n : null;
 
         }
@@ -790,8 +793,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             => XmlReader.Create(stream, new XmlReaderSettings
             {
                 DtdProcessing = DtdProcessing.Ignore,
-                IgnoreWhitespace = false,
-                Async = true
+                IgnoreWhitespace = false, //сохранение пробельных узлов
+                Async = true //поддержка асинк методов
             });
 
         private static string ExtractTextFromXmlString(string xml)
@@ -804,29 +807,28 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 while (r.Read())
                     if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
                         sb.Append(r.Value);
-                return CollapseWhitespace(sb.ToString());
+                return CollapseWhitespace(sb.ToString()); //убрать лишние пробелы
             }
             catch { return string.Empty; }
         }
 
+        //преобразование предварительной модели в конечную
         private static PartElement MapToPartElement(ParsedElement pe)
         {
             object? c = pe.Content;
 
-            // pn-элемент: Content — int (номер страницы).
-            // Обходим PartElementJsonConverter передавая int напрямую через JsonSerializer.Serialize.
+            // pn-элемент: Content — int (номер страницы)
             if (pe.Type == "pn" && c is int pageNum)
             {
                 return new PartElement
                 {
                     T = pe.Type,
                     Xp = [pe.BodyIndex, pe.SectionIndex, pe.ElemIndex],
-                    C = pageNum   // int сериализуется как JSON number
+                    C = pageNum
                 };
             }
 
-            // Если Content — одиночный ImgSegment, передаём как список из одного.
-            // PartElementJsonConverter умеет сериализовать List<object> и string.
+            // Если Content — одиночный ImgSegment, передаём как список из одного
             if (c is ImgSegment img)
                 c = new List<object> { img };
 
@@ -845,25 +847,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 _ => ".jpg"
             };
 
-        private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled);
+        private static readonly Regex WhitespaceRegex = new Regex(@"\s+"); //регулярное выражение
+        //верабльный литерал (игнорирование обратных слешей, чтобы не было \\)
+        //пробел, переносы и табуляции
 
         private static string CollapseWhitespace(string s)
             => WhitespaceRegex.Replace(s, " ").Trim();
-    }
-
-    public sealed class ParsedNote
-    {
-        public required string NoteId { get; init; }
-        /// <summary>[notesBodyIdx, sectionIdx, elemIdx] — 1-based.</summary>
-        public required int[] Xp { get; init; }
-        /// <summary>Параграфы тела сноски.</summary>
-        /// <summary>Параграфы тела сноски — plain strings.</summary>
-        public required List<string> Paragraphs { get; init; }
-    }
-
-    public class PageNumberSegment
-    {
-        [JsonPropertyName("pn")]
-        public int Pn { get; set; }
     }
 }

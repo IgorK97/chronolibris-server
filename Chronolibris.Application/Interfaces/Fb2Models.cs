@@ -219,8 +219,7 @@ namespace Chronolibris.Application.Interfaces
     /// <summary>
     /// Сегмент изображения. Используется как элемент верхнего уровня (t="p" с единственным img)
     /// или как вложенный сегмент внутри абзаца
-    /// {t:"img", src:"1.jpg", w:768, h:230}
-    /// w/h — null если размер не удалось определить
+    /// {t:"img", src:"1.jpg"}
     /// </summary>
     public sealed class ImgSegment
     {
@@ -229,5 +228,19 @@ namespace Chronolibris.Application.Interfaces
 
         [JsonPropertyName("src")]
         public required string Src { get; init; }
+    }
+
+
+    public sealed class ParsedNote
+    {
+        public required string NoteId { get; init; }
+        public required int[] Xp { get; init; } //с 1 отсчет
+        public required List<string> Paragraphs { get; init; }
+    }
+
+    public class PageNumberSegment
+    {
+        [JsonPropertyName("pn")]
+        public int Pn { get; set; }
     }
 }
