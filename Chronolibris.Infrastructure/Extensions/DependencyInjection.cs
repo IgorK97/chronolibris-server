@@ -47,14 +47,10 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             {
                 options.UseNpgsql(dataSource);
 
-                // 1. Добавляем логирование в консоль
-                options.LogTo(Console.WriteLine, LogLevel.Information);
+                options.LogTo(Console.WriteLine, LogLevel.Error);
 
-                // 2. (Опционально) Чтобы видеть значения параметров (например, сам текст комментария),
-                // а не просто @p0, добавь эту строку:
                 options.EnableSensitiveDataLogging();
 
-                // Настройка для автоматического преобразования имен свойств в snake_case в БД
                 options.UseSnakeCaseNamingConvention();
             });
 
@@ -124,23 +120,23 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         public static IServiceCollection AddIdentityRealization(this IServiceCollection services, 
             IConfiguration configuration)
         {
-            // Регистрация кастомного сервиса идентификации
-            services.AddScoped<IIdentityService, IdentityService>();
 
-            // Регистрация стандартной реализации Identity
+            services.AddScoped<IIdentityService, IdentityService>();
             services.AddIdentity<User, IdentityRole<long>>(
-                //options =>
-                //{
-                //    options.Password.RequiredLength = 8;
-                //    options.Password.RequireUppercase = true;
-                //    options.User.RequireUniqueEmail = true;
-                //}
+                options =>
+                {
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireUppercase = true;
+                    options.User.RequireUniqueEmail = true;
+                    options.Password.RequireNonAlphanumeric = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireDigit = true;
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";//@.-+
+                }
                 )
-                // Указывает, что Identity будет использовать ApplicationDbContext
+                .AddErrorDescriber<RussianIdentityErrorDescriber>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
                 //.AddDefaultTokenProviders();
-
-            //services.AddHostedService<TokenCleanupService>();
             return services;
         }
 

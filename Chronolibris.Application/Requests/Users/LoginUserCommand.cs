@@ -9,5 +9,14 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Users
 {
-    public record LoginUserCommand([MaxLength(256)] string UserName, [MaxLength(128)]string Password) : IRequest<LoginResult>;
+    public record LoginUserCommand(
+        [RegularExpression("^(?=.* [a - zA - Z])[a-zA-Z0-9_]{5,32}$", ErrorMessage ="От 5 до 32 символов: латиница, цифры или _")]
+        [MaxLength(32, ErrorMessage ="Имя пользователя должно быть не более 32 символов")]
+        [MinLength(5, ErrorMessage ="Имя пользователя должно быть не менее 5 символов")]
+    string UserName,
+        [RegularExpression("^(?=.*?[A - Z])(?=.*?[a - z])(?=.*?[0 - 9])(?=.*?[#?!@$%^&*-]).{8,128}$", ErrorMessage ="Пароль должен быть длиной не менее 8 символов и содержать цифры," +
+        " латинские заглавные и строчные буквы и один из символов #?!@$%^&*-")]
+        [MaxLength(128, ErrorMessage = "Превышение допустимой длины")]
+        [Required(ErrorMessage ="Пароль обязателен")]
+    string Password) : IRequest<LoginResult>;
 }

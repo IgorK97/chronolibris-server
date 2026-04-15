@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChronolibrisWeb.Controllers
 {
     [ApiController]
-    [Route("api/search")]
+    [Route("api/Search")]
     public class SearchController : ControllerBase
     {
         private readonly IMediator _mediator;

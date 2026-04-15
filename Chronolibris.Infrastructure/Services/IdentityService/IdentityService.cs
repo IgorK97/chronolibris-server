@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using PhoneNumbers;
+using ErrorType = Chronolibris.Domain.Exceptions.ErrorType;
 
 namespace Chronolibris.Infrastructure.Services.IdentityService
 {
@@ -36,6 +38,18 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         public async Task<RegistrationResult> RegisterUserAsync(RegisterRequest request)
         {
             DateTime dt = DateTime.UtcNow;
+            var util = PhoneNumberUtil.GetInstance();
+            var number = util.Parse(request.PhoneNumber, "RU");
+            bool isValid = util.IsValidNumber(number);
+            if (!isValid)
+                throw new ChronolibrisException("Невалидный номер телефона", ErrorType.Validation);
+
+            var existingUser = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+            if (existingUser != null)
+                throw new ChronolibrisException("Номер телефона уже занят", ErrorType.Conflict);
+
             var user = new User
             {
                 LastName = request.LastName,
@@ -52,12 +66,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             if (!result.Succeeded)
             {
-                return new RegistrationResult
-                {
-                    Success = false,
-                    UserId=0,
-                    Message = result.Errors.Select(e => e.Description).FirstOrDefault(),
-                };
+                throw new ChronolibrisException(string.Join(", ", result.Errors.Select(e => e.Description)), ErrorType.Validation);
             };
 
             var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
@@ -79,48 +88,6 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             };
         
         }
-
-        //public async Task<LoginResult> LoginUserByEmailAsync(string Email, string Password)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(Email);
-        //    if (user == null) 
-        //        return new LoginResult { Success = false,
-        //            Token = string.Empty,
-        //            Message = "User not found"
-        //        };
-        //    var result = await _signInManager
-        //        .CheckPasswordSignInAsync(user, Password, false);
-
-        //    if (!result.Succeeded) 
-        //        return new LoginResult 
-        //        { 
-        //            Success = false,
-        //            Token = string.Empty,
-        //            Message = "Invalid credentials"
-        //        };
-
-        //    string jwt = await GenerateJwtToken(user);
-        //    string refresh = GenerateRefreshToken();
-
-        //    //user.RefreshToken = refresh;
-        //    //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        //    await _userManager.UpdateAsync(user);
-
-        //    return new LoginResult
-        //    {
-        //        Success = true,
-        //        Token = jwt,
-        //        RefreshToken = refresh,
-        //        Message = "Login successful"
-        //    };
-        //}
-
-        //private string GenerateRefreshToken()
-        //{
-        //    var randomBytes = RandomNumberGenerator.GetBytes(64);
-        //    return Convert.ToBase64String(randomBytes);
-        //}
-
 
         private async Task<string> GenerateJwtToken(User user)
         {
@@ -175,42 +142,23 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             };
         }
 
-        //public async Task<bool> IsUserNameUniqueAsync(string username)
-        //{
-        //    // FindByNameAsync ищет по NormalizedUserName — регистронезависимо
-        //    return await _userManager.FindByNameAsync(username) is null;
-        //}
-
-        //public async Task<bool> IsPhoneUniqueAsync(string phone)
-        //{
-        //    var normalized = System.Text.RegularExpressions.Regex.Replace(phone, @"[\s\-\(\)]", "");
-        //    return !await _userManager.Users
-        //                                .AnyAsync(u => u.PhoneNumber == normalized);
-
-        //}
-
-        //public async Task<bool> IsEmailUniqueAsync(string email)
-        //{
-        //    return await _userManager.FindByEmailAsync(email) is null;
-        //}
-
         public async Task<LoginResult> LoginUserByUserNameAsync(string username, string password)
         {
-            // UserName в Identity нормализуется к upper-case, FindByNameAsync учитывает это
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
-                return new LoginResult { Success = false, Token = string.Empty, Message = "Пользователь не найден" };
+                throw new ChronolibrisException("Пользователь не найден", ErrorType.NotFound);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (!result.Succeeded)
-                return new LoginResult { Success = false, Token = string.Empty, Message = "Неверный пароль" };
+                throw new ChronolibrisException("Неверный пароль", ErrorType.Validation);
+
 
             string jwt = await GenerateJwtToken(user);
             //string refresh = GenerateRefreshToken();
 
             //user.RefreshToken = refresh;
             //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _userManager.UpdateAsync(user);
+            //await _userManager.UpdateAsync(user);
 
             return new LoginResult { Success = true, Token = jwt };
         }
@@ -252,7 +200,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
-                throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
+                throw new ChronolibrisException("Пользователь не найден", ErrorType.NotFound);
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(
                 user,
@@ -261,16 +209,17 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             if (!changePasswordResult.Succeeded)
             {
-                throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
+                //throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
                 //throw new ChronolibrisException($"Ошибка: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}", ErrorType.Conflict);
+                throw new ChronolibrisException(string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)), ErrorType.Validation);
+
             }
         }
 
         public async Task<bool> IsUserActiveAsync(long userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            return user != null && (!user.LockoutEnabled || user.LockoutEnd <= DateTimeOffset.UtcNow) && !user.IsDeleted;
+            return user != null && !user.IsDeleted;
         }
     }
 }
