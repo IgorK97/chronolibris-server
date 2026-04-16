@@ -3,7 +3,7 @@
 namespace ChronolibrisWeb.InputModels
 {
     public record UpdateUserProfileInputModel
-    (   [RegularExpression("^(?=.* [a - zA - Z])[a-zA-Z0-9_]{5,32}$", ErrorMessage ="От 5 до 32 символов: латиница, цифры или _")]
+    (   [RegularExpression("^(?=.*[a-zA-Z])[a-zA-Z0-9_]{5,32}$", ErrorMessage ="От 5 до 32 символов: латиница, цифры или _")]
         [MaxLength(32, ErrorMessage = "Имя пользователя должно быть не более 32 символов")]
         [MinLength(5, ErrorMessage = "Имя пользователя должно быть не менее 5 символов")]
         string UserName,
@@ -16,7 +16,9 @@ namespace ChronolibrisWeb.InputModels
         [MinLength(1, ErrorMessage = "Фамилия должна быть указана")]
         string LastName,
         [MaxLength(256, ErrorMessage = "Превышение допустимой длины")]
-        [EmailAddress(ErrorMessage = "Некорректный адрес электронной почты")]
+        //[EmailAddress(ErrorMessage = "Некорректный адрес электронной почты")]
+        [RegularExpression(@"^(?!.*\.\.)(?!^\.)(?!.*@\.)(?!.*@\-)[a-zA-Zа-яА-ЯёЁ0-9._%+-]+@(?!.*\-+\.)[a-zA-ZёЁа-яА-Я0-9.-]+\.[a-zA-Zа-яА-ЯёЁ]{2,}$",
+        ErrorMessage = "Введите почту в формате name@example.com")]
         [Required(ErrorMessage = "Адрес электронной почты обязателен")]
         string Email,
         [LibPhoneAttribute]

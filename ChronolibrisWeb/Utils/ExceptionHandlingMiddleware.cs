@@ -65,7 +65,7 @@ namespace ChronolibrisWeb.Middleware
                     detail = "Ошибка сервера";
                 }
 
-                    context.Response.StatusCode = statusCode;
+                context.Response.StatusCode = statusCode;
 
                 await context.Response.WriteAsJsonAsync(new ProblemDetails
                 {
@@ -82,6 +82,8 @@ namespace ChronolibrisWeb.Middleware
             ErrorType.Conflict => StatusCodes.Status409Conflict,
             ErrorType.TooManyRequests => StatusCodes.Status429TooManyRequests,
             ErrorType.Validation => StatusCodes.Status400BadRequest,
+            ErrorType.Unprocessable =>StatusCodes.Status422UnprocessableEntity,
+            ErrorType.ServerException => StatusCodes.Status500InternalServerError,
             _ => StatusCodes.Status400BadRequest
         };
     }

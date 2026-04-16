@@ -20,7 +20,7 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterUserCommand request)
+        public async Task<IActionResult> Register(RegisterUserCommand request)
         {
             var result = await _mediator.Send(request);
             if (!result.Success || string.IsNullOrEmpty(result.Token))
@@ -37,6 +37,7 @@ namespace ChronolibrisWeb.Controllers
             };
 
             Response.Cookies.Append("token", token, cookieOptions);
+            //return StatusCode(StatusCodes.Status201Created);
             return Ok();
         }
 

@@ -19,14 +19,13 @@ namespace ChronolibrisWeb.InputModels
         public string? Udk { get; set; }
         public string? Source { get; set; }
         [Required(ErrorMessage = "Обложка обязательна")]
-        public string CoverBase64 { get; set; } = string.Empty;
-        public string CoverContentType { get; set; } = "image/jpeg";
-        public string CoverFileName { get; set; } = "cover";
+        public string? CoverBase64 { get; set; } = string.Empty;
+        public string? CoverContentType { get; set; } = "image/jpeg";
+        public string? CoverFileName { get; set; } = "cover";
         public bool IsAvailable { get; set; } = true;
         public bool IsReviewable { get; set; }
         public int? PublisherId { get; set; }
         public List<PersonRoleFilter>? PersonFilters { get; set; }
-        public List<int>? ThemeIds { get; set; }
     }
     public class UpdateBookInputModel
     {

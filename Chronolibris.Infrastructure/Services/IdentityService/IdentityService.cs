@@ -59,6 +59,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 RegisteredAt = dt,
                 Email = request.Email,
                 UserName = request.UserName,
+                PhoneNumber = request.PhoneNumber,
                 EmailConfirmed = true
             };
 
@@ -66,7 +67,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             if (!result.Succeeded)
             {
-                throw new ChronolibrisException(string.Join(", ", result.Errors.Select(e => e.Description)), ErrorType.Validation);
+                throw new ChronolibrisException(string.Join(", ", result.Errors.Select(e => e.Description)), ErrorType.Conflict);
             };
 
             var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
@@ -145,12 +146,13 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         public async Task<LoginResult> LoginUserByUserNameAsync(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
+
             if (user == null)
-                throw new ChronolibrisException("Пользователь не найден", ErrorType.NotFound);
+                throw new ChronolibrisException("Неверный логин или пароль", ErrorType.NotFound);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (!result.Succeeded)
-                throw new ChronolibrisException("Неверный пароль", ErrorType.Validation);
+                throw new ChronolibrisException("Неверный логин или пароль", ErrorType.NotFound);
 
 
             string jwt = await GenerateJwtToken(user);

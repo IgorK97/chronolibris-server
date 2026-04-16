@@ -19,14 +19,13 @@ namespace Chronolibris.Application.Handlers.Books
         string? Bbk,
         string? Udk,
         string? Source,
-        string CoverBase64,         
-        string CoverContentType,
-        string CoverFileName,
+        string? CoverBase64,         
+        string? CoverContentType,
+        string? CoverFileName,
         bool IsAvailable,
         bool IsReviewable,
         int? PublisherId,
-        List<PersonRoleFilter>? PersonFilters,
-        List<int>? ThemeIds
+        List<PersonRoleFilter>? PersonFilters
     ) : IRequest<long>;
 
     public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
@@ -56,7 +55,7 @@ namespace Chronolibris.Application.Handlers.Books
                 Bbk = cmd.Bbk?.Trim(),
                 Udk = cmd.Udk?.Trim(),
                 Source = cmd.Source?.Trim(),
-                CoverPath = "covers/default.jpg",
+                CoverPath = "",
                 IsAvailable = cmd.IsAvailable,
                 IsReviewable = cmd.IsReviewable,
                 PublisherId = cmd.PublisherId,
@@ -66,46 +65,44 @@ namespace Chronolibris.Application.Handlers.Books
 
             var bookId = await _bookRepository.CreateAsync(book, cmd.PersonFilters, ct);
 
-            try
+            if (!string.IsNullOrEmpty(cmd.CoverBase64) && !string.IsNullOrEmpty(cmd.CoverFileName) && !string.IsNullOrEmpty(cmd.CoverContentType))
             {
-                //var imageBytes = DecodeCover(cmd.CoverBase64);
-                var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
-                var fileName = $"cover{extension}";
-                var coverPath = $"covers/{bookId}/{fileName}";
-                using (var imageStream = DecodeCover(cmd.CoverBase64))
+                try
                 {
-                    await _storageService.SaveCoverAsync(
-                    bookId.ToString(), fileName, imageStream, cmd.CoverContentType, ct);
+                    //var imageBytes = DecodeCover(cmd.CoverBase64);
+                    var extension = Path.GetExtension(cmd.CoverFileName).ToLowerInvariant();
+                    var fileName = $"cover{extension}";
+                    var coverPath = $"covers/{bookId}/{fileName}";
+                    using (var imageStream = DecodeCover(cmd.CoverBase64))
+                    {
+                        await _storageService.SaveCoverAsync(
+                        bookId.ToString(), fileName, imageStream, cmd.CoverContentType, ct);
+                    }
+
+                    //    await _storageService.SavePublicBookImageAsync(
+                    //bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
+
+                    book.CoverPath = coverPath;
+                    _bookRepository.Update(book);
+                    await _bookRepository.SaveChangesAsync();
                 }
-
-            //    await _storageService.SavePublicBookImageAsync(
-            //bookId.ToString(), fileName, imageBytes, cmd.CoverContentType, ct);
-
-                book.CoverPath = coverPath;
-                _bookRepository.Update(book);
-                await _bookRepository.SaveChangesAsync();
-            } catch(Exception ex)
-            {
-                throw new ChronolibrisException("Ошибка при сохранении файла обложки", ErrorType.Conflict);
+                catch (Exception ex)
+                {
+                    
+                }
             }
 
             return bookId;
         }
         private static Stream DecodeCover(string base64)
         {
-            //var data = base64.Contains(',')
-            //    ? base64[(base64.IndexOf(',') + 1)..]
-            //    : base64;
 
-            //return Convert.FromBase64String(data);
             var data = base64.Contains(',')
-        ? base64[(base64.IndexOf(',') + 1)..]
-        : base64;
+                        ? base64[(base64.IndexOf(',') + 1)..]
+                        : base64;
 
             var bytes = Convert.FromBase64String(data);
 
-            // Возвращаем поток. 
-            // Мы не используем здесь using, так как поток должен "жить" до конца сохранения.
             return new MemoryStream(bytes);
         }
     }

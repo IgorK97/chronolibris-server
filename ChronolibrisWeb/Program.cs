@@ -10,6 +10,8 @@ using Chronolibris.Infrastructure.DependencyInjection;
 using Chronolibris.Infrastructure.DataAccess.Hangfire;
 using Chronolibris.Infrastructure.DatabaseChecker;
 using ChronolibrisWeb.Middleware.Hangfire;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,7 +118,23 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
-    options.SuppressModelStateInvalidFilter = false;
+    options.SuppressModelStateInvalidFilter = false; //автоматически прерывает выполнение при ошибке валидации
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState.Values.SelectMany(v => v.Errors)
+        .Select(e => e.ErrorMessage);
+
+        var detail = string.Join("; ", errors);
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Ошибка валидации",
+            Detail = detail,
+            Instance = context.HttpContext.Request.Path
+        };
+        return new BadRequestObjectResult(problemDetails);
+    };
 });
 
 // NSwag (OpenAPI/Swagger)

@@ -42,8 +42,7 @@ namespace ChronolibrisWeb.Controllers
                 request.IsAvailable,
                 request.IsReviewable,
                 request.PublisherId,
-                request.PersonFilters,
-                request.ThemeIds
+                request.PersonFilters
             );
 
             var id = await _mediator.Send(command, cancellationToken);
