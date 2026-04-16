@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Requests.Users
         [MinLength(1, ErrorMessage = "Фамилия должна быть указана")]
         string LastName, 
         [MaxLength(256, ErrorMessage = "Превышение допустимой длины")]
-        [RegularExpression(@"^(?!.*\.\.)(?!^\.)(?!.*@\.)(?!.*@\-)[a-zA-Zа-яА-ЯёЁ0-9._%+-]+@(?!.*\-+\.)[a-zA-ZёЁа-яА-Я0-9.-]+\.[a-zA-Zа-яА-ЯёЁ]{2,}$",
+        [RegularExpression(@"^(?!.*\.\.)(?!^\.)(?!.*@\.)(?!.*@\-)[a-zA-Z0-9._%+-]+@(?!.*\-+\.)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         ErrorMessage = "Введите почту в формате name@example.com")]
         [Required(ErrorMessage = "Адрес электронной почты обязателен")]
         string Email,

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Application", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chronolibris.Infrastructure", "Chronolibris.Infrastructure\Chronolibris.Infrastructure.csproj", "{07C66C69-B445-400E-9C5B-7347E56D63AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronolibrisServer.Tests", "ChronolibrisServer.Tests\ChronolibrisServer.Tests.csproj", "{789832D5-49BD-4901-9C0E-63E9C7B6B19F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07C66C69-B445-400E-9C5B-7347E56D63AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{789832D5-49BD-4901-9C0E-63E9C7B6B19F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{789832D5-49BD-4901-9C0E-63E9C7B6B19F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{789832D5-49BD-4901-9C0E-63E9C7B6B19F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{789832D5-49BD-4901-9C0E-63E9C7B6B19F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

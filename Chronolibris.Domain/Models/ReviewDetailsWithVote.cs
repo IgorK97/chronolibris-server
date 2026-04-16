@@ -9,10 +9,10 @@ namespace Chronolibris.Domain.Models
 {
     public class ReviewDetailsWithVote
     {
-        public required Review Review { get; set; }
-        public required string UserName { get; set; }
-        public required long LikesCount { get; set; }
-        public required long DislikesCount { get; set; }
+        public Review Review { get; set; }
+        public string UserName { get; set; } = String.Empty;
+        public long LikesCount { get; set; }
+        public long DislikesCount { get; set; }
         public bool? UserVote { get; set; }
         public bool IsDeleted { get; set; }
     }
