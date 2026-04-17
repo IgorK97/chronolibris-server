@@ -17,7 +17,7 @@ namespace ChronolibrisWeb.Middleware
             _next = next;
             _logger = logger;
         }
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, IExceptionMapper mapper)
         {
 
             try
@@ -51,19 +51,10 @@ namespace ChronolibrisWeb.Middleware
                     context.Request.QueryString,
                     exception.Message);
 
-                int statusCode;
-                string detail;
+                if (context.Response.HasStarted)
+                    return; //если уже что-то начало передаваться клиенту, то лучше не записывать
 
-                if(exception is ChronolibrisException)
-                {
-                    statusCode = MapTypeToStatusCode((exception as ChronolibrisException).ErrorType);
-                    detail = exception.Message;
-                }
-                else
-                {
-                    statusCode = StatusCodes.Status500InternalServerError;
-                    detail = "Ошибка сервера";
-                }
+                var (statusCode, title, detail) = mapper.Map(exception);
 
                 context.Response.StatusCode = statusCode;
 
@@ -76,15 +67,6 @@ namespace ChronolibrisWeb.Middleware
             }
         }
 
-        private static int MapTypeToStatusCode(ErrorType type) => type switch {
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            ErrorType.TooManyRequests => StatusCodes.Status429TooManyRequests,
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.Unprocessable =>StatusCodes.Status422UnprocessableEntity,
-            ErrorType.ServerException => StatusCodes.Status500InternalServerError,
-            _ => StatusCodes.Status400BadRequest
-        };
+
     }
 }

@@ -43,6 +43,7 @@ builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("Default", LogLevel.Information);
 
 // Инфраструктурные сервисы
+builder.Services.AddExceptionMapper();
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
 //builder.Services.AddFileProviderInfrastructure(builder.Configuration);

@@ -1,5 +1,6 @@
 ﻿using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Options;
@@ -15,6 +16,7 @@ using Chronolibris.Infrastructure.Services.Fb2Converter;
 using Chronolibris.Infrastructure.Services.Files;
 using Chronolibris.Infrastructure.Services.IdentityService;
 using Chronolibris.Infrastructure.Utils;
+using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +31,11 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
     public static class DependencyInjection
     {
+        public static IServiceCollection AddExceptionMapper(this IServiceCollection services)
+        {
+            services.AddScoped<IExceptionMapper, ExceptionMapper>();
+            return services;
+        }
         public static IServiceCollection AddDatabaseInfrastructure(this IServiceCollection services, 
             IConfiguration configuration)
         {
@@ -45,7 +52,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             // Регистрация DbContext для PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(dataSource);
+                options.UseNpgsql(dataSource).UseExceptionProcessor();
 
                 options.LogTo(Console.WriteLine, LogLevel.Error);
 
