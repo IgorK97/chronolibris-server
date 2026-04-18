@@ -39,14 +39,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             var sql = @"
                 INSERT INTO moderation_tasks 
-                    (target_id, target_type_td, moderated_by, started_at, status_id, comment, check_number, reason_type_id)
-                SELECT {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM moderation_tasks 
-                    WHERE target_id = {0} 
-                      AND target_type_id = {1} 
-                      AND status_id = 2
-                )
+                    (target_id, target_type_id, moderated_by, started_at, status_id, comment, check_number, reason_type_id)
+                VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})
+                ON CONFLICT (target_id, target_type_id) WHERE status_id = 2 
+                DO NOTHING
                 RETURNING id;";
 
             var result = await _context.Database

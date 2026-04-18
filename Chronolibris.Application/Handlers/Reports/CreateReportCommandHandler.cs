@@ -21,6 +21,7 @@ namespace Chronolibris.Application.Handlers.Reports
         private readonly ReportingOptions _options;
         private readonly IIdentityService _identityService;
 
+
         public CreateReportCommandHandler(
             IUnitOfWork unitOfWork,
             ReportingOptions options, IIdentityService identityService)
@@ -45,11 +46,7 @@ namespace Chronolibris.Application.Handlers.Reports
 
             var isOnCooldown = await _unitOfWork.Reports.GetLastUserReport(request.UserId,
                 request.TargetTypeId, request.TargetId, request.ReasonTypeId, cancellationToken);
-            //можно добавить atomic cooldown insert,
-            //если окажется, что среднее количество ожидаемых получаемых жалоб
-            //будет слишком высоко, а так можно пока так оставить
-            //(в конце концов у меня еще клиент задержимает, поэтому технически будет сложно это сделать,
-            //но если такое действительно будет случаться часть - тогда да, это проблема)
+            
             if (isOnCooldown is not null && isOnCooldown.CreatedAt >= cooldownThreshold)
                 throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы одного типа можно отправлять" +
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);

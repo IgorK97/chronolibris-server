@@ -11,21 +11,29 @@ namespace Chronolibris.Domain.Entities
     public class BookFile
     {
         [Key]
-        public required long Id { get; set; }
-        public required long BookId { get; set; }
-        public required int FormatId { get; set; }
+        [Required]
+        public long Id { get; set; }
+        [Required]
+        public long BookId { get; set; }
+        [Required]
+        public int FormatId { get; set; }
         //public required int MediaTypeId { get; set; }
         [MaxLength(2048)]
-        public required string StorageUrl { get; set; }
-        public required long FileSizeBytes { get; set; }
-
-        public required bool IsReadable { get; set; }
-        public required DateTime CreatedAt { get; set; }
+        [Required]
+        public string StorageUrl { get; set; } = String.Empty;
+        [Required]
+        public long FileSizeBytes { get; set; }
+        [Required]
+        public bool IsReadable { get; set; }
+        [Required]
+        public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         //public required DateTime UpdatedAt { get; set; }
-        public required long CreatedBy { get; set; }
+        [Required]
+        public long CreatedBy { get; set; }
         //public required int Version { get; set; } = 0;
-        public required long BookFileStatusId { get; set; }
+        [Required]
+        public long BookFileStatusId { get; set; }
         [Required]
         public long MaxParaIndex { get; set; }
 

@@ -6,7 +6,7 @@ using Chronolibris.Domain.Interfaces.Repository;
 using FluentAssertions;
 using Moq;
 
-namespace ChronolibrisServer.Tests
+namespace ChronolibrisServer.Tests.Reports
 {
     public class CreateModerationTaskHandlerTests
     {
@@ -59,24 +59,23 @@ namespace ChronolibrisServer.Tests
 
             ModerationTask? captured = null;
             _taskRepoMock
-                .Setup(r => r.AddAsync(It.IsAny<ModerationTask>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.TryCreateActiveTaskAsync(It.IsAny<ModerationTask>(), It.IsAny<CancellationToken>()))
                 .Callback<ModerationTask, CancellationToken>((t, _) => captured = t)
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(1);
 
             var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
             captured.Should().NotBeNull();
-            captured!.CheckNumber.Should().Be(0);
+            captured.CheckNumber.Should().Be(1);
             captured.StatusId.Should().Be(2);
             captured.ModeratedBy.Should().Be(moderatorId);
-
             result.TaskStatusId.Should().Be(2);
         }
 
         [Fact]
         public async Task Handle_LastTaskExists_NotActive_IncrementsCheckNumber()
         {
-            var lastTask = new ModerationTask { StatusId = 3, CheckNumber = 2 }; // завершена
+            var lastTask = new ModerationTask { StatusId = 3, CheckNumber = 2 };
 
             _taskRepoMock
                 .Setup(r => r.GetLastTaskAsync(targetId, 1, It.IsAny<CancellationToken>()))
@@ -84,13 +83,15 @@ namespace ChronolibrisServer.Tests
 
             ModerationTask? captured = null;
             _taskRepoMock
-                .Setup(r => r.AddAsync(It.IsAny<ModerationTask>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.TryCreateActiveTaskAsync(It.IsAny<ModerationTask>(), It.IsAny<CancellationToken>()))
                 .Callback<ModerationTask, CancellationToken>((t, _) => captured = t)
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(2);
 
-            await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
+            var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
-            captured!.CheckNumber.Should().Be(3); // 2 + 1
+            captured.Should().NotBeNull();
+            captured.CheckNumber.Should().Be(3);
+            result.TaskStatusId.Should().Be(2);
         }
 
         [Fact]

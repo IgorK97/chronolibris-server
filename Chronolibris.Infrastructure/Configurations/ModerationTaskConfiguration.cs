@@ -32,6 +32,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .WithMany()
                 .HasForeignKey(mt => mt.ModeratedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(mt => new { mt.TargetId, mt.TargetTypeId })
+                .IsUnique()
+                .HasFilter("status_id = 2")
+                .HasDatabaseName("ix_moderation_tasks_target_active_only");
         }
     }
 }

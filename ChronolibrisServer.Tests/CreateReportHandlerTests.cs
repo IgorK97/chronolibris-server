@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Application.Handlers.Reports;
+using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
@@ -7,13 +8,16 @@ using Chronolibris.Domain.Options;
 using FluentAssertions;
 using Moq;
 
-namespace ChronolibrisServer.Tests.Application.Reports;
+namespace ChronolibrisServer.Tests.Reports;
 
 public class CreateReportCommandHandlerTests
 {
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IReportRepository> _reportRepoMock = new();
     private readonly Mock<IModerationTasksRepository> _tasksRepoMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
+    private readonly Mock<ITransaction> _transactionMock = new();
+
 
     private const int UserId = 1;
     private const int TargetId = 10;
@@ -31,14 +35,29 @@ public class CreateReportCommandHandlerTests
         _unitOfWorkMock.Setup(u => u.ModerationTasks).Returns(_tasksRepoMock.Object);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
+        _identityServiceMock.Setup(i => i.IsUserActiveAsync(It.IsAny<long>())).ReturnsAsync(true);
+        _transactionMock
+            .Setup(t => t.CommitAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _transactionMock
+            .Setup(t => t.RollbackAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _transactionMock
+            .Setup(t => t.DisposeAsync())
+            .Returns(ValueTask.CompletedTask);
+        _unitOfWorkMock
+           .Setup(u => u.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+           .ReturnsAsync(_transactionMock.Object);
 
         _tasksRepoMock
-            .Setup(r => r.GetActiveByTarget(It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(r => r.GetActiveByTarget(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ModerationTask?)null);
     }
 
     private CreateReportCommandHandler CreateHandler(ReportingOptions? options = null)
-        => new(_unitOfWorkMock.Object, options ?? _defaultOptions);
+        => new(_unitOfWorkMock.Object, options ?? _defaultOptions, _identityServiceMock.Object);
 
     private CreateReportCommand BuildCommand(
         long userId = UserId,
@@ -54,11 +73,11 @@ public class CreateReportCommandHandlerTests
         var activeTask = new ModerationTask { Id = 99 };
 
         _reportRepoMock
-            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId))
+            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Report?)null);
 
         _tasksRepoMock
-            .Setup(r => r.GetActiveByTarget(TargetId, TargetTypeId))
+            .Setup(r => r.GetActiveByTarget(TargetId, TargetTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activeTask);
 
         Report? savedReport = null;
@@ -69,20 +88,20 @@ public class CreateReportCommandHandlerTests
 
         var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
-        savedReport!.ModerationTaskId.Should().Be(99);
+        savedReport.Should().NotBeNull();
+        savedReport.ModerationTaskId.Should().Be(99);
         result.Success.Should().BeTrue();
-
     }
 
     [Fact]
     public async Task Handle_WithoutActiveTask_LeavesTaskIdNull()
     {
         _reportRepoMock
-            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId))
+            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Report?)null);
 
         _tasksRepoMock
-            .Setup(r => r.GetActiveByTarget(TargetId, TargetTypeId))
+            .Setup(r => r.GetActiveByTarget(TargetId, TargetTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((ModerationTask?)null);
 
         Report? savedReport = null;
@@ -108,7 +127,7 @@ public class CreateReportCommandHandlerTests
         };
 
         _reportRepoMock
-            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId))
+            .Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentReport);
 
         var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);

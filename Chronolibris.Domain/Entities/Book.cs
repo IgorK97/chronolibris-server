@@ -10,14 +10,19 @@ namespace Chronolibris.Domain.Entities
 {
     public class Book
     {
-        public required long Id { get; set; }
+        [Key]
+        public long Id { get; set; }
         [MaxLength(500)]
-        public required string Title { get; set; }
+        [Required]
+        public string Title { get; set; } = String.Empty;
         [MaxLength(2000)]
-        public required string Description { get; set; }
-        public required long CountryId { get; set; }
-        public required long LanguageId { get; set; }
-        public required DateTime CreatedAt { get; set; }
+        public string Description { get; set; } = String.Empty;
+        [Required]
+        public long CountryId { get; set; }
+        [Required]
+        public long LanguageId { get; set; }
+        [Required]
+        public DateTime CreatedAt { get; set; }
         [ConcurrencyCheck]
         public DateTime? UpdatedAt { get; set; }
         public int? Year { get; set; }
@@ -31,12 +36,14 @@ namespace Chronolibris.Domain.Entities
         //[MaxLength(2048)]
         //public required string FilePath { get; set; }
         [MaxLength(2048)]
-        public required string CoverPath { get; set; }
+        [Required]
+        public string CoverPath { get; set; } = String.Empty;
 
         //public string? SearchData { get; set; }
-        public required bool IsAvailable { get; set; }
-
-        public required bool IsReviewable { get; set; }
+        [Required]
+        public bool IsAvailable { get; set; }
+        [Required]
+        public bool IsReviewable { get; set; }
         public long? PublisherId { get; set; }
         [MaxLength(500)]
         public string? Source { get; set; }

@@ -36,7 +36,7 @@ namespace Chronolibris.Application.Handlers.Reports
                     throw new ChronolibrisException("Для данного контента уже существует активная задача модерации", ErrorType.Conflict);
                 }
 
-                var checkNumber = (lastTask?.CheckNumber ?? -1) + 1;
+                var checkNumber = (lastTask?.CheckNumber ?? 0) + 1;
 
                 var newTask = new ModerationTask
                 {

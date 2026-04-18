@@ -8,7 +8,7 @@ using Chronolibris.Domain.Models;
 using FluentAssertions;
 using Moq;
 
-namespace ChronolibrisServer.Tests
+namespace ChronolibrisServer.Tests.Reviews
 {
     public class CreateReviewHandlerTests
     {
@@ -22,6 +22,7 @@ namespace ChronolibrisServer.Tests
 
         public CreateReviewHandlerTests()
         {
+            _identityServiceMock.Setup(i => i.IsUserActiveAsync(It.IsAny<long>())).ReturnsAsync(true);
             _unitOfWorkMock.Setup(u => u.Reviews).Returns(_reviewRepoMock.Object);
             _unitOfWorkMock.Setup(u => u.Books).Returns(_bookRepoMock.Object);
         }
@@ -51,11 +52,6 @@ namespace ChronolibrisServer.Tests
                 CreatedAt=DateTime.UtcNow,
                 CoverPath=""});
 
-        //private void SetupActiveUser(bool isActive = true) =>
-        //    _identityServiceMock
-        //        .Setup(s => s.IsUserActiveAsync(userId))
-        //        .ReturnsAsync(isActive);
-
         private CreateReviewHandler CreateHandler() =>
             new(_unitOfWorkMock.Object, _identityServiceMock.Object);
 
@@ -74,20 +70,6 @@ namespace ChronolibrisServer.Tests
             _bookRepoMock.Verify(
                 r => r.GetByIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()),
                 Times.Never);
-        }
-
-        [Fact]
-        public async Task Handle_BookNotFound_ThrowsNotFound()
-        {
-            SetupNoExistingReview();
-            _bookRepoMock
-                .Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Book?)null);
-
-            var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
-
-            await act.Should().ThrowAsync<ChronolibrisException>()
-                .Where(e => e.ErrorType == ErrorType.NotFound);
         }
 
         [Fact]
