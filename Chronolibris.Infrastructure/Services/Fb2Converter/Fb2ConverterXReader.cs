@@ -512,6 +512,29 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         }
                     }
                 }
+                else if(nodeType == XmlNodeType.Whitespace ||
+                    nodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    //if (inMainBody)
+                    //{
+                    //    var ws = reader.Value;
+                    //    if(ws.Contains('\n') || ws.Contains('\r'))
+                    //    {
+                    //        elemIdx++;
+                    //        var pe = new ParsedElement
+                    //        {
+                    //            Type = "br",
+                    //            Content = null,
+                    //            Text = null,
+                    //            Xp = BuildXp(bodyIdx, sectionStack, elemIdx),
+                    //                GlobalIndex = globalIdx
+                    //        };
+                    //        currentPart.Add(pe);
+                    //        globalIdx++;
+                    //        totalElements++;
+                    //    }
+                    //}
+                }
                 else if (nodeType == XmlNodeType.EndElement)
                 {
                     if (localName == "body")
@@ -630,6 +653,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 {
                     case XmlNodeType.Text:
                     case XmlNodeType.SignificantWhitespace: //например, в теге p с xml:space=preserve пробелы с переносами или иным содержимым могут стать именно этим
+                    case XmlNodeType.Whitespace:
                         buf.Append(r.Value);
                         break;
 
@@ -641,7 +665,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                     FlushBuf(); //сброс уже накопленного текста
                                     // ReadInnerText безопасно обходит любые вложенные теги,
                                     // поэтому <strong><em>текст</em></strong> тоже корректно обработается
-                                    var inner = ReadInnerText(r).Trim();
+                                    var inner = ReadInnerText(r);
                                     if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
                                 }
                                 break;
@@ -649,7 +673,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             case "emphasis": //курсив - аналогично
                                 {
                                     FlushBuf();
-                                    var inner = ReadInnerText(r).Trim();
+                                    var inner = ReadInnerText(r);
                                     if (inner.Length > 0) mixed.Add(new EmSegment { C = inner });
                                 }
                                 break;
@@ -734,11 +758,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             //если все строки, то можно склеить в одну
             if (mixed.All(x => x is string))
             {
-                var plain = string.Concat(mixed.Cast<string>()).Trim(); //приведение типа к строке
+                var plain = string.Concat(mixed.Cast<string>()); //приведение типа к строке
                 return plain.Length > 0 ? (plain, plain) : (null, null);
             }
 
-            var flatText = string.Concat(mixed.OfType<string>()).Trim();
+            var flatText = string.Concat(mixed.OfType<string>());
             var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
             return (mixed, s);
         }  
@@ -1065,6 +1089,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         //пробел, переносы и табуляции
 
         private static string CollapseWhitespace(string s)
-            => WhitespaceRegex.Replace(s, " ").Trim();
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            return WhitespaceRegex.Replace(s, " ");
+        }
     }
 }
