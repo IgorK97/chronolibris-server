@@ -3,6 +3,7 @@ using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Handlers.References
 {

@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Models.Search
 {
-    public class LanguageDto
-    {
-        public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-    }
+    //public class LanguageDto
+    //{
+    //    public long Id { get; set; }
+    //    public string Name { get; set; } = string.Empty;
+    //}
 
-    public class CountryDto
-    {
-        public long Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-    }
+    //public class CountryDto
+    //{
+    //    public long Id { get; set; }
+    //    public string Name { get; set; } = string.Empty;
+    //}
 
 
     public class PersonRoleDto

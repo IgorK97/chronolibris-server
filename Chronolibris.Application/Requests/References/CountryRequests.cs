@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Chronolibris.Application.Models;
 using System.Collections.Generic;
+using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Requests.References
 {

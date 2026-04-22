@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Interfaces.Repository;
+using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Models.Search;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
