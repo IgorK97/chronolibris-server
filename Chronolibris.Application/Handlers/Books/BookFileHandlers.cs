@@ -197,7 +197,7 @@ namespace Chronolibris.Application.Handlers.Books
 
             _bookFileRepository.Delete(bookFile);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _bookStorage.DeleteFileAsync("books", bookFile.StorageUrl, cancellationToken);
+            await _bookStorage.DeleteBookDataAsync(bookFile.Id.ToString(), cancellationToken);
 
             return Unit.Value;
         }

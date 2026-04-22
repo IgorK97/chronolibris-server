@@ -22,22 +22,22 @@ namespace ChronolibrisWeb.Middleware
 
             try
             {
-                //_logger.LogInformation(" {Method} {Path} | Запрос: {Query} | Пользователь: {User}",
-                //    context.Request.Method,
-                //    context.Request.Path,
-                //    context.Request.QueryString,
-                //    context.User.Identity?.Name ?? "anonymous");
+                _logger.LogInformation(" {Method} {Path} | Запрос: {Query} | Пользователь: {User}",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Request.QueryString,
+                    context.User.Identity?.Name ?? "anonymous");
 
                 var sw = Stopwatch.StartNew();
                 await _next(context);
 
                 sw.Stop();
 
-                //_logger.LogInformation(" {Method} {Path} {StatusCode} ({Elapsed}ms)",
-                //    context.Request.Method,
-                //    context.Request.Path,
-                //    context.Response.StatusCode,
-                //    sw.ElapsedMilliseconds);
+                _logger.LogInformation(" {Method} {Path} {StatusCode} ({Elapsed}ms)",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Response.StatusCode,
+                    sw.ElapsedMilliseconds);
             }
 
             catch (Exception exception)

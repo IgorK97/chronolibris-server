@@ -92,7 +92,7 @@ namespace Chronolibris.Infrastructure.Services.Files
         {
             try
             {
-                await _minioClient.RemoveObjectAsync(new RemoveObjectArgs().WithObject(objectKey), ct);
+                await _minioClient.RemoveObjectAsync(new RemoveObjectArgs().WithBucket(bucket).WithObject(objectKey), ct);
 
             }
             catch (ObjectNotFoundException) { }
