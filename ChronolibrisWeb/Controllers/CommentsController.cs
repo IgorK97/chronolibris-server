@@ -41,7 +41,8 @@ namespace ChronolibrisWeb.Controllers
         [EnableRateLimiting("comments")]
         public async Task<IActionResult> Create(CreateCommentInputModel request)
         {
-            if (!TryGetUserId(out var userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) 
+                return Unauthorized();
 
             var id = await _mediator.Send(new CreateCommentCommand(
                 request.BookId, userId, request.Text, request.ParentCommentId));

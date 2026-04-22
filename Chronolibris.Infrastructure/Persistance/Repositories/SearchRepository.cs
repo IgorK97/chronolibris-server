@@ -38,8 +38,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 parameters.Add(request.LastId.Value);
 
                 cursorClause = @"
-                    WHERE sub.best_similarity < {" + p.ToString() +@"} 
-                    OR (sub.best_similarity = {" + p.ToString() + @"} AND sub.id > {" + p.ToString() + @"})
+                    WHERE (sub.best_similarity < {" + p.ToString() +@"} 
+                    OR (sub.best_similarity = {" + p.ToString() + @"} AND sub.id > {" + p.ToString() + @"}))
                     ";
 
             }
@@ -62,7 +62,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         ) AS best_similarity
                     FROM books b
                     WHERE " + (!request.mode ?  @" b.is_available = true 
-                        AND " : " ") + @" word_similarity({0}::text, b.title)>0.3
+                        AND " : " ") + @" b.title%>{0}::text
 
                     UNION
 
@@ -81,12 +81,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         ) AS best_similarity
                     FROM books b
                     WHERE " + (!request.mode ?  @" b.is_available = true 
-                        AND " : " ") +  @" EXISTS (
+                        AND " : " ") + @" EXISTS (
                             SELECT 1
                             FROM book_content bc
                             JOIN contents c ON c.id = bc.content_id
                             WHERE bc.book_id=b.id
-                                AND word_similarity({0}::text, c.title) >0.3
+                                AND c.title%>{0}::text
                             )
                     ) sub
                     " + cursorClause+@" 
@@ -141,8 +141,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 parameters.Add(request.LastId.Value);
 
                 cursorClause = $$""" 
-                    WHERE best_similarity < {{{p}}}
-                    OR (best_similarity ={{{p}}} AND id>{{{p + 1}}}) 
+                    WHERE (best_similarity < {{{p}}}
+                    OR (best_similarity ={{{p}}} AND id>{{{p + 1}}})) 
                     """;
 
             }
@@ -307,7 +307,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 WHERE  
                 """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + 
                 $$"""
-                  word_similarity({{{0}}}::text, b.title)>0.3
+                  b.title%>{{{0}}}::text
                 
                 {{filters}}
  
@@ -325,7 +325,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                       FROM book_content bc
                       JOIN contents c ON c.id = bc.content_id
                       WHERE bc.book_id = b.id
-                        AND word_similarity({{{0}}}::text, c.title)>0.3
+                        AND c.title%>{{{0}}}::text
                   )
                 {{filters}}
                 """;

@@ -10,7 +10,7 @@ namespace Chronolibris.Domain.Entities
     public class Publisher
     {
         public required long Id { get; set; }
-        [MaxLength(256)]
+        [MaxLength(255)]
         public required string Name { get; set; }
         [MaxLength(5000)]
         public required string Description { get; set; }

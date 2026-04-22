@@ -12,7 +12,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         public required long UserId { get; set; }
         public required long ShelfTypeId { get; set; }
-        [MaxLength(256)]
+        [MaxLength(255)]
         public required string Name { get; set; }
         public required DateTime CreatedAt { get; set; }
         public ShelfType ShelfType { get; set; } = null!;

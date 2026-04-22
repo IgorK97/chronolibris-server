@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Utils
 {
-
-
-
-
     public static class RateLimiterExtensions
     {
         public static void AddChronolibrisRateLimiter(this RateLimiterOptions

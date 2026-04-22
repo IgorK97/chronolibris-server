@@ -15,7 +15,7 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(500)]
         [Required]
         public string Title { get; set; } = String.Empty;
-        [MaxLength(2000)]
+        [MaxLength(5000)]
         public string Description { get; set; } = String.Empty;
         [Required]
         public long CountryId { get; set; }
@@ -26,9 +26,9 @@ namespace Chronolibris.Domain.Entities
         [ConcurrencyCheck]
         public DateTime? UpdatedAt { get; set; }
         public int? Year { get; set; }
-        [MaxLength(150)]
+        [MaxLength(255)]
         public string? Bbk { get; set; }
-        [MaxLength(150)]
+        [MaxLength(255)]
         public string? Udk { get; set; }
         [MaxLength(17)]
         public string? ISBN { get; set; }

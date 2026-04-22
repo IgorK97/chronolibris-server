@@ -36,7 +36,7 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             IConfiguration configuration)
         {
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration
-                .GetConnectionString("Connection"));
+                .GetConnectionString("DefaultConnection"));
 
             var translator = new NpgsqlSnakeCaseNameTranslator();
 

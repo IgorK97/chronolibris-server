@@ -24,7 +24,7 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.Property(user => user.PasswordHash)
                 .IsUnicode(false)
                 .IsFixedLength(true)
-                .HasMaxLength(256); //84
+                .HasMaxLength(255); //84
 
             builder.Property(user => user.ConcurrencyStamp)
                 .IsUnicode(false)
@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.Configurations
             builder
                 .Property(u => u.UserName)
                 .IsRequired()
-                .HasMaxLength(256);
+                .HasMaxLength(255);
 
             var dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 

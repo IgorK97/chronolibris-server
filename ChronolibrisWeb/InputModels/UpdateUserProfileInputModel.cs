@@ -15,7 +15,7 @@ namespace ChronolibrisWeb.InputModels
         [MaxLength(64, ErrorMessage = "Фамилия пользователя должна быть не более 64 символов")]
         [MinLength(1, ErrorMessage = "Фамилия должна быть указана")]
         string LastName,
-        [MaxLength(256, ErrorMessage = "Превышение допустимой длины")]
+        [MaxLength(254, ErrorMessage = "Превышение допустимой длины")]
         //[EmailAddress(ErrorMessage = "Некорректный адрес электронной почты")]
         [RegularExpression(@"^(?=^.{1,254}$)(?!.*\.\.)(?!^\.)(?!.*@\.)(?!.*@-)(?!.*\.@)[a-zA-Z0-9._%+-]+@(?!.*-\.)(?!.*\.-)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         ErrorMessage = "Введите почту в формате name@example.com")]
