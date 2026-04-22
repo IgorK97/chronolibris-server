@@ -154,7 +154,8 @@ namespace ChronolibrisWeb.Controllers
             [FromQuery] TagsInputModel tagsInputModel,
             CancellationToken ct)
         {
-            return await _mediator.Send(new GetTagsByIdsQuery(tagsInputModel.ParsedIds), ct);
+            var results = await _mediator.Send(new GetTagsByIdsQuery(tagsInputModel.ParsedIds), ct);
+            return Ok(results);
         }
     }
 }

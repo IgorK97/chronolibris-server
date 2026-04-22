@@ -492,6 +492,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var found = await _context.Tags
                 .AsNoTracking()
                 .Include(t => t.ParentTag)
+                .Include(t => t.TagType)
                 .Where(t => EF.Functions.ILike(t.Name, pattern))
                 .Take(limit * 2)
                 .ToListAsync(ct);
@@ -515,6 +516,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     Id = rootTag.Id,
                     Name = rootTag.Name,
                     MatchedName = matchedName,
+                    TagTypeName = tag.TagType.Name,
                 });
 
                 if (results.Count >= limit)

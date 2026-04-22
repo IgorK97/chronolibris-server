@@ -54,17 +54,17 @@ namespace ChronolibrisWeb.Controllers
             return Ok(tags);
         }
 
-        [HttpGet("tags/search")]
-        public async Task<ActionResult<List<TagDetails>>> SearchTags(
-        [FromQuery] string searchTerm,
-        [FromQuery] long? tagTypeId = null,
-        [FromQuery] int limit = 5,
-        CancellationToken cancellationToken = default)
-        {
-            var query = new GetTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
-            var tags = await _mediator.Send(query, cancellationToken);
-            return Ok(tags);
-        }
+        //[HttpGet("tags/search")]
+        //public async Task<ActionResult<List<TagDetails>>> SearchTags(
+        //[FromQuery] string searchTerm,
+        //[FromQuery] long? tagTypeId = null,
+        //[FromQuery] int limit = 5,
+        //CancellationToken cancellationToken = default)
+        //{
+        //    var query = new GetTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
+        //    var tags = await _mediator.Send(query, cancellationToken);
+        //    return Ok(tags);
+        //}
 
         [Authorize(Roles = "admin")]
         [HttpPost("{contentId}/tags/{tagId}")]
