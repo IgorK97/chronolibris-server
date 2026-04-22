@@ -127,6 +127,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             };
         }
 
+        private record SectionFrame(int SectionOrdinal, int ParentElemCount,
+            TocChapter? Chapter);
+
         //Метод первого прохода
         private async Task<(BookMeta? meta,
                              Dictionary<string, ParsedNote> notes,
@@ -322,6 +325,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             //список элементов текущего накапливаемого фрагмента
             var currentPart = new List<ParsedElement>();
             //списки метаданных фрагментов
+            var sectionStack = new Stack<SectionFrame>();
             var allChapters = new List<TocChapter>(); //список всех глав для оглавления
             var tocParts = new List<TocPart>(); //список всех сохраненных фрагментов для TOC
 
@@ -339,7 +343,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             // ElemCount — текущий счётчик элементов внутри этой секции.
             // ParentElemCount — значение счётчика элементов родительского уровня,
             //   которое нужно восстановить при выходе из секции.
-            var sectionStack = new Stack<(int SectionOrdinal, int ParentElemCount)>();
+            //var sectionStack = new Stack<(int SectionOrdinal, int ParentElemCount)>();
 
             // sectionCounters[depth] — сколько секций уже открыто на данной глубине
             // (depth 0 = прямые дочери body). Растёт при каждом входе в секцию, не сбрасывается.
@@ -403,7 +407,9 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         int ordinal = sectionCounters[depth];
 
                         // Сохраняем текущий elemIdx родителя — восстановим при выходе
-                        sectionStack.Push((ordinal, elemIdx));
+                        //sectionStack.Push((ordinal, elemIdx));
+                        sectionStack.Push(new SectionFrame
+                            (ordinal, elemIdx, null));
                         elemIdx = 0; //нумерация внутри новой секции с нуля
                         continue;
                     }
@@ -516,8 +522,44 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         //если там до одного элемента, значит, заголовок верхнего уровня)
                         //Если потребуется составить оглавление многоуровневое - 
                         //подправить потом здесь
-                        if (pe.Type == "title" && sectionStack.Count <= 1)
-                            UpdateChapters(allChapters, pe, globalIdx);
+                        //if (pe.Type == "title" && sectionStack.Count <= 1)
+                        //    UpdateChapters(allChapters, pe, globalIdx);
+
+                        if(pe.Type == "title")
+                        {
+                            int depth = sectionStack.Count;
+                            if(depth>=1 && depth <= 3)
+                            {
+                                var newChapter = new TocChapter
+                                {
+                                    S = globalIdx,
+                                    E = globalIdx,
+                                    T = pe.Text,
+                                    C = new List<TocChapter>()
+                                };
+
+                                if(depth == 1)
+                                {
+                                    allChapters.Add(newChapter);
+                                }
+                                else
+                                {
+                                    var parentFrame = sectionStack.Skip(1)
+                                        .FirstOrDefault();
+                                    if(parentFrame?.Chapter != null)
+                                    {
+                                        parentFrame.Chapter.C.Add(newChapter);
+                                    }
+                                    else
+                                    {
+                                        allChapters.Add(newChapter);
+                                    }
+                                }
+
+                                var currentFrame = sectionStack.Pop();
+                                sectionStack.Push(currentFrame with { Chapter = newChapter });
+                            }
+                        }
 
                         fullLength += pe.Text?.Length ?? 0; //добавление длины текста
                         lastElement = pe;
@@ -571,8 +613,15 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     //если это была секция, то нужно восстановить счётчик элементов родительского уровня
                     if (localName == "section" && sectionStack.Count > 0)
                     {
-                        var (_, parentElemCount) = sectionStack.Pop();
-                        elemIdx = parentElemCount; // восстановить счётчик родителя
+                        //var (_, parentElemCount) = sectionStack.Pop();
+                        var frame = sectionStack.Pop();
+                        //elemIdx = parentElemCount; // восстановить счётчик родителя
+                        if (frame.Chapter != null)
+                        {
+                            frame.Chapter.E = globalIdx > 0 ? globalIdx - 1 : 0;
+                        }
+
+                        elemIdx = frame.ParentElemCount;
                     }
                 }
             }
@@ -1062,7 +1111,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         /// </summary>
         private static int[] BuildXp(
             int bodyIdx,
-            Stack<(int SectionOrdinal, int ParentElemCount)> sectionStack,
+            Stack<SectionFrame> sectionStack,
             int elemIdx)
         {
             // Стек хранится «верхушка = самый вложенный уровень»,

@@ -302,6 +302,8 @@ namespace Chronolibris.Application.Interfaces
 
         [JsonPropertyName("t")]
         public string? T { get; set; }
+        [JsonPropertyName("c")]
+        public List<TocChapter> C { get; set; } = new();
     }
 
     //Информация о фрагменте книги
