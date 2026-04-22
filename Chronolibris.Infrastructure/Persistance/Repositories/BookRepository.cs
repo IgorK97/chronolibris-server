@@ -49,6 +49,8 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     b.Bbk,
                     b.Udk,
                     b.Source,
+                    CountryId = b.CountryId,
+                    LanguageId = b.LanguageId,
                     CountryName = b.Country.Name,
                     LanguageName = b.Language.Name,
                     PublisherId = b.PublisherId,
@@ -109,15 +111,23 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 IsAvailable = raw.IsAvailable,
                 IsReviewable = raw.IsReviewable,
                 CoverUri = raw.CoverPath,
-                Country = raw.CountryName,
-                Language = raw.LanguageName,
+                Country = new()
+                {
+                    Name = raw.CountryName,
+                    Id = raw.CountryId
+                },
+                Language = new()
+                {
+                    Name = raw.LanguageName,
+                    Id = raw.LanguageId
+                },
                 Publisher = raw.PublisherName != null
                     ? new PublisherDetails { Id = (long)raw.PublisherId!, Name = raw.PublisherName }
                     : null,
                 AverageRating = raw.Stats?.AverageRating ?? 0M,
-                RatingsCount = raw.Stats?.RatingsCount??0,
-                ReviewsCount = raw.Stats?.ReviewsCount??0,
-                CommentsCount = raw.Stats?.CommentsCount??0,
+                RatingsCount = raw.Stats?.RatingsCount ?? 0,
+                ReviewsCount = raw.Stats?.ReviewsCount ?? 0,
+                CommentsCount = raw.Stats?.CommentsCount ?? 0,
                 UserRating = raw.Stats?.UserRating ?? 0M,
                 IsFavorite = raw.IsFavorite,
                 IsRead = raw.IsRead,

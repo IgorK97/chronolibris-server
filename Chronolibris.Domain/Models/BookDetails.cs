@@ -28,8 +28,8 @@ namespace Chronolibris.Domain.Models
         public required bool IsRead { get; set; }
         public required bool IsReviewable { get; set; }
         public PublisherDetails? Publisher { get; set; }
-        public string? Country { get; set; }
-        public required string Language { get; set; }
+        public CountryDto Country { get; set; } = new();
+        public LanguageDto Language { get; set; } = new();
         public IEnumerable<BookPersonGroupDetails> Participants { get; set; } = [];
         public IEnumerable<ThemeDetails> Themes { get; set; } = [];
         public required IEnumerable<TagShortDetails> Tags { get; set; } = [];
