@@ -869,6 +869,7 @@ using System.Xml;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Chronolibris.Infrastructure.Services.Fb2Converter
 {
@@ -883,9 +884,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         };
 
         private readonly IStorageService _storage;
+        private readonly ILogger<Fb2ConverterXReader> _logger;
 
-        public Fb2ConverterXReader(IStorageService storage)
-            => _storage = storage;
+        public Fb2ConverterXReader(IStorageService storage, ILogger<Fb2ConverterXReader> logger)
+        {
+            _storage = storage;
+            _logger = logger;        
+        }
 
         public async Task<ConversionResult> ConvertAsync(
             Stream fb2Stream,
@@ -1015,7 +1020,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             while (await reader.ReadAsync())
             {
                 ct.ThrowIfCancellationRequested();
-
+                _logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}",
+                    reader.NodeType, reader.LocalName, reader.Value);
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     var localName = reader.LocalName;
@@ -1186,13 +1192,14 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
             //Последний фрагмент - чтобы корректно его обработать
             ParsedElement? lastElement = null;
-
+            _logger.LogDebug("===second trip===");
             using var reader = CreateXmlReader(stream);
 
             while (await reader.ReadAsync())
             {
                 ct.ThrowIfCancellationRequested();
-
+                _logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}",
+    reader.NodeType, reader.LocalName, reader.Value);
                 var nodeType = reader.NodeType;
                 var localName = reader.LocalName;
                 //var nsUri = reader.NamespaceURI;
@@ -1431,11 +1438,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         // Парсит смешанный XML-фрагмент
         // в объект Content (string или List или object) и plain-text
         // Использует легковесный XmlReader — не создаёт полный DOM
-        private static (object? content, string? flatText) ParseMixedXml(
+
+        // Парсит смешанный XML-фрагмент
+        // в объект Content (string или List или object) и plain-text
+        // Использует легковесный XmlReader — не создаёт полный DOM
+        private (object? content, string? flatText) ParseMixedXml(
             string outerXml,
             Dictionary<string, ParsedNote> notes,
             Dictionary<string, string> imageMap)
         {
+            _logger.LogDebug("parse mixed xml");
             var mixed = new List<object>(); //это может быть большой список из разного содержимого, по идее
             var buf = new StringBuilder();
 
@@ -1454,10 +1466,32 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             r.Read();
             int rootDepth = r.Depth; //абсолютная глубина
 
+            // Вспомогательный метод: читает содержимое текущего элемента как plain-текст,
+            // рекурсивно обходя любые дочерние теги. Позиция читателя после вызова —
+            // на EndElement обрабатываемого тега (или сразу после пустого элемента).
+            // Используется для «понятных» инлайн-тегов (strong, emphasis), у которых
+            // теоретически может быть вложенная разметка (например, <strong><em>...</em></strong>).
+            static string ReadInnerText(XmlReader r)
+            {
+                if (r.IsEmptyElement) return string.Empty;
+                var sb = new StringBuilder();
+                int depth = r.Depth; // глубина открывающего тега
+                while (r.Read() && r.Depth > depth)
+                {
+                    if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
+                        sb.Append(r.Value);
+                    // все вложенные теги прозрачно проходятся; их текстовые узлы будут
+                    // подхвачены на следующих итерациях, пока глубина больше depth
+                }
+                // после цикла r стоит на EndElement родительского тега — это ожидаемое состояние
+                return sb.ToString();
+            }
+
             while (r.Read())
             {
                 if (r.Depth == rootDepth) break; //на всякий случай выход сразу по окончании корневого тега
-
+                _logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}",
+                        r.NodeType, r.LocalName, r.Value);
                 switch (r.NodeType)
                 {
                     case XmlNodeType.Text:
@@ -1470,9 +1504,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         {
                             case "strong":
                                 {
-
                                     FlushBuf(); //сброс уже накопленного текста
-                                    var inner = r.ReadElementContentAsString().Trim();
+                                    // ReadInnerText безопасно обходит любые вложенные теги,
+                                    // поэтому <strong><em>текст</em></strong> тоже корректно обработается
+                                    var inner = ReadInnerText(r).Trim();
                                     if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
                                 }
                                 break;
@@ -1480,7 +1515,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             case "emphasis": //курсив - аналогично
                                 {
                                     FlushBuf();
-                                    var inner = r.ReadElementContentAsString().Trim();
+                                    var inner = ReadInnerText(r).Trim();
                                     if (inner.Length > 0) mixed.Add(new EmSegment { C = inner });
                                 }
                                 break;
@@ -1501,7 +1536,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                                     else
                                     {
-                                        var label = r.ReadElementContentAsString();
+                                        // ReadInnerText безопасен для смешанного содержимого ссылки
+                                        var label = ReadInnerText(r);
 
                                         if (noteType == "note" && href != null
                                             && notes.TryGetValue(href, out var note))
@@ -1540,8 +1576,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 }
 
                             default:
-                                //прочие теги - только текст
-                                buf.Append(r.ReadElementContentAsString());
+                                // Тег-обёртка (например, <p> внутри <title>, или любой иной неизвестный тег).
+                                // Нельзя вызывать ReadElementContentAsString(), если внутри есть дочерние теги
+                                // (это приведёт к InvalidOperationException).
+                                // Вместо этого используем ReadInnerText(), который безопасно рекурсивно
+                                // извлекает весь текст, а форматирующие сегменты (strong/emphasis/a/image)
+                                // внутри таких обёрток будут потеряны как сегменты, но их текст сохранится.
+                                // Альтернатива — рекурсивный вызов ParseMixedXml с outerXml дочернего тега,
+                                // но тогда нужно вычитывать outerXml через r.ReadOuterXml(), что меняет
+                                // позицию читателя и усложняет логику.
+                                buf.Append(ReadInnerText(r));
                                 break;
                         }
                         break;
@@ -1564,6 +1608,146 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
             return (mixed, s);
         }
+
+
+
+
+
+        //private (object? content, string? flatText) ParseMixedXml(
+        //    string outerXml,
+        //    Dictionary<string, ParsedNote> notes,
+        //    Dictionary<string, string> imageMap)
+        //{
+        //    _logger.LogDebug("parse mixed xml");
+        //    var mixed = new List<object>(); //это может быть большой список из разного содержимого, по идее
+        //    var buf = new StringBuilder();
+
+        //    void FlushBuf() //сбросить накопленную строку
+        //    {
+        //        var s = CollapseWhitespace(buf.ToString()); //удалить лишние пробелы
+        //        if (s.Length > 0) mixed.Add(s);
+        //        buf.Clear();
+        //    }
+
+        //    using var r = XmlReader.Create( //напрямую в констурктор, как оказалось, не принимает строку, поэтому использовал stringReader
+        //        new StringReader(outerXml),
+        //        new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore }); //по умолчанию prohibit
+
+        //    //Здесь корневой тег, его нужно пропустить
+        //    r.Read();
+        //    int rootDepth = r.Depth; //абсолютная глубина
+
+        //    while (r.Read())
+        //    {
+        //        if (r.Depth == rootDepth) break; //на всякий случай выход сразу по окончании корневого тега
+        //        _logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}",
+        //                r.NodeType, r.LocalName, r.Value);
+        //        switch (r.NodeType)
+        //        {
+        //            case XmlNodeType.Text:
+        //            case XmlNodeType.SignificantWhitespace: //например, в теге p с xml:space=preserve пробелы с переносами или иным содержимым могут стать именно этим
+        //                buf.Append(r.Value);
+        //                break;
+
+        //            case XmlNodeType.Element:
+        //                switch (r.LocalName)
+        //                {
+        //                    case "strong":
+        //                        {
+
+        //                            FlushBuf(); //сброс уже накопленного текста
+        //                            var inner = r.ReadElementContentAsString().Trim();
+        //                            if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
+        //                        }
+        //                        break;
+
+        //                    case "emphasis": //курсив - аналогично
+        //                        {
+        //                            FlushBuf();
+        //                            var inner = r.ReadElementContentAsString().Trim();
+        //                            if (inner.Length > 0) mixed.Add(new EmSegment { C = inner });
+        //                        }
+        //                        break;
+
+        //                    case "a": //пока только якоря (для номеров страниц) или ссылки для сносок
+        //                        {
+        //                            var noteType = r.GetAttribute("type");
+        //                            var href = r.GetAttribute("href")?.TrimStart('#');
+
+        //                            var anchorId = r.GetAttribute("id");
+        //                            var pageNumber = TryParsePageNumber(anchorId);
+        //                            if (pageNumber.HasValue)
+        //                            {
+        //                                FlushBuf();
+        //                                mixed.Add(new PageNumberSegment { Pn = pageNumber.Value });
+        //                                if (!r.IsEmptyElement) r.Skip();
+        //                            }
+
+        //                            else
+        //                            {
+        //                                var label = r.ReadElementContentAsString();
+
+        //                                if (noteType == "note" && href != null
+        //                                    && notes.TryGetValue(href, out var note))
+        //                                {
+        //                                    FlushBuf();
+        //                                    mixed.Add(new NoteSegment
+        //                                    {
+        //                                        C = label,
+        //                                        Xp = note.Xp,
+        //                                        F = new FootnoteContent
+        //                                        {
+        //                                            Xp = note.Xp,
+        //                                            C = note.Paragraphs
+        //                                        }
+        //                                    });
+        //                                }
+        //                                else
+        //                                {
+        //                                    buf.Append(label);
+        //                                }
+
+        //                            }
+        //                            break;
+        //                        }
+
+        //                    case "image":
+        //                        {
+        //                            var href = r.GetAttribute("href")?.TrimStart('#');
+        //                            if (href != null && imageMap.TryGetValue(href, out var imgFile))
+        //                            {
+        //                                FlushBuf();
+        //                                mixed.Add(new ImgSegment { Src = imgFile });
+        //                            }
+        //                            if (!r.IsEmptyElement) r.Skip();
+        //                            break;
+        //                        }
+
+        //                    default:
+        //                        //прочие теги - только текст
+        //                        buf.Append(r.ReadElementContentAsString());
+        //                        break;
+        //                }
+        //                break;
+        //        }
+        //    }
+
+        //    FlushBuf();
+
+        //    if (mixed.Count == 0)
+        //        return (null, null);
+
+        //    //если все строки, то можно склеить в одну
+        //    if (mixed.All(x => x is string))
+        //    {
+        //        var plain = string.Concat(mixed.Cast<string>()).Trim(); //приведение типа к строке
+        //        return plain.Length > 0 ? (plain, plain) : (null, null);
+        //    }
+
+        //    var flatText = string.Concat(mixed.OfType<string>()).Trim();
+        //    var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
+        //    return (mixed, s);
+        //}
 
         // Сериализует накопленный фрагмент, сохраняет в хранилище,
         // добавляет запись в список tocParts

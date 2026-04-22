@@ -16,9 +16,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug() // Уровень логирования
+    .WriteTo.Console()    // Оставляем вывод в консоль
+    .WriteTo.File("logs/parsing_log_.txt",
+        rollingInterval: RollingInterval.Day, // Новый файл каждый день
+        retainedFileCountLimit: 30,            // Хранить логи за последние 7 дней
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Очистка карты клеймов до настройки аутентификации
 //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
