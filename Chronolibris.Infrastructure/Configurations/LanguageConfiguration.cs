@@ -18,7 +18,8 @@ namespace Chronolibris.Infrastructure.Configurations
                 new Language { Id = 1, Name = "Английский" },
                 new Language { Id = 2, Name = "Русский" },
                 new Language { Id = 3, Name = "Французский"},
-                new Language { Id = 4, Name = "Немецкий" }
+                new Language { Id = 4, Name = "Немецкий" },
+                new Language { Id = 5, Name = "Русский (дореформенная орфография)"}
             );
         }
     }
