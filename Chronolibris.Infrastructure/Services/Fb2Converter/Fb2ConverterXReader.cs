@@ -657,7 +657,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             case "a": //пока только якоря (для номеров страниц) или ссылки для сносок
                                 {
                                     var noteType = r.GetAttribute("type");
-                                    var href = r.GetAttribute("href")?.TrimStart('#');
+                                    var href = r.GetAttribute("l:href")?.TrimStart('#');
 
                                     var anchorId = r.GetAttribute("id");
                                     var pageNumber = TryParsePageNumber(anchorId);
@@ -699,7 +699,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                             case "image":
                                 {
-                                    var href = r.GetAttribute("href")?.TrimStart('#');
+                                    var href = r.GetAttribute("l:href")?.TrimStart('#');
                                     if (href != null && imageMap.TryGetValue(href, out var imgFile))
                                     {
                                         FlushBuf();
