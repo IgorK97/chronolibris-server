@@ -158,7 +158,7 @@ namespace Chronolibris.Application.Handlers.Books
 
                 return bookFile.Id;
             }
-            catch
+            catch(Exception ex)
             {
                 string message = "";
                 try
@@ -166,11 +166,12 @@ namespace Chronolibris.Application.Handlers.Books
                     _bookFileRepository.Delete(bookFile);
                     await _unitOfWork.SaveChangesAsync(CancellationToken.None); //чтобы удаление не отменилось при отмене основного токена
                 }
-                catch (Exception ex)
+                catch (Exception ex1)
                 {
                     message = $"Ошибка при очистке данных о файле после неудачной загрузки";
                 }
-                throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов. " + message, ErrorType.ServerException);
+                throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов или в процессе конвертации. " + message+
+                    ex.Message, ErrorType.ServerException);
             }
         }
     }
