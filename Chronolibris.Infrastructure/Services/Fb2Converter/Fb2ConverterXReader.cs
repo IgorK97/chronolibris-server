@@ -189,15 +189,29 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     //если в боди сносок и вошли в секцию для конкретной сноски
                     if (inNotesBody && localName == "section")
                     {
-                        inNoteSection = true;
+                        //inNoteSection = true;
                         noteSectionIdx++;
                         noteElemIdx = 0; //новая секция - новая нумерация параграфов
                         //(хотя может быть всего один)
+                        var secId = reader.GetAttribute("id");
+                        if (!string.IsNullOrEmpty(secId))
+                        {
+                            currentNoteId = secId;
+                            if (!notes.ContainsKey(secId))
+                            {
+                                notes[secId] = new ParsedNote
+                                {
+                                    NoteId = secId,
+                                    Xp = [noteBodyIdx, noteSectionIdx, 0],
+                                    Paragraphs = new List<string>()
+                                };
+                            }
+                        }
                         continue;
                     }
 
                     //параграф в сноске <p id="nX">
-                    if (inNotesBody && inNoteSection && localName == "p")
+                    if (inNotesBody /*&& inNoteSection*/ && localName == "p")
                     {
                         var id = reader.GetAttribute("id");
                         noteElemIdx++;
@@ -209,20 +223,31 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         if (!string.IsNullOrEmpty(id)) //id будет у первого параграфа только
                         {
                             currentNoteId = id;
-                            notes[id] = new ParsedNote //поэтому запись в словаре создается при первом обнаружении
+                            if (!notes.ContainsKey(id))
                             {
-                                NoteId = id,
-                                Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx], // body notes всегда плоские: body > section > p
-                                Paragraphs = string.IsNullOrEmpty(text) ? [] : [text]
-                            };
+                                notes[id] = new ParsedNote //поэтому запись в словаре создается при первом обнаружении
+                                {
+                                    NoteId = id,
+                                    Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx], // body notes всегда плоские: body > section > p
+                                    Paragraphs = string.IsNullOrEmpty(text) ? [] : [text]
+                                };
+                            }
+
                         }
-                        //если это уже не первый абзац
-                        else if (!string.IsNullOrEmpty(currentNoteId)
-                                 //&& notes.TryGetValue(currentNoteId, out var existing)
-                                 && !string.IsNullOrEmpty(text))
+                        if(!string.IsNullOrEmpty(currentNoteId) && !string.IsNullOrWhiteSpace(text))
                         {
-                            notes[currentNoteId].Paragraphs.Add(text);
+                            if(notes.TryGetValue(currentNoteId, out var note))
+                            {
+                                note.Paragraphs.Add(text);
+                            }
                         }
+                        ////если это уже не первый абзац
+                        //else if (!string.IsNullOrEmpty(currentNoteId)
+                        //         //&& notes.TryGetValue(currentNoteId, out var existing)
+                        //         && !string.IsNullOrEmpty(text))
+                        //{
+                        //    notes[currentNoteId].Paragraphs.Add(text);
+                        //}
                         continue;
                     }
 
@@ -273,7 +298,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     if (reader.LocalName == "body")
                         inNotesBody = false;
                     if (reader.LocalName == "section")
+                    {
                         inNoteSection = false;
+                        currentNoteId = "";
+                    }
                 }
             }
 
