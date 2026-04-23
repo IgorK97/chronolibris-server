@@ -116,6 +116,10 @@ namespace Chronolibris.Infrastructure.DependencyInjection
                     .WithEndpoint(minioOpts.Endpoint)
                     .WithCredentials(minioOpts.AccessKey, minioOpts.SecretKey)
                     .WithSSL(minioOpts.UseSSL)
+                    //.WithHttpClient(new HttpClient(new HttpClientHandler
+                    //{
+                    //    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                    //}))
                     .Build());
             services.AddScoped<IStorageService, StorageService>();
             return services;

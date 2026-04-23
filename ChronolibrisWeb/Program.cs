@@ -22,7 +22,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug() // Уровень логирования
+    .MinimumLevel.Error() // Уровень логирования
     .WriteTo.Console()    // Оставляем вывод в консоль
     .WriteTo.File("logs/parsing_log_.txt",
         rollingInterval: RollingInterval.Day, // Новый файл каждый день
@@ -144,13 +144,13 @@ builder.Services.AddRateLimiter(options =>
 {
     options.AddChronolibrisRateLimiter();
 });
-builder.Services.AddRequestTimeouts(options =>
-{
-    options.DefaultPolicy = new RequestTimeoutPolicy
-    {
-        Timeout = TimeSpan.FromSeconds(60)
-    };
-});
+//builder.Services.AddRequestTimeouts(options =>
+//{
+//    options.DefaultPolicy = new RequestTimeoutPolicy
+//    {
+//        Timeout = TimeSpan.FromSeconds(60)
+//    };
+//});
 
 
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
@@ -243,7 +243,7 @@ if(app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseRequestTimeouts();
+//app.UseRequestTimeouts();фт
 app.UseRateLimiter();
 
 app.UseDefaultFiles();

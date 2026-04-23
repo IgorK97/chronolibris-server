@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Контейнер с базой данных
+  db-chronolibris:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ChronolibrisDbDev
+    ports:
+      - "5433:5432"
+    volumes:
+      # ВАЖНО: маппинг папки на компьютере в папку внутри контейнера
+      # Формат: "путь_на_хосте:путь_в_контейнере"
+      - C:/docker_data/postgres:/var/lib/postgresql/data
+
+  # Контейнер с вашим Web API
+  web-api:
+    image: ${DOCKER_REGISTRY-}chronolibris_web
+    build:
+      context: .
+      dockerfile: ChronolibrisWeb/Dockerfile
+    ports:
+      - "5000:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - db-chronolibris
+    environment:
+      - MinioOptions__Endpoint=host.docker.internal:9020
+      - MinioOptions__UseSSL=false
+      - BookStorageOptions__BooksBucket=books
+      # Переопределяем строку подключения для контейнера
+      - ConnectionStrings__DefaultConnection=Host=db-chronolibris;Port=5432;Database=ChronolibrisDbDev;Username=postgres;Password=${DB_PASSWORD}

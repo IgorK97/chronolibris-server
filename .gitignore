@@ -12,6 +12,12 @@
 
 *.json
 
+.env
+
+backup.sql
+*.backup
+*.sql
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
