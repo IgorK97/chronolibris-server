@@ -20,7 +20,6 @@ namespace Chronolibris.Infrastructure.Utils
                 ChronolibrisException ex => (MapTypeToStatusCode(ex.ErrorType), "Ошибка", ex.Message),
                 CannotInsertNullException ex => (StatusCodes.Status400BadRequest, "Ошибка", "Некоторые обязательные данные не были указаны"),
 
-
                 //DbUpdateException dbEx when dbEx.InnerException?.Message.Contains("duplicate key") == true =>
                     //UniqueConstraintException ex=>(StatusCodes.Status409Conflict, "Ошибка", FormatUniqueMessage(ex.Entries)),
 
@@ -29,21 +28,6 @@ namespace Chronolibris.Infrastructure.Utils
                 _ => (StatusCodes.Status500InternalServerError, "Ошибка сервера", "Произошла непредвиденная ошибка")
             };
         }
-
-        //private string FormatUniqueMessage(IReadOnlyList<EntityEntry> entries)
-        //{
-        //    var details = entries.Select(entry =>
-        //    {
-        //        var entityName = entry.Metadata.GetComment() ?? entry.Entity.GetType().Name;
-
-        //        var properties = entry.CurrentValues.Properties
-        //        .Where(p => p.IsIndex() || p.IsPrimaryKey())
-        //        .Select(p => $"{p.GetComment() ?? p.Name}: '{entry.CurrentValues[p]}");
-
-        //        return $"{entityName} ({string.Join(", ", properties)})";
-        //    });
-        //    return $"Ошибка. Указанные поля должны быть уникальными в системе, но таковыми не являются: {string.Join("; ", details)}";
-        //}
 
         private static int MapTypeToStatusCode(ErrorType type) => type switch
         {

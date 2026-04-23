@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Utils
@@ -13,9 +14,15 @@ namespace ChronolibrisWeb.Utils
             options.OnRejected = async (context, token) =>
             {
                 context.HttpContext.Response.StatusCode = 429;
-                await context.HttpContext.Response.
-                    WriteAsync("Слишком много запросов. Попробуйте позже",
-                    token);
+                context.HttpContext.Response.ContentType = "application/json";
+
+                await context.HttpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                {
+                    Status = 429,
+                    Title = "Слишком много запросов",
+                    Detail = "Превышен лимит запросов. Попробуйте позже.",
+                    Instance = context.HttpContext.Request.Path
+                }, cancellationToken: token);
             };
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
