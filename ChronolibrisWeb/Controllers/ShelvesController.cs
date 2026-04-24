@@ -55,6 +55,7 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("books/{bookId}")]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> SeekBookInShelves(long bookId)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -67,6 +68,7 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("user")]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> GetUserShelves()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,9 +79,13 @@ namespace ChronolibrisWeb.Controllers
             return Ok(result);
         }
         [HttpGet("{shelfId}/books")]
-        public async Task<IActionResult> GetShelfBooks(long userId, long shelfId, 
+        [Authorize(Roles = "reader")]
+        public async Task<IActionResult> GetShelfBooks(long shelfId, 
             long? lastId = null, int limit = 20)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
             if (limit < 1) limit = 20;
             else if (limit > 100) limit = 100;
 

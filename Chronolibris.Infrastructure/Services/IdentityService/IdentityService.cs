@@ -137,7 +137,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             var role = roles.FirstOrDefault() ?? string.Empty;
             return new UserProfileResponse
             {
-                UserId = user.Id,
+                //UserId = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
@@ -191,7 +191,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             return new UserProfileResponse
             {
-                UserId = user.Id,
+                //UserId = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
