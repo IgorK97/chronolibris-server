@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
@@ -58,7 +59,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 if (ReportStatusId is not null) {
                     if (moderatorId == 0)
-                        throw new Exception("Не указан модератор");
+                        throw new ChronolibrisException("Не указан модератор", ErrorType.Validation);
                     query = query.Where(r => r.ModerationTaskId != null && r.ModerationTask.StatusId == ReportStatusId && r.ModerationTask.ModeratedBy == moderatorId);
                 }
                 else

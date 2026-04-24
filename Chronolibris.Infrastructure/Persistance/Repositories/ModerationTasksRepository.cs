@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 INSERT INTO moderation_tasks 
                     (target_id, target_type_id, moderated_by, started_at, status_id, comment, check_number, reason_type_id)
                 VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})
-                ON CONFLICT (target_id, target_type_id) WHERE status_id = 2 
+                ON CONFLICT (target_id, target_type_id, reason_type_id) WHERE status_id = 2 
                 DO NOTHING
                 RETURNING id;";
 
