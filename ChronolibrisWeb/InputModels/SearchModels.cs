@@ -35,11 +35,13 @@ namespace ChronolibrisWeb.InputModels
 
         public double? LastBestSimilarity { get; set; }
         public long? LastId { get; set; }
-
+        [MaxLength(100, ErrorMessage = "Максимальное количество фильтров персоналий — 100")]
         public List<PersonRoleFilterModel> PersonFilters { get; set; } = [];
         public long ThemeId { get; set; }
         public long SelectionId { get; set; }
+        [MaxLength(100, ErrorMessage = "Максимальное количество тегов — 100")]
         public List<long> RequiredTagIds { get; set; } = [];
+        [MaxLength(100, ErrorMessage = "Максимальное количество тегов — 100")]
         public List<long> ExcludedTagIds { get; set; } = [];
 
     }
