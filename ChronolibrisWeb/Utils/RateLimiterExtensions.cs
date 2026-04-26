@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -32,8 +31,8 @@ namespace ChronolibrisWeb.Utils
                     partitionKey: ipAddress,
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
-                        PermitLimit = 20,           // 20 запросов
-                        Window = TimeSpan.FromSeconds(1), // в секунду
+                        PermitLimit = 20,           
+                        Window = TimeSpan.FromSeconds(1),
                         QueueLimit = 0              // без очереди (сразу блокировать)
                     });
             });

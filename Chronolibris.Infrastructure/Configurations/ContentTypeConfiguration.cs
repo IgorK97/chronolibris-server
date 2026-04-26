@@ -32,7 +32,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                  new ContentType { Id = 10, Name = "Рассказ", Nature = ContentNature.Work },
                  new ContentType { Id = 11, Name = "Роман", Nature = ContentNature.Work },
                  new ContentType { Id = 12, Name = "Философский трактат", Nature = ContentNature.Work },
-                 new ContentType { Id = 13, Name = "Богословский трактат", Nature = ContentNature.Work },
+                 new ContentType { Id = 13, Name = "Религиозный трактат", Nature = ContentNature.Work },
                  new ContentType { Id = 14, Name = "Политический трактат", Nature = ContentNature.Work },
                  new ContentType { Id = 15, Name = "Биография", Nature = ContentNature.Work },
                  new ContentType { Id = 16, Name = "Путевые заметки", Nature = ContentNature.Work },
@@ -47,7 +47,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
                  new ContentType { Id = 22, Name = "Неизвестно", Nature = ContentNature.Unknown },
 
-                 new ContentType { Id = 23, Name = "Комментарий", Nature = ContentNature.Analysis }
+                 new ContentType { Id = 23, Name = "Комментарий", Nature = ContentNature.Analysis },
+                 new ContentType { Id = 24, Name = "Священный текст", Nature = ContentNature.Document }
+
 
                  );
         }
