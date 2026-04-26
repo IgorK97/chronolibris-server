@@ -108,15 +108,20 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             try
             {
                 await _context.Set<BookShelf>().AddAsync(link, ct);
+                await _context.SaveChangesAsync(ct);
             }
-            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            catch (DbUpdateException ex) //when (ex.InnerException is PostgresException pgEx)
             {
+                if (ex.InnerException is not PostgresException pgEx)
+                    throw;
                 if (pgEx.SqlState == "23503")
                 {
                     throw new ChronolibrisException("Книга или полка не найдена", ErrorType.NotFound);
                 }
                 if (pgEx.SqlState == "23505")
+                {
                     return;
+                }
                 throw;
             }
         }

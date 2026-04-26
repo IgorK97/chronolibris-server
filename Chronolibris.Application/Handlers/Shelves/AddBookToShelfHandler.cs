@@ -20,7 +20,7 @@ namespace Chronolibris.Application.Handlers.Shelves
         public async Task Handle(AddBookToShelfCommand request, CancellationToken ct)
         {
             var shelfOwnerValid = await _uow.Shelves.AnyAsync(s =>
-                    s.Id == request.ShelfId && s.UserId == request.UserId, ct);
+                    s.Id == request.ShelfId && s.UserId == request.UserId, ct); //TODO: лучше все таки взять полку и проверить, чья она
 
             if (!shelfOwnerValid)
                 throw new ChronolibrisException("Полка не найдена", ErrorType.Forbidden);
@@ -32,7 +32,7 @@ namespace Chronolibris.Application.Handlers.Shelves
                 throw new ChronolibrisException("Книга недоступна", ErrorType.Forbidden);
 
             await _uow.Shelves.AddBookToShelf(request.ShelfId, request.BookId, ct);
-            await _uow.SaveChangesAsync(ct);
+            //await _uow.SaveChangesAsync(ct);
         }
     }
 }

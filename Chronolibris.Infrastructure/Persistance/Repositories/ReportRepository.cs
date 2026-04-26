@@ -45,6 +45,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             bool ReportStatusFilter,
             long? ReportStatusId, DateTime? LastDate)
         {
+            
             IQueryable<Report> query = _context.Reports
                 .AsNoTracking().Include(r=>r.ModerationTask);
             if(TargetTypeFilter && LastTargetTypeId is not null)
