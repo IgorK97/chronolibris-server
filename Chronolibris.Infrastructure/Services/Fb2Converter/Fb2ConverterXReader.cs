@@ -821,6 +821,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 // но тогда нужно вычитывать outerXml через r.ReadOuterXml(), что меняет
                                 // позицию читателя и усложняет логику.
                                 buf.Append(ReadInnerText(r));
+                                buf.Append(' ');
                                 break;
                         }
                         break;
@@ -1019,31 +1020,31 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         }
 
         //обновляет список глав
-        private static void UpdateChapters(
-            List<TocChapter> chapters,
-            ParsedElement titleElement,
-            int globalIdx)
-        {
-            //закрытие предыдущей главы
-            if (chapters.Count > 0)
-            {
-                //var prev = chapters[^1];
-                //chapters[^1] = new TocChapter
-                //{
-                //    S = prev.S,
-                //    E = globalIdx - 1,
-                //    T = prev.T
-                //};
-                chapters[^1].E = globalIdx - 1;
-            }
-            //открытие новой
-            chapters.Add(new TocChapter
-            {
-                S = globalIdx,
-                E = globalIdx,
-                T = titleElement.Text
-            });
-        }
+        //private static void UpdateChapters(
+        //    List<TocChapter> chapters,
+        //    ParsedElement titleElement,
+        //    int globalIdx)
+        //{
+        //    //закрытие предыдущей главы
+        //    if (chapters.Count > 0)
+        //    {
+        //        //var prev = chapters[^1];
+        //        //chapters[^1] = new TocChapter
+        //        //{
+        //        //    S = prev.S,
+        //        //    E = globalIdx - 1,
+        //        //    T = prev.T
+        //        //};
+        //        chapters[^1].E = globalIdx - 1;
+        //    }
+        //    //открытие новой
+        //    chapters.Add(new TocChapter
+        //    {
+        //        S = globalIdx,
+        //        E = globalIdx,
+        //        T = titleElement.Text
+        //    });
+        //}
 
         // Метаданные (название книги) (парсинг outerXml блока description)
 
@@ -1161,14 +1162,27 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 _ => ".jpg"
             };
 
-        private static readonly Regex WhitespaceRegex = new Regex(@"\s+"); //регулярное выражение
-        //верабльный литерал (игнорирование обратных слешей, чтобы не было \\)
-        //пробел, переносы и табуляции
+        //private static readonly Regex WhitespaceRegex = new Regex(@"\s+"); //регулярное выражение
+        ////верабльный литерал (игнорирование обратных слешей, чтобы не было \\)
+        ////пробел, переносы и табуляции
+
+        //private static string CollapseWhitespace(string s)
+        //{
+        //    if (string.IsNullOrEmpty(s)) return s;
+        //    return WhitespaceRegex.Replace(s, " ");
+        //}
+
+        private static readonly Regex MultipleNewlinesRegex = new Regex(@"\n+");
+        private static readonly Regex MultipleSpacesRegex = new Regex(@"[ \t]+");
 
         private static string CollapseWhitespace(string s)
         {
             if (string.IsNullOrEmpty(s)) return s;
-            return WhitespaceRegex.Replace(s, " ");
+
+            s = MultipleNewlinesRegex.Replace(s, "\n");
+            s = MultipleSpacesRegex.Replace(s, " ");
+
+            return s;
         }
     }
 }
