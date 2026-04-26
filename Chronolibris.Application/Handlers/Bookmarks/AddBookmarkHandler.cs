@@ -34,8 +34,6 @@ namespace Chronolibris.Application.Handlers.Bookmarks
             {
                 throw new ChronolibrisException("Такой книги нет или она недоступна", ErrorType.Forbidden);
             }
-            if (request.ParaIndex < 0 || request.ParaIndex > availableBookFile.MaxParaIndex)
-                throw new ChronolibrisException("Некорректная позиция закладки", ErrorType.Validation);
 
             var currentCount = await _unitOfWork.Bookmarks.CountAsync(b => b.UserId == request.UserId && b.BookFileId == request.BookFileId, cancellationToken);
             if (currentCount >= 500)
@@ -48,8 +46,9 @@ namespace Chronolibris.Application.Handlers.Bookmarks
                 BookFileId = request.BookFileId,
                 UserId = request.UserId,
                 Note = request.NoteText,
-                ParaIndex = request.ParaIndex,
+                Xpointer = request.Xpointer,
                 CreatedAt = DateTime.UtcNow,
+                Context = request.Context,
                 Id = 0,
             };
             await _unitOfWork.Bookmarks.AddAsync(bookmark, cancellationToken);

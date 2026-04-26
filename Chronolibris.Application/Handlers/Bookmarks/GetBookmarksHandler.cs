@@ -23,8 +23,9 @@ namespace Chronolibris.Application.Handlers.Bookmarks
                 Id = b.Id,
                 Note = b.Note,
                 BookFileId=b.BookFileId,
-                ParaIndex = b.ParaIndex,
-                CreatedAt = b.CreatedAt
+                Xpointer = b.Xpointer,
+                CreatedAt = b.CreatedAt,
+                Context = b.Context
             }).ToList();
         }
     }

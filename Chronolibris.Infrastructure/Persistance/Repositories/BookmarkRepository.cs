@@ -46,9 +46,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .ToListAsync(token);
         }
 
-        public async Task<Bookmark?> GetConcreteBookmark(long bookId, long userId, int paraIndex, CancellationToken token = default)
+        public async Task<Bookmark?> GetConcreteBookmark(long bookId, long userId, string xpointer, CancellationToken token = default)
         {
-            return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId && b.ParaIndex == paraIndex).FirstOrDefaultAsync(token);
+            return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId && b.Xpointer == xpointer).FirstOrDefaultAsync(token);
         }
     }
 }

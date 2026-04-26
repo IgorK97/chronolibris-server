@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
     {
         
         Task<List<Bookmark>> GetAllForBookAndUserAsync(long bookId, long userId, CancellationToken token);
-        Task<Bookmark?> GetConcreteBookmark(long bookId, long userId, int paraIndex, CancellationToken token);
+        Task<Bookmark?> GetConcreteBookmark(long bookId, long userId, string xpointer, CancellationToken token);
 
     }
 }

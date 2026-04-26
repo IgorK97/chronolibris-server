@@ -54,7 +54,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
             bookFile.CompletedAt = result.CompletedAt;
-            bookFile.MaxParaIndex = result.TocFile.GlobalEnd;
 
             await _context.SaveChangesAsync(ct);
         }

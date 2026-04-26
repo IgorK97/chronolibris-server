@@ -30,8 +30,8 @@ public class AddBookmarkHandlerTests
     [Fact]
     public async Task Handle_Success_ShouldReturnResult()
     {
-        var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, ParaIndex: 5, NoteText: "Закладка");
-        var bookFile = new BookFile { MaxParaIndex = 100, Book = new Book { IsAvailable = true } };
+        var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10,Xpointer: "/5", NoteText: "Закладка", Context:"");
+        var bookFile = new BookFile { Book = new Book { IsAvailable = true } };
 
         _identityMock.Setup(s => s.IsUserActiveAsync(command.UserId)).ReturnsAsync(true);
         _uowMock.Setup(u => u.BookFiles.GetByIdAsync(command.BookFileId, It.IsAny<CancellationToken>())).ReturnsAsync(bookFile);
@@ -48,8 +48,8 @@ public class AddBookmarkHandlerTests
     [Fact]
     public async Task Handle_LimitReached_ShouldThrowException()
     {
-        var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, ParaIndex: 5, NoteText:"");
-        var bookFile = new BookFile { MaxParaIndex = 100, Book = new Book { IsAvailable = true } };
+        var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, Xpointer: "/5", NoteText:"", Context:"");
+        var bookFile = new BookFile { Book = new Book { IsAvailable = true } };
 
         _identityMock.Setup(s => s.IsUserActiveAsync(command.UserId)).ReturnsAsync(true);
         _uowMock.Setup(u => u.BookFiles.GetByIdAsync(command.BookFileId, It.IsAny<CancellationToken>())).ReturnsAsync(bookFile);
@@ -62,17 +62,17 @@ public class AddBookmarkHandlerTests
         await act.Should().ThrowAsync<ChronolibrisException>();
     }
 
-    [Fact]
-    public async Task Handle_IndexOutOfBounds_ShouldThrowException()
-    {
-        var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, ParaIndex: 999, NoteText: "");
-        var bookFile = new BookFile { MaxParaIndex = 100, Book = new Book { IsAvailable = true } };
+    //[Fact]
+    //public async Task Handle_IndexOutOfBounds_ShouldThrowException()
+    //{
+    //    var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, ParaIndex: 999, NoteText: "");
+    //    var bookFile = new BookFile { MaxParaIndex = 100, Book = new Book { IsAvailable = true } };
 
-        _identityMock.Setup(s => s.IsUserActiveAsync(command.UserId)).ReturnsAsync(true);
-        _uowMock.Setup(u => u.BookFiles.GetByIdAsync(command.BookFileId, It.IsAny<CancellationToken>())).ReturnsAsync(bookFile);
+    //    _identityMock.Setup(s => s.IsUserActiveAsync(command.UserId)).ReturnsAsync(true);
+    //    _uowMock.Setup(u => u.BookFiles.GetByIdAsync(command.BookFileId, It.IsAny<CancellationToken>())).ReturnsAsync(bookFile);
 
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+    //    Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<ChronolibrisException>();
-    }
+    //    await act.Should().ThrowAsync<ChronolibrisException>();
+    //}
 }
