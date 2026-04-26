@@ -86,9 +86,9 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpPost("{selectionId}/books/{bookId}")]
         [Authorize(Roles ="admin")]
-        public async Task<IActionResult> AddBook(long selectionId, long bookId)
+        public async Task<IActionResult> AddBook(long selectionId, long bookId, CancellationToken ct)
         {
-            await _mediator.Send(new AddBookToSelectionRequest(selectionId, bookId));
+            await _mediator.Send(new AddBookToSelectionRequest(selectionId, bookId), ct);
             return Ok();
         }
 

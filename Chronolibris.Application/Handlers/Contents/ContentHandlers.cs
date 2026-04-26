@@ -196,7 +196,7 @@ namespace Chronolibris.Application.Handlers.Contents
             await _contentRepository.LinkContentToBookAsync(
                 request.ContentId, request.BookId, cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            //await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

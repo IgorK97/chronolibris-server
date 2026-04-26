@@ -182,10 +182,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
             try
             {
-                await _context.Database.ExecuteSqlRawAsync(
-                    @"INSERT INTO book_selection (selection_id, book_id) 
-              VALUES ({0}, {1}) ON CONFLICT DO NOTHING",
-                    selectionId, bookId, ct);
+                await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"INSERT INTO book_selection (selection_id, book_id) VALUES ({selectionId}, {bookId}) ON CONFLICT DO NOTHING",
+                ct);
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
             {

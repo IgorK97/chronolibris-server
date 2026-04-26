@@ -43,9 +43,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                  new ContentType { Id = 19, Name = "Историческое исследование", Nature = ContentNature.Analysis },
                  new ContentType { Id = 20, Name = "Монография", Nature = ContentNature.Analysis },
                  new ContentType { Id = 21, Name = "Научная статья", Nature = ContentNature.Analysis },
+                 
 
+                 new ContentType { Id = 22, Name = "Неизвестно", Nature = ContentNature.Unknown },
 
-                 new ContentType { Id = 22, Name = "Неизвестно", Nature = ContentNature.Unknown }
+                 new ContentType { Id = 23, Name = "Комментарий", Nature = ContentNature.Analysis }
+
                  );
         }
     }

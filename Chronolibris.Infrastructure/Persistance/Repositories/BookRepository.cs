@@ -22,7 +22,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             return await _context.Contents
                 .AsNoTracking()
-                .Where(c => c.Id == bookId)
+                .Where(c => c.BookContents.Any(bc => bc.BookId == bookId))
                 .Include(c => c.Country)
                 .Include(c => c.ContentType)
                 .Include(c => c.Language)

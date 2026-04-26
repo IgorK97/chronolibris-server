@@ -27,58 +27,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .OrderBy(t => t.Id)
                 .ToListAsync(ct);
         }
-
-    //    public async Task<List<TagDetails>> GetTagsAsync(
-    //        long? tagTypeId,
-    //string? searchTerm,
-    //long? lastId,      
-    //int limit,        
-    //CancellationToken ct)
-    //    {
-    //        IQueryable<Tag> query = _context.Tags.AsNoTracking()
-    //.Include(t => t.TagType);
-
-    //        if (tagTypeId.HasValue)
-    //            query = query.Where(t => t.TagTypeId == tagTypeId.Value);
-
-    //        if (!string.IsNullOrWhiteSpace(searchTerm))
-    //            query = query.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}%"));
-
-    //        if (lastId.HasValue)
-    //            query = query.Where(t => t.Id > lastId.Value);
-
-    //        return await query
-    //            .OrderBy(t => t.Id)       
-    //            .Take(limit + 1)          
-    //            .Select(t => new TagDetails
-    //            {
-    //                Id = t.Id,
-    //                Name = t.Name,
-    //                TagTypeId = t.TagTypeId,
-    //                TagTypeName = t.TagType.Name
-    //            })
-    //            .ToListAsync(ct);
-    //    }
-
-        //public async Task<int> GetTagsCountAsync(
-        //    long? tagTypeId,
-        //    string? searchTerm,
-        //    CancellationToken ct)
-        //{
-        //    var query = _context.Tags.AsNoTracking();
-
-        //    if (tagTypeId.HasValue)
-        //    {
-        //        query = query.Where(t => t.TagTypeId == tagTypeId.Value);
-        //    }
-
-        //    if (!string.IsNullOrWhiteSpace(searchTerm))
-        //    {
-        //        query = query.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}%"));
-        //    }
-
-        //    return await query.CountAsync(ct);
-        //}
         public async Task<long> CreateAsync(Tag tag, CancellationToken ct)
         {
             _context.Tags.Add(tag);
@@ -97,13 +45,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             return true;
         }
 
-        //public async Task<Tag?> GetByIdAsync(long id, CancellationToken ct)
-        //{
-        //    return await _context.Tags
-        //        .Include(t => t.TagType)
-        //        .FirstOrDefaultAsync(t => t.Id == id, ct);
-        //}
-
         public async Task<List<TagDetails>> GetRootTagsAsync(
             long? tagTypeId, string? searchTerm, long? lastId, int limit,
             CancellationToken ct)
@@ -118,7 +59,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 if (tagTypeId.HasValue)
                     searchQuery = searchQuery.Where(t => t.TagTypeId == tagTypeId.Value);
 
-                searchQuery = searchQuery.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}"));
+                searchQuery = searchQuery.Where(t => EF.Functions.ILike(t.Name, $"%{searchTerm}%"));
 
                 if (lastId.HasValue)
                     searchQuery = searchQuery.Where(t => t.Id > lastId.Value);

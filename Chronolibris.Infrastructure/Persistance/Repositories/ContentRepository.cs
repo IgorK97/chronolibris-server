@@ -6,11 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
+using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Chronolibris.Infrastructure.Persistence.Repositories
 {
@@ -353,14 +355,27 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
 
         public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {
-            var bookContent = new BookContent
+            try
             {
-                ContentId = contentId,
-                BookId = bookId,
-                //Order = order
-            };
+                var bookContent = new BookContent
+                {
+                    ContentId = contentId,
+                    BookId = bookId,
+                    //Order = order
+                };
 
-            await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);
+                await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);
+                await _context.SaveChangesAsync();
+            } catch (DbUpdateException ex) when(ex.InnerException is PostgresException pgEx)
+            {
+                if (pgEx.SqlState == "23503")
+                {
+                    throw new ChronolibrisException("Книга или подборка не найдена", ErrorType.NotFound);
+                }
+                if (pgEx.SqlState == "23505")
+                    return;
+                throw;
+            }
         }
 
         public async Task UnlinkContentFromBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
