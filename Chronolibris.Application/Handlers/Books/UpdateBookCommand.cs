@@ -49,12 +49,6 @@ namespace Chronolibris.Application.Handlers.Books
             var book = await _unitOfWork.Books.GetByIdAsync(cmd.Id, ct)
                 ?? throw new ChronolibrisException("Книга не найдена", ErrorType.NotFound);
             DateTime date = DateTime.UtcNow;
-            if (book.UpdatedAt != date)
-            {
-                throw new ChronolibrisException(
-                    "Данные были изменены другим администратором. Пожалуйста, обновите страницу.",
-                    ErrorType.Conflict);
-            }
 
             UpdateBookFields(book, cmd);
             book.UpdatedAt = date;

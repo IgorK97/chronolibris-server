@@ -37,7 +37,7 @@ namespace ChronolibrisWeb.InputModels
         [RegularExpression(@"^[\d\s\p{L};/\\:?&=%#[\]\-.,_—№§]{0,500}$",
             ErrorMessage = "Неверный формат указания источника")]
         public string? Source { get; init; }
-        [Required(ErrorMessage = "Обложка обязательна")]
+        //[Required(ErrorMessage = "Обложка обязательна")]
         public string? CoverBase64 { get; init; } = string.Empty;
         //public string? CoverContentType { get; init; } = "image/jpeg";
         //public string? CoverFileName { get; init; } = "cover";
