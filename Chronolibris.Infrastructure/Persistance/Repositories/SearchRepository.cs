@@ -317,7 +317,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
                 FROM books b
                 WHERE  
-                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  +
+                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + //AND убрал здесь
                  $$"""
                   
                  EXISTS (
@@ -338,7 +338,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var sql = $"""
                     SELECT b.id AS id, 1.0 AS best_similarity
                     FROM books b 
-                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : string.IsNullOrEmpty(filters)? " " : " WHERE ") +
+                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : string.IsNullOrEmpty(filters)? " " : " WHERE 1=1 ") + //потом посмотреть, как подправить
                     $"""
                     {filters}
                     

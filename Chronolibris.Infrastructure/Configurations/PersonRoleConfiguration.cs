@@ -26,7 +26,8 @@ namespace Chronolibris.Infrastructure.Configurations
                 new PersonRole { Id = 6, Name = "Корректор", Kind=PersonRoleKind.Book  },
                 new PersonRole { Id = 7, Name = "Научный редактор", Kind=PersonRoleKind.Book  },
                 new PersonRole { Id = 8, Name = "Редактор перевода", Kind=PersonRoleKind.Book  },
-                new PersonRole { Id = 9, Name = "Адресат", Kind=PersonRoleKind.Content}
+                new PersonRole { Id = 9, Name = "Адресат", Kind=PersonRoleKind.Content},
+                new PersonRole { Id = 10, Name = "Комментатор", Kind=PersonRoleKind.Both }
             );
         }
     }

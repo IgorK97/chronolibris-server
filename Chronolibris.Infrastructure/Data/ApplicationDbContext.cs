@@ -55,8 +55,8 @@ namespace Chronolibris.Infrastructure.Data
 
             modelBuilder.HasPostgresEnum<PersonRoleKind>();
             modelBuilder.HasPostgresEnum<ContentNature>(
-        name: "content_nature_enum"   
-    );
+                name: "content_nature_enum"   
+            );
 
             modelBuilder.Ignore<IdentityUserClaim<long>>();
             modelBuilder.Ignore<IdentityUserLogin<long>>();
