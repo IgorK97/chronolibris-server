@@ -68,7 +68,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     LanguageId = 2,
                     //Position = 0,
                     Title = "Буддизм в Японии",
-                    Year = 1993,
+                    YearFrom = 1993,
+                    YearTo = 1993,
                     ContentTypeId = 20,
                 },
                 new Content
@@ -80,7 +81,8 @@ namespace Chronolibris.Infrastructure.Configurations
                     LanguageId = 2,
                     //Position = 0,
                     Title = "Структуры повседневности: возможное и невозможное",
-                    Year = 1979,
+                    YearFrom = 1979,
+                    YearTo = 1979,
                     ContentTypeId = 19,
                 }
             );

@@ -26,7 +26,8 @@ namespace Chronolibris.Application.Models
         [Required]
         public long LanguageId { get; set; }
 
-        public int? Year { get; set; }
+        public int? YearFrom { get; set; }
+        public int? YearTo { get; set; }
         public List<PersonRoleFilter> PersonFilters { get; set; } = new();
         public List<long> ThemeIds { get; set; } = new();
     }
@@ -45,8 +46,10 @@ namespace Chronolibris.Application.Models
 
         public long? LanguageId { get; set; }
 
-        public int? Year { get; set; }
-        public bool YearProvided { get; set; }
+        public int? YearFrom { get; set; }
+        public int? YearTo { get; set; }
+        public bool YearFromProvided { get; set; }
+        public bool YearToProvided { get; set; }
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<long>? ThemeIds { get; set; }
         public List<long>? TagIds { get; set; }

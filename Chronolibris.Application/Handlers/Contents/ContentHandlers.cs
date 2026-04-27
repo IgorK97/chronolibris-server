@@ -84,7 +84,8 @@ namespace Chronolibris.Application.Handlers.Contents
                 CountryId = request.CountryId,
                 ContentTypeId = request.ContentTypeId,
                 LanguageId = request.LanguageId,
-                Year = request.Year,
+                YearFrom = request.YearFrom,
+                YearTo = request.YearTo,
                 CreatedAt = DateTime.UtcNow,
                 Participations = new List<ContentParticipation>(),
                 Themes = new List<Theme>()
@@ -138,8 +139,11 @@ namespace Chronolibris.Application.Handlers.Contents
             if(request.LanguageId!=null)
                 content.LanguageId = (long)request.LanguageId;
             
-            if(request.YearProvided)
-                content.Year = request.Year;
+            if(request.YearFromProvided)
+                content.YearFrom = request.YearFrom;
+
+            if(request.YearToProvided)
+                content.YearTo = request.YearTo;
 
             if (request.ThemeIds != null)
                 _contentRepository.SyncThemes(content, request.ThemeIds);

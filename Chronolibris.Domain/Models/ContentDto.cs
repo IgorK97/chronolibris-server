@@ -17,7 +17,8 @@ namespace Chronolibris.Domain.Models
         public string? ContentType { get; set; }
         public long LanguageId { get; set; }
         public string? LanguageName { get; set; }
-        public int? Year { get; set; }
+        public int? YearFrom { get; set; }
+        public int? YearTo { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<string> Authors { get; set; } = new();
         public List<PersonRoleFilter> Participants { get; set; } = new();

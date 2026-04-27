@@ -36,7 +36,8 @@ namespace Chronolibris.Application.Handlers.Books
                 ContentType = content.ContentType?.Name,
                 LanguageId = content.LanguageId,
                 LanguageName = content.Language?.Name,
-                Year = content.Year,
+                YearFrom = content.YearFrom,
+                YearTo = content.YearTo,
                 CreatedAt = content.CreatedAt,
                 Authors = content.Participations
                     .Select(p => p.Person.Name)

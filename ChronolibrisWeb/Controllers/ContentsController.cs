@@ -100,7 +100,8 @@ namespace ChronolibrisWeb.Controllers
                 request.CountryId,
                 request.ContentTypeId,
                 request.LanguageId,
-                request.Year,
+                request.YearFrom,
+                request.YearTo,
                 request.PersonFilters,
                 request.ThemeIds
             );

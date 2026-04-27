@@ -18,7 +18,8 @@ namespace Chronolibris.Domain.Entities
         public required long CountryId { get; set; }
         public required long ContentTypeId { get; set; }
         public required long LanguageId { get; set; }
-        public int? Year { get; set; }
+        public int? YearFrom { get; set; }
+        public int? YearTo { get; set; }
         public required DateTime CreatedAt { get; set; }
         public ICollection<BookContent> BookContents { get; set; } = [];
         public Country Country { get; set; } = null!;

@@ -209,7 +209,8 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                     ContentType = c.ContentType.Name,
                     LanguageId = c.LanguageId,
                     LanguageName = c.Language.Name,
-                    Year = c.Year,
+                    YearFrom = c.YearFrom,
+                    YearTo = c.YearTo,
                     CreatedAt = c.CreatedAt,
 
                     Authors = c.Participations.Where(p => p.PersonRoleId == 1)
@@ -277,7 +278,8 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 ContentType = c.ContentType.Name,
                 LanguageId = c.LanguageId,
                 LanguageName = c.Language.Name,
-                Year = c.Year,
+                YearFrom = c.YearFrom,
+                YearTo = c.YearTo,
                 CreatedAt = c.CreatedAt,
                 Authors = c.Participations.Where(p => p.PersonRoleId==1).Select(p => p.Person.Name)
                 .ToList(),
