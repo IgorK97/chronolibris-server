@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Chronolibris.Application.Interfaces;
+using Chronolibris.Application.Models;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -535,6 +536,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                     S = globalIdx,
                                     E = globalIdx,
                                     T = pe.Text,
+                                    Xps = pe.Xp,
                                     C = new List<TocChapter>()
                                 };
 
@@ -845,146 +847,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return (mixed, s);
         }  
 
-
-
-
-
-        //private (object? content, string? flatText) ParseMixedXml(
-        //    string outerXml,
-        //    Dictionary<string, ParsedNote> notes,
-        //    Dictionary<string, string> imageMap)
-        //{
-        //    _logger.LogDebug("parse mixed xml");
-        //    var mixed = new List<object>(); //это может быть большой список из разного содержимого, по идее
-        //    var buf = new StringBuilder();
-
-        //    void FlushBuf() //сбросить накопленную строку
-        //    {
-        //        var s = CollapseWhitespace(buf.ToString()); //удалить лишние пробелы
-        //        if (s.Length > 0) mixed.Add(s);
-        //        buf.Clear();
-        //    }
-
-        //    using var r = XmlReader.Create( //напрямую в констурктор, как оказалось, не принимает строку, поэтому использовал stringReader
-        //        new StringReader(outerXml),
-        //        new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore }); //по умолчанию prohibit
-
-        //    //Здесь корневой тег, его нужно пропустить
-        //    r.Read();
-        //    int rootDepth = r.Depth; //абсолютная глубина
-
-        //    while (r.Read())
-        //    {
-        //        if (r.Depth == rootDepth) break; //на всякий случай выход сразу по окончании корневого тега
-        //        _logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}",
-        //                r.NodeType, r.LocalName, r.Value);
-        //        switch (r.NodeType)
-        //        {
-        //            case XmlNodeType.Text:
-        //            case XmlNodeType.SignificantWhitespace: //например, в теге p с xml:space=preserve пробелы с переносами или иным содержимым могут стать именно этим
-        //                buf.Append(r.Value);
-        //                break;
-
-        //            case XmlNodeType.Element:
-        //                switch (r.LocalName)
-        //                {
-        //                    case "strong":
-        //                        {
-
-        //                            FlushBuf(); //сброс уже накопленного текста
-        //                            var inner = r.ReadElementContentAsString().Trim();
-        //                            if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
-        //                        }
-        //                        break;
-
-        //                    case "emphasis": //курсив - аналогично
-        //                        {
-        //                            FlushBuf();
-        //                            var inner = r.ReadElementContentAsString().Trim();
-        //                            if (inner.Length > 0) mixed.Add(new EmSegment { C = inner });
-        //                        }
-        //                        break;
-
-        //                    case "a": //пока только якоря (для номеров страниц) или ссылки для сносок
-        //                        {
-        //                            var noteType = r.GetAttribute("type");
-        //                            var href = r.GetAttribute("href")?.TrimStart('#');
-
-        //                            var anchorId = r.GetAttribute("id");
-        //                            var pageNumber = TryParsePageNumber(anchorId);
-        //                            if (pageNumber.HasValue)
-        //                            {
-        //                                FlushBuf();
-        //                                mixed.Add(new PageNumberSegment { Pn = pageNumber.Value });
-        //                                if (!r.IsEmptyElement) r.Skip();
-        //                            }
-
-        //                            else
-        //                            {
-        //                                var label = r.ReadElementContentAsString();
-
-        //                                if (noteType == "note" && href != null
-        //                                    && notes.TryGetValue(href, out var note))
-        //                                {
-        //                                    FlushBuf();
-        //                                    mixed.Add(new NoteSegment
-        //                                    {
-        //                                        C = label,
-        //                                        Xp = note.Xp,
-        //                                        F = new FootnoteContent
-        //                                        {
-        //                                            Xp = note.Xp,
-        //                                            C = note.Paragraphs
-        //                                        }
-        //                                    });
-        //                                }
-        //                                else
-        //                                {
-        //                                    buf.Append(label);
-        //                                }
-
-        //                            }
-        //                            break;
-        //                        }
-
-        //                    case "image":
-        //                        {
-        //                            var href = r.GetAttribute("href")?.TrimStart('#');
-        //                            if (href != null && imageMap.TryGetValue(href, out var imgFile))
-        //                            {
-        //                                FlushBuf();
-        //                                mixed.Add(new ImgSegment { Src = imgFile });
-        //                            }
-        //                            if (!r.IsEmptyElement) r.Skip();
-        //                            break;
-        //                        }
-
-        //                    default:
-        //                        //прочие теги - только текст
-        //                        buf.Append(r.ReadElementContentAsString());
-        //                        break;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    FlushBuf();
-
-        //    if (mixed.Count == 0)
-        //        return (null, null);
-
-        //    //если все строки, то можно склеить в одну
-        //    if (mixed.All(x => x is string))
-        //    {
-        //        var plain = string.Concat(mixed.Cast<string>()).Trim(); //приведение типа к строке
-        //        return plain.Length > 0 ? (plain, plain) : (null, null);
-        //    }
-
-        //    var flatText = string.Concat(mixed.OfType<string>()).Trim();
-        //    var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
-        //    return (mixed, s);
-        //}
-
         // Сериализует накопленный фрагмент, сохраняет в хранилище,
         // добавляет запись в список tocParts
         private async Task<int> FlushPartAsync(
@@ -1019,35 +881,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return partIndex;
         }
 
-        //обновляет список глав
-        //private static void UpdateChapters(
-        //    List<TocChapter> chapters,
-        //    ParsedElement titleElement,
-        //    int globalIdx)
-        //{
-        //    //закрытие предыдущей главы
-        //    if (chapters.Count > 0)
-        //    {
-        //        //var prev = chapters[^1];
-        //        //chapters[^1] = new TocChapter
-        //        //{
-        //        //    S = prev.S,
-        //        //    E = globalIdx - 1,
-        //        //    T = prev.T
-        //        //};
-        //        chapters[^1].E = globalIdx - 1;
-        //    }
-        //    //открытие новой
-        //    chapters.Add(new TocChapter
-        //    {
-        //        S = globalIdx,
-        //        E = globalIdx,
-        //        T = titleElement.Text
-        //    });
-        //}
-
         // Метаданные (название книги) (парсинг outerXml блока description)
-
         private static BookMeta ParseMetaFromXml(string descXml)
         {
             using var r = XmlReader.Create(new StringReader(descXml),
@@ -1165,12 +999,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         //private static readonly Regex WhitespaceRegex = new Regex(@"\s+"); //регулярное выражение
         ////верабльный литерал (игнорирование обратных слешей, чтобы не было \\)
         ////пробел, переносы и табуляции
-
-        //private static string CollapseWhitespace(string s)
-        //{
-        //    if (string.IsNullOrEmpty(s)) return s;
-        //    return WhitespaceRegex.Replace(s, " ");
-        //}
 
         private static readonly Regex MultipleNewlinesRegex = new Regex(@"\n+");
         private static readonly Regex MultipleSpacesRegex = new Regex(@"[ \t]+");
