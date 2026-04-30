@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers.Books
 {
-    public record UpdateBookCommand(
+    public record UpdateBookCommand( //nullable типы могут не идти в самом конце что ли?
         long Id,
         string Title,
         string Description,
@@ -28,7 +28,8 @@ namespace Chronolibris.Application.Handlers.Books
         long? PublisherId, bool PublisherIdProvided,
         //int? SeriesId, bool SeriesIdProvided,
         List<PersonRoleFilter>? PersonFilters,
-        List<int>? ThemeIds
+        List<int>? ThemeIds,
+        bool DeleteCoverCommand
     ) : IRequest;
 
     public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand>
@@ -87,7 +88,16 @@ namespace Chronolibris.Application.Handlers.Books
                 {
                 }
             }
+            else if(cmd.DeleteCoverCommand)
+            {
+                var oldPath = book.CoverPath;
+                book.CoverPath = "";
 
+                if (oldPath != null)
+                {
+                    await _storageService.DeleteFileAsync("images", oldPath, ct);
+                }
+            }
             if (cmd.PersonFilters != null)
             {
                 _unitOfWork.Books.SyncParticipations(book, cmd.PersonFilters);

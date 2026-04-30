@@ -72,7 +72,8 @@ namespace ChronolibrisWeb.Controllers
                 request.IsReviewable,
                 request.PublisherId, request.PublisherIdProvided,
                request.PersonFilters,
-                request.ThemeIds
+                request.ThemeIds,
+                request.DeleteCoverCommand
             );
 
             await _mediator.Send(command, cancellationToken);

@@ -94,5 +94,6 @@ namespace ChronolibrisWeb.InputModels
 
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<int>? ThemeIds { get; set; }
+        public bool DeleteCoverCommand { get; set; } = false;
     }
 }
