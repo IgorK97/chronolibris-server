@@ -199,7 +199,7 @@ namespace Chronolibris.Application.Handlers.References
             if (hasSubThemes)
             {
                 throw new ChronolibrisException(
-                    "Нельзя удалить тему, у которой есть дочерние темы. Сначала удалите или переместите дочерние темы",
+                    "Нельзя удалить тему, у которой есть дочерние темы. Сначала удалите дочерние темы",
                     ErrorType.Unprocessable);
             }
 

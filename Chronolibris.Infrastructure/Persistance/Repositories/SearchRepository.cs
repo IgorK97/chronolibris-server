@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Models.Search;
@@ -189,7 +190,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
 
         private static (string Sql, List<object> Parameters) BuildString(
-            string? rawQuery,AdvancedSearchKeysetRequest request)
+            string? rawQuery,AdvancedSearchKeysetRequest request) //порядок аргументов не важен?
         {
 
             var query = rawQuery?.Trim() ?? string.Empty;
@@ -228,14 +229,30 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 var p = parameters.Count;
                 parameters.Add(request.ThemeId);
-                bookFilters.AppendLine($$""" 
+                //bookFilters.AppendLine($$""" 
+                //    AND EXISTS (
+                //        SELECT 1
+                //        FROM book_content bc
+                //        JOIN content_theme ct ON ct.content_id = bc.content_id
+                //        WHERE bc.book_id = b.id
+                //          AND ct.theme_id = {{{p}}}
+                //    ) 
+                //    """);
+
+                bookFilters.AppendLine($$"""
                     AND EXISTS (
-                        SELECT 1
-                        FROM book_content bc
-                        JOIN content_theme ct ON ct.content_id = bc.content_id
-                        WHERE bc.book_id = b.id
-                          AND ct.theme_id = {{{p}}}
-                    ) 
+                       WITH RECURSIVE expanded_themes AS (
+                          SELECT id FROM themes WHERE id = {{{p}}}
+                          UNION
+                          SELECT themes.id FROM themes
+                          INNER JOIN expanded_themes ethe ON themes.parent_theme_id = ethe.id
+                        )
+                    SELECT 1
+                    FROM book_content bc
+                    JOIN content_theme cthe ON cthe.content_id = bc.content_id
+                    WHERE bc.book_id = b.id
+                       AND cthe.theme_id IN (SELECT id FROM expanded_themes)
+                    )
                     """);
             } 
 
@@ -257,32 +274,73 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             if (request.RequiredTagIds.Count > 0)
             {
-                var p = parameters.Count;
-                parameters.Add(request.RequiredTagIds.ToArray());
-                bookFilters.AppendLine($$""" 
-                    AND EXISTS (
-                        SELECT 1
-                        FROM book_content bc
-                        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
-                        WHERE bc.book_id = b.id
-                          AND ctg.tags_id = ANY({{{p}}})
-                    ) 
-                    """);
+                foreach(var tagId in request.RequiredTagIds)
+                {
+                    var p = parameters.Count;
+                    parameters.Add(tagId);
+
+                    bookFilters.AppendLine($$"""
+                        AND EXISTS (
+                           WITH RECURSIVE expanded_tags AS (
+                              SELECT id FROM tags WHERE id = {{{p}}}
+                              UNION
+                              SELECT t.id FROM tags t
+                              INNER JOIN expanded_tags et ON t.parent_tag_id = et.id
+                           )
+                           SELECT 1
+                           FROM book_content bc
+                           JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+                           WHERE bc.book_id = b.id
+                              AND ctg.tags_id IN (SELECT id FROM expanded_tags)
+                        )
+                        """);
+                };
+
+
+
+                //var p = parameters.Count;
+                //parameters.Add(request.RequiredTagIds.ToArray());
+                //bookFilters.AppendLine($$""" 
+                //    AND EXISTS (
+                //        SELECT 1
+                //        FROM book_content bc
+                //        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+                //        WHERE bc.book_id = b.id
+                //          AND ctg.tags_id = ANY({{{p}}})
+                //    ) 
+                //    """);
             }
 
             if (request.ExcludedTagIds.Count > 0)
             {
                 var p = parameters.Count;
                 parameters.Add(request.ExcludedTagIds.ToArray());
-                bookFilters.AppendLine($$""" 
+
+                bookFilters.AppendLine($$"""
                     AND NOT EXISTS (
-                        SELECT 1
-                        FROM book_content bc
-                        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
-                        WHERE bc.book_id = b.id
-                          AND ctg.tags_id = ANY({{{p}}})
-                    ) 
+                       WITH RECURSIVE expanded_excluded_tags AS (
+                          SELECT id FROM tags WHERE id = ANY({{{p}}})
+                          UNION
+                          SELECT t.id FROM tags t
+                          INNER JOIN expanded_excluded_tags eet ON t.parent_tag_id = eet.id
+                       )
+                       SELECT 1
+                       FROM book_content bc
+                       JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+                       WHERE bc.book_id = b.id
+                          AND ctg.tags_id IN (SELECT id FROM expanded_excluded_tags)
+                    )
                     """);
+
+                //bookFilters.AppendLine($$""" 
+                //    AND NOT EXISTS (
+                //        SELECT 1
+                //        FROM book_content bc
+                //        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+                //        WHERE bc.book_id = b.id
+                //          AND ctg.tags_id = ANY({{{p}}})
+                //    ) 
+                //    """);
             }
             var filters = bookFilters.ToString();
 
@@ -317,7 +375,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
                 FROM books b
                 WHERE  
-                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + //AND убрал здесь
+                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  +
                  $$"""
                   
                  EXISTS (

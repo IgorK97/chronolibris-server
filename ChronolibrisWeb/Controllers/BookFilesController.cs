@@ -37,7 +37,7 @@ namespace ChronolibrisWeb.Controllers
 
             return File(stream, "application/octet-stream", $"book_file_{id}");
         }
-
+        //максимальное время поддержания соединения
         [Authorize(Roles = "admin")]
         [HttpPost]
         [RequestSizeLimit(50 * 1024 * 1024)]

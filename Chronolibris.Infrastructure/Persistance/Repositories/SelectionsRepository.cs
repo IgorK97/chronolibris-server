@@ -163,30 +163,25 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         }
         public async Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct)
         {
-            //var selection = await _context.Selections
-            //    .Include(s => s.Books)
-            //    .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
+            var selection = await _context.Selections
+                .Include(s => s.Books)
+                .FirstOrDefaultAsync(s => s.Id == selectionId, ct);
 
-            //if (selection == null) return false;
+            if (selection == null)
+                throw new ChronolibrisException("Книга или подборка не найдена", ErrorType.NotFound);
 
-            //var book = await _context.Books.FindAsync(new object[] { bookId }, ct);
-            //if (book == null) return false;
-
-            //if (!selection.Books.Any(b => b.Id == bookId))
-            //{
-            //    selection.Books.Add(book);
-            //    await _context.SaveChangesAsync(ct);
-            //}
-
-            //return true;
+            var book = await _context.Books.FindAsync(new object[] { bookId }, ct);
+            if (book == null) 
+                throw new ChronolibrisException("Книга или подборка не найдена", ErrorType.NotFound);
 
             try
             {
-                await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"INSERT INTO book_selection (selection_id, book_id) VALUES ({selectionId}, {bookId}) ON CONFLICT DO NOTHING",
-                ct);
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+                if (!selection.Books.Any(b => b.Id == bookId))
+                {
+                    selection.Books.Add(book);
+                    await _context.SaveChangesAsync(ct);
+                }
+            } catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
             {
                 if (pgEx.SqlState == "23503")
                 {

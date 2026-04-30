@@ -7,6 +7,7 @@ using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Domain.Models;
+using CommunityToolkit.HighPerformance;
 using Microsoft.Extensions.Logging;
 
 namespace Chronolibris.Infrastructure.Services.Fb2Converter
@@ -450,6 +451,33 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 currentPart.Clear();
                             }
                         }
+                        //TODO: сноска в заголовках
+                        //else
+                        //{
+                        //    var noteType = reader.GetAttribute("type");
+                        //    var href = reader.GetAttribute("l:href")?.TrimStart('#');
+                        //    var label = ReadInnerText(reader);
+
+                        //    if (noteType == "note" && href != null
+                        //        && notes.TryGetValue(href, out var note))
+                        //    {
+                        //        currentPart.Add(new NoteSegment
+                        //        {
+                        //            C = label,
+                        //            Xp = note.Xp,
+                        //            F = new FootnoteContent
+                        //            {
+                        //                Xp = note.Xp,
+                        //                C = note.Paragraphs
+                        //            }
+                        //        });
+                        //    }
+                        //    else
+                        //    {
+                        //        buf.Append(label);
+                        //    }
+
+                        //}
                         //содержимое не нужно (даже если есть)
                         if (!reader.IsEmptyElement)
                             await reader.SkipAsync();
@@ -672,6 +700,22 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return (totalElements, tocDoc);
         }
 
+        static string ReadInnerText(XmlReader r)
+        {
+            if (r.IsEmptyElement) return string.Empty;
+            var sb = new StringBuilder();
+            int depth = r.Depth; // глубина открывающего тега
+            while (r.Read() && r.Depth > depth)
+            {
+                if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
+                    sb.Append(r.Value);
+                // все вложенные теги прозрачно проходятся; их текстовые узлы будут
+                // подхвачены на следующих итерациях, пока глубина больше depth
+            }
+            // после цикла r стоит на EndElement родительского тега — это ожидаемое состояние
+            return sb.ToString();
+        }
+
         // Парсит смешанный XML-фрагмент
         // в объект Content (string или List или object) и plain-text
         // Использует легковесный XmlReader — не создаёт полный DOM
@@ -708,21 +752,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             // на EndElement обрабатываемого тега (или сразу после пустого элемента).
             // Используется для «понятных» инлайн-тегов (strong, emphasis), у которых
             // теоретически может быть вложенная разметка (например, <strong><em>...</em></strong>).
-            static string ReadInnerText(XmlReader r)
-            {
-                if (r.IsEmptyElement) return string.Empty;
-                var sb = new StringBuilder();
-                int depth = r.Depth; // глубина открывающего тега
-                while (r.Read() && r.Depth > depth)
-                {
-                    if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
-                        sb.Append(r.Value);
-                    // все вложенные теги прозрачно проходятся; их текстовые узлы будут
-                    // подхвачены на следующих итерациях, пока глубина больше depth
-                }
-                // после цикла r стоит на EndElement родительского тега — это ожидаемое состояние
-                return sb.ToString();
-            }
+
 
             while (r.Read())
             {

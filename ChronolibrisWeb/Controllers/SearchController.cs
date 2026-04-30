@@ -21,7 +21,7 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpGet]
         public async Task<ActionResult<PagedBooks<BookSearchResult>>> Search(
-            [FromQuery] SimpleSearchInputModel request, bool mode = false,
+            [FromQuery] SimpleSearchInputModel request, bool hiddenIsAvailableMode = false,
             CancellationToken cancellationToken = default)
         {
             if (request.LastBestSimilarity.HasValue != request.LastId.HasValue)
@@ -33,7 +33,7 @@ namespace ChronolibrisWeb.Controllers
                 //return Unauthorized();
                 userId = 0;
             var roleClaim = User.FindFirstValue(ClaimTypes.Role);
-            if (mode && (userId == 0 || roleClaim != "admin"))
+            if (hiddenIsAvailableMode && (userId == 0 || roleClaim != "admin"))
                 return BadRequest();
 
             var result = await _mediator.Send(
@@ -43,7 +43,7 @@ namespace ChronolibrisWeb.Controllers
                     UserId: userId,
                     LastBestSimilarity: request.LastBestSimilarity,
                     LastId: request.LastId,
-                    mode),
+                    hiddenIsAvailableMode),
                 cancellationToken);
 
             return Ok(result);
