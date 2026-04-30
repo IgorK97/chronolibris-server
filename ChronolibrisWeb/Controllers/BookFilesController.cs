@@ -40,7 +40,7 @@ namespace ChronolibrisWeb.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        [RequestSizeLimit(100 * 1024 * 1024)]
+        [RequestSizeLimit(50 * 1024 * 1024)]
         public async Task<ActionResult<long>> UploadBookFile(
             [FromForm] long bookId,
             [FromForm] int formatId,
