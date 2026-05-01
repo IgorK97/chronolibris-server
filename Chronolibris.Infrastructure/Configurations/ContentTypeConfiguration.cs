@@ -54,7 +54,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
 
 
-                 );
+            );
         }
     }
 }

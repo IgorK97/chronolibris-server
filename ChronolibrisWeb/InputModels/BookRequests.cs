@@ -34,7 +34,7 @@ namespace ChronolibrisWeb.InputModels
         [RegularExpression(@"^[\d\p{L}[\]()+:\-/=;""'*\.]{0,255}$",
             ErrorMessage = "Неверный формат УДК")]
         public string? Udk { get; init; }
-        [RegularExpression(@"^[\d\s\p{L};/\\:?&;=%#[\]\-\.,_—№§]{0,500}$",
+        [RegularExpression(@"^[\d\s\p{L};/\\:?&;=%#[\]()\-\.,_—№§]{0,500}$",
             ErrorMessage = "Неверный формат указания источника")]
         public string? Source { get; init; }
         //[Required(ErrorMessage = "Обложка обязательна")]
@@ -68,19 +68,19 @@ namespace ChronolibrisWeb.InputModels
         [YearRange(-10000, ErrorMessage = "Год в пределах от {1} до {2}")]
         public int? Year { get; set; }
         public bool YearProvided { get; set; }
-        [RegularExpression(@"(?:(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-]+)?$",
+        [RegularExpression(@"(?:(?=(?:[^0-9X]*[0-9X]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-X]+)?$",
             ErrorMessage = "Неверный формат ISBN")]
         public string? ISBN { get; set; }
         public bool IsbnProvided { get; set; }
-        [RegularExpression(@"^[\d\p{L}[\]()+:;\-/=""'*\.]{0,255}$/u",
+        [RegularExpression(@"^[\d\p{L}[\]()\+:/=""'\*\.-]{0,255}$",
             ErrorMessage = "Неверный формат ББК")]
         public string? Bbk { get; set; }
         public bool BbkProvided { get; set; }
-        [RegularExpression(@"^[\d\p{L}[\]()+:\-/=""'*\.]{0,255}$",
+        [RegularExpression(@"^[\d\p{L}[\]()\+:\-/=""'\*\.]{0,255}$",
             ErrorMessage = "Неверный формат УДК")]
         public string? Udk { get; set; }
         public bool UdkProvided { get; set; }
-        [RegularExpression(@"^[\d\s\p{L};/\\:?&=%#[\]\-.,_—№§]{0,500}$",
+        [RegularExpression(@"^[\d\s\p{L};/\\:?&=%#[\]()\-.,_—№§]{0,500}$",
             ErrorMessage = "Неверный формат указания источника")]
         public string? Source { get; set; }
         public bool SourceProvided { get; set; }
