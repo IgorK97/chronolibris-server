@@ -45,6 +45,9 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken ct)
         {
             return await _context.Selections
+                .Include(s => s.Books) //потом проекцию сделать, но книг так-то немного в подборках должно быть,
+                                       //да и самих подборок сейчас немного (и активных всегда немного будет),
+                                       //поэтому можно пока так оставить
                 .Where(s => s.IsActive)
                 .ToListAsync(ct);
         }
@@ -61,15 +64,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
             var query = _context.Selections.AsNoTracking();
 
-            // Фильтр по активности
             if (onlyActive.HasValue)
                 query = query.Where(s => s.IsActive == onlyActive.Value);
 
-            // Keyset cursor
             if (lastId.HasValue)
                 query = query.Where(s => s.Id > lastId.Value);
 
-            // Берём limit + 1, чтобы понять — есть ли следующая страница
             var items = await query
                 .OrderBy(s => s.Id)
                 .Take(limit)

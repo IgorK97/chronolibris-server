@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
                 cursorClause = @"
                     WHERE (sub.best_similarity < {" + p.ToString() +@"} 
-                    OR (sub.best_similarity = {" + p.ToString() + @"} AND sub.id > {" + p.ToString() + @"}))
+                    OR (sub.best_similarity = {" + p.ToString() + @"} AND sub.id > {" + (p+1).ToString() + @"}))
                     ";
 
             }
@@ -127,8 +127,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             };
 
         }
-       
-
 
         public async Task<PagedBooks<BookSearchResult>> AdvancedSearchKeysetAsync(
             AdvancedSearchKeysetRequest request, CancellationToken token)

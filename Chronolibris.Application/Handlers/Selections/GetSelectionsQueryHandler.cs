@@ -29,7 +29,7 @@ namespace Chronolibris.Application.Handlers.Selections
             {
                 HasNext = hasMore,
                 Items = pageItems,
-                LastId = request.LastId,
+                LastId = pageItems.LastOrDefault()?.Id,
                 Limit = request.Limit,
             };
         }

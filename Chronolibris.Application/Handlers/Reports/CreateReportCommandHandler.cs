@@ -34,7 +34,7 @@ namespace Chronolibris.Application.Handlers.Reports
         public async Task<CreateReportResult> Handle(
             CreateReportCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            //await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             bool userExists = await _identityService.IsUserActiveAsync(request.UserId);
             if (!userExists)
             {
@@ -67,7 +67,7 @@ namespace Chronolibris.Application.Handlers.Reports
 
             await _unitOfWork.Reports.AddAsync(report, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            //await transaction.CommitAsync(cancellationToken);
             return new CreateReportResult(true, null);
         }
     }

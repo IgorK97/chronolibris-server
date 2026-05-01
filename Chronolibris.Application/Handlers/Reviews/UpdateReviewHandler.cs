@@ -31,11 +31,11 @@ namespace Chronolibris.Application.Handlers.Reviews
                 throw new ChronolibrisException("Отзыв не найден", ErrorType.NotFound);
             }
 
-            //bool userExists = await _identityService.IsUserActiveAsync(cmd.UserId);
-            //if (!userExists || review.UserId != cmd.UserId)
-            //{
-            //    throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
-            //}
+            bool userExists = await _identityService.IsUserActiveAsync(cmd.UserId);
+            if (!userExists || review.UserId != cmd.UserId)
+            {
+                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
+            }
 
             bool hadText = !string.IsNullOrWhiteSpace(review.ReviewText);
             bool hasText = !string.IsNullOrWhiteSpace(cmd.ReviewText);
