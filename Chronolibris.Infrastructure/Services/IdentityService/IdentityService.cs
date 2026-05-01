@@ -224,9 +224,10 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
         public async Task<bool> IsUserActiveAsync(long userId)
         {
+            //var hasTx = dbContext.Database.CurrentTransaction != null;
+            //Console.WriteLine($"[IsUserActiveAsync] transaction active: {hasTx}");
             var user = await dbContext.Users
             .FromSqlRaw("SELECT * FROM users WHERE id = {0} FOR UPDATE", userId)
-            .AsNoTracking()
             .FirstOrDefaultAsync();
             //var user = await _userManager.FindByIdAsync(userId.ToString());
             return user != null && !user.IsDeleted;
