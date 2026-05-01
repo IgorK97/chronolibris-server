@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501090710_AddTranscript")]
+    partial class AddTranscript
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -819,7 +822,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 16L,
                             Name = "Путевые заметки",
-                            Nature = ContentNature.Document
+                            Nature = ContentNature.Work
                         },
                         new
                         {
@@ -837,31 +840,31 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 19L,
                             Name = "Историческое исследование",
-                            Nature = ContentNature.Work
+                            Nature = ContentNature.Analysis
                         },
                         new
                         {
                             Id = 20L,
                             Name = "Монография",
-                            Nature = ContentNature.Work
+                            Nature = ContentNature.Analysis
                         },
                         new
                         {
                             Id = 21L,
                             Name = "Научная статья",
-                            Nature = ContentNature.Work
+                            Nature = ContentNature.Analysis
                         },
                         new
                         {
                             Id = 22L,
-                            Name = "Другое",
+                            Name = "Неизвестно",
                             Nature = ContentNature.Unknown
                         },
                         new
                         {
                             Id = 23L,
                             Name = "Комментарий",
-                            Nature = ContentNature.Work
+                            Nature = ContentNature.Analysis
                         },
                         new
                         {
@@ -874,12 +877,6 @@ namespace Chronolibris.Infrastructure.Migrations
                             Id = 25L,
                             Name = "Стенограмма",
                             Nature = ContentNature.Document
-                        },
-                        new
-                        {
-                            Id = 26L,
-                            Name = "Публицистика",
-                            Nature = ContentNature.Work
                         });
                 });
 

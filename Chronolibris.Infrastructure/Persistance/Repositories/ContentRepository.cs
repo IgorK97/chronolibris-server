@@ -68,40 +68,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             return content;
         }
 
-        //public async Task<List<TagDetails>> SearchTagsAsync(
-        //    string searchTerm,
-        //    long? tagTypeId,
-        //    int limit,
-        //    CancellationToken ct)
-        //{
-        //    IQueryable<Tag> query = _context.Tags.AsNoTracking()
-        //        .Include(t => t.TagType);
-
-        //    if (!string.IsNullOrWhiteSpace(searchTerm))
-        //    {
-        //        query = query.Where(t => EF.Functions.Like(t.Name, $"%{searchTerm}%"));
-        //    }
-
-        //    if (tagTypeId.HasValue)
-        //    {
-        //        query = query.Where(t => t.TagTypeId == tagTypeId.Value);
-        //    }
-
-        //    var tags = await query
-        //        .OrderBy(t => t.Name)
-        //        .Take(limit)
-        //        .Select(t => new TagDetails
-        //        {
-        //            Id = t.Id,
-        //            Name = t.Name,
-        //            TagTypeId = t.TagTypeId,
-        //            TagTypeName = t.TagType.Name
-        //        })
-        //        .ToListAsync(ct);
-
-        //    return tags;
-        //}
-
         public async Task<bool> AddTagAsync(long contentId, long tagId, CancellationToken ct)
         {
             var content = await _context.Contents
@@ -143,12 +109,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
 
             return false;
         }
-
-
-        //public async Task<List<Content>> GetAllAsync(CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Contents.ToListAsync(cancellationToken);
-        //}
 
         public async Task<List<BookDto>> GetBooksDtoByContentIdAsync(long contentId, CancellationToken cancellationToken)
         {
@@ -254,7 +214,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrWhiteSpace(filter.SearchQuery))
             {
-                query = query.Where(c => c.Title.Contains(filter.SearchQuery));
+                query = query.Where(t => EF.Functions.ILike(t.Title, $"%{filter.SearchQuery}%"));
             }
 
 
@@ -328,33 +288,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             _context.Contents.Remove(content);
         }
 
-        //public async Task<int> GetBooksCountAsync(long contentId, CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Set<BookContent>()
-        //        .CountAsync(bc => bc.ContentId == contentId, cancellationToken);
-        //}
-
-        //public async Task<List<Book>> GetBooksByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Set<BookContent>()
-        //        .Include(bc => bc.Book)
-        //            .ThenInclude(b => b.Country)
-        //        .Include(bc => bc.Book)
-        //            .ThenInclude(b => b.Language)
-        //        .Include(bc => bc.Book)
-        //            .ThenInclude(b => b.Publisher)
-        //        //.Include(bc => bc.Book)
-        //            //.ThenInclude(b => b.Series)
-        //        .Include(bc => bc.Book)
-        //            .ThenInclude(b => b.Participations)
-        //                .ThenInclude(p => p.Person)
-
-        //        .Where(bc => bc.ContentId == contentId)
-        //        //.OrderBy(bc => bc.Order)
-        //        .Select(bc => bc.Book)
-        //        .ToListAsync(cancellationToken);
-        //}
-
         public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {
             try
@@ -390,23 +323,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 _context.Set<BookContent>().Remove(bookContent);
             }
         }
-
-        //public async Task<List<string>> GetAuthorNamesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Set<ContentParticipation>()
-        //        .Include(cp => cp.Person)
-        //        .Where(cp => cp.ContentId == contentId)
-        //        .Select(cp => cp.Person.Name)
-        //        .ToListAsync(cancellationToken);
-        //}
-
-        //public async Task<List<Theme>> GetThemesByContentIdAsync(long contentId, CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Contents
-        //        .Where(c => c.Id == contentId)
-        //        .SelectMany(c => c.Themes)
-        //        .ToListAsync(cancellationToken);
-        //}
 
         public void SyncThemes(Content content, List<long> newThemeIds)
         {
@@ -472,85 +388,5 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 });
             }
         }
-
-        //public async Task SyncThemesAsync(long contentId, List<long> newThemeIds, CancellationToken cancellationToken = default)
-        //{
-        //    var content = await _context.Contents.Include(c=>c.Themes)
-        //        .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
-        //        throw new KeyNotFoundException($"Not found");
-
-        //    var currentIds = content.Themes.Select(t => t.Id).ToHashSet();
-        //    var desiredIds = newThemeIds.ToHashSet();
-
-        //    var toRemove = content.Themes.Where(t => !desiredIds.Contains(t.Id)).ToList();
-        //    foreach (var theme in toRemove)
-        //        content.Themes.Remove(theme);
-
-        //    var toAddIds = desiredIds.Except(currentIds).ToList();
-        //    if (toAddIds.Count > 0)
-        //    {
-        //        var themesToAdd = await _context.Themes.Where(t=>toAddIds.Contains(t.Id))
-        //            .ToListAsync(cancellationToken);
-        //        foreach (var theme in themesToAdd)
-        //            content.Themes.Add(theme);
-        //    }
-        //}
-
-        //public async Task SyncPersonsAsync(long contentId, List<PersonRoleFilter> newPersons, CancellationToken cancellationToken = default)
-        //{
-        //   var content = await _context.Contents.Include(c=>c.Participations).
-        //        FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
-        //        throw new KeyNotFoundException($"Not found");
-
-        //    var currentPairs = content.Participations.Select(p => (p.PersonId,p.PersonRoleId))
-        //        .ToHashSet();
-        //    var desiredPairs = newPersons.SelectMany(pr => pr.PersonIds.Select(pid => (PersonId: pid, PersonRoleId: pr.RoleId)))
-        //        .ToHashSet();
-
-        //    var pairsToAdd = desiredPairs.Except(currentPairs).ToList();
-        //    foreach (var pair in pairsToAdd)
-        //    {
-        //        var participation = new ContentParticipation
-        //        {
-        //            PersonRoleId = pair.PersonRoleId,
-        //            PersonId = pair.PersonId,
-        //        };
-        //        content.Participations.Add(participation);
-        //    }
-
-        //    var pairsToRemove = currentPairs.Except(desiredPairs).ToList();
-        //    var participationsToRemove = content.Participations.Where(p =>
-        //        pairsToRemove.Contains((p.PersonId, p.PersonRoleId))).ToList();
-
-        //    foreach (var participation in participationsToRemove)
-        //        content.Participations.Remove(participation);
-
-
-
-
-        //}
-
-        //public async Task SyncTagsAsync(long contentId, List<long> TagIds, CancellationToken cancellationToken)
-        //{
-        //    var content = await _context.Contents.Include(c => c.Tags)
-        //       .FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken) ??
-        //       throw new KeyNotFoundException($"Not found");
-
-        //    var currentIds = content.Tags.Select(t => t.Id).ToHashSet();
-        //    var desiredIds = TagIds.ToHashSet();
-
-        //    var toRemove = content.Tags.Where(t => !desiredIds.Contains(t.Id)).ToList();
-        //    foreach (var tag in toRemove)
-        //        content.Tags.Remove(tag);
-
-        //    var toAddIds = desiredIds.Except(currentIds).ToList();
-        //    if (toAddIds.Count > 0)
-        //    {
-        //        var tagsToAdd = await _context.Tags.Where(t => toAddIds.Contains(t.Id))
-        //            .ToListAsync(cancellationToken);
-        //        foreach (var tag in tagsToAdd)
-        //            content.Tags.Add(tag);
-        //    }
-        //}
     }
 }

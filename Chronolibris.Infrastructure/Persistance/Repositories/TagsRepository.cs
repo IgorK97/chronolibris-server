@@ -137,6 +137,3 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
     }
 }
-
-
-

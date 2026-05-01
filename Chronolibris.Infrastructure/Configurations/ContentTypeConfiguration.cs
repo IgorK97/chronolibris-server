@@ -35,20 +35,23 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                  new ContentType { Id = 13, Name = "Религиозный трактат", Nature = ContentNature.Work },
                  new ContentType { Id = 14, Name = "Политический трактат", Nature = ContentNature.Work },
                  new ContentType { Id = 15, Name = "Биография", Nature = ContentNature.Work },
-                 new ContentType { Id = 16, Name = "Путевые заметки", Nature = ContentNature.Work },
+                 new ContentType { Id = 16, Name = "Путевые заметки", Nature = ContentNature.Document },
                  new ContentType { Id = 17, Name = "Сборник", Nature = ContentNature.Work },
                  new ContentType { Id = 18, Name = "Учебник", Nature = ContentNature.Work },
 
 
-                 new ContentType { Id = 19, Name = "Историческое исследование", Nature = ContentNature.Analysis },
-                 new ContentType { Id = 20, Name = "Монография", Nature = ContentNature.Analysis },
-                 new ContentType { Id = 21, Name = "Научная статья", Nature = ContentNature.Analysis },
+                 new ContentType { Id = 19, Name = "Историческое исследование", Nature = ContentNature.Work },
+                 new ContentType { Id = 20, Name = "Монография", Nature = ContentNature.Work },
+                 new ContentType { Id = 21, Name = "Научная статья", Nature = ContentNature.Work },
                  
+                 
+                 new ContentType { Id = 22, Name = "Другое", Nature = ContentNature.Unknown },
 
-                 new ContentType { Id = 22, Name = "Неизвестно", Nature = ContentNature.Unknown },
+                 new ContentType { Id = 23, Name = "Комментарий", Nature = ContentNature.Work },
+                 new ContentType { Id = 24, Name = "Священный текст", Nature = ContentNature.Document },
+                 new ContentType { Id = 25, Name = "Стенограмма", Nature = ContentNature.Document },
+                 new ContentType { Id = 26, Name = "Публицистика", Nature = ContentNature.Work }
 
-                 new ContentType { Id = 23, Name = "Комментарий", Nature = ContentNature.Analysis },
-                 new ContentType { Id = 24, Name = "Священный текст", Nature = ContentNature.Document }
 
 
                  );
