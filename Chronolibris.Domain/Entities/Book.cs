@@ -45,7 +45,7 @@ namespace Chronolibris.Domain.Entities
         [Required]
         public bool IsReviewable { get; set; }
         public long? PublisherId { get; set; }
-        [MaxLength(500)]
+        [MaxLength(2000)]
         public string? Source { get; set; }
         public Publisher? Publisher { get; set; }
         //public long? SeriesId { get; set; }
