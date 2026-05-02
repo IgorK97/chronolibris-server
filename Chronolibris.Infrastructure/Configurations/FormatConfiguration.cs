@@ -18,12 +18,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 {
                     Id = 1,
                     Name = "fb2"
+                },
+                new Format
+                {
+                    Id = 2,
+                    Name = "epub"
                 }
-                //new Format
-                //{
-                //    Id = 2,
-                //    Name = "epub"
-                //},
                 //new Format
                 //{
                 //    Id = 3,

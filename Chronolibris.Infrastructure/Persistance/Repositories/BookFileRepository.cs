@@ -68,7 +68,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
             {
                 throw new ChronolibrisException(
-                    $"Файл формата {entity.FormatId} уже существует для этой книги",
+                    "Файл такого формата уже существует для этой книги",
                     ErrorType.Conflict);
             }
         }
