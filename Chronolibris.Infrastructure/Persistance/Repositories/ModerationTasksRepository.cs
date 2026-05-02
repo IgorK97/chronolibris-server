@@ -26,12 +26,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .FirstOrDefaultAsync(token);
         }
 
-        public async Task<ModerationTask?> GetActiveByTarget(long TargetId, long TargetTypeId, CancellationToken token = default)
+        public async Task<ModerationTask?> GetActiveByTarget(long TargetId, long TargetTypeId, long ReasonTypeId, CancellationToken token = default)
         {
             return await _context.ModerationTasks.AsNoTracking().Where(t =>
             t.TargetId == TargetId &&
             t.TargetTypeId == TargetTypeId &&
-            t.StatusId == 2
+            t.StatusId == 2 && t.ReasonTypeId == ReasonTypeId
             ).FirstOrDefaultAsync(token);
         }
 

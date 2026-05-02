@@ -38,8 +38,8 @@ namespace ChronolibrisWeb.Utils
             });
             AddUserPolicy(options, "bookmarks", 1, 0);
             AddUserPolicy(options, "comments", 5, 60);
-            AddUserPolicy(options, "ratings", 10, 60);
-            AddUserPolicy(options, "reports", 1, 60);
+            AddUserPolicy(options, "ratings", 20, 60);
+            AddUserPolicy(options, "reports", 1000, 60);
         }
 
         private static void AddUserPolicy(RateLimiterOptions options,

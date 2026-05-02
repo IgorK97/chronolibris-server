@@ -11,7 +11,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
     {
         Task<long?> TryCreateActiveTaskAsync(ModerationTask task, CancellationToken token);
         Task<ModerationTask?> GetLastTaskAsync(long targetId, long targetTypeId, CancellationToken token);
-        Task<ModerationTask?> GetActiveByTarget(long TargetId, long TargetTypeId, CancellationToken token);
+        Task<ModerationTask?> GetActiveByTarget(long TargetId, long TargetTypeId, long ReasonTypeId, CancellationToken token);
     }
 
 }

@@ -26,9 +26,9 @@ namespace Chronolibris.Application.Handlers.Reports
         {
 
 
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(token);
-            try
-            {
+            //await using var transaction = await _unitOfWork.BeginTransactionAsync(token);
+            //try
+            //{
                 var task = await _unitOfWork.ModerationTasks
                 .GetByIdAsync(command.TaskId, token);
 
@@ -84,19 +84,19 @@ namespace Chronolibris.Application.Handlers.Reports
                     
                 }
                 await _unitOfWork.SaveChangesAsync(token);
-                await transaction.CommitAsync(token);
+                //await transaction.CommitAsync(token);
                 return new TaskResolutionResponse
                 {
                     Success = true,
                     TaskResolvedAt = now,
                     TaskStatusId = task.StatusId
                 };
-            }
-            catch
-            {
-                await transaction.RollbackAsync(token);
-                throw;
-            }
+            //}
+            //catch
+            //{
+            //    await transaction.RollbackAsync(token);
+            //    throw;
+            //}
                 
         }
     }

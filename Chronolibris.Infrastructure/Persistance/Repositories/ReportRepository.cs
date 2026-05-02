@@ -19,7 +19,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public async Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token)
         {
-            await _context.Reports
+            await _context.Reports.Include(r => r.ModerationTask)
                 .Where(r => r.TargetId == targetId &&
                             r.TargetTypeId == targetTypeId &&
                             r.ReasonTypeId == reportTypeId &&
@@ -31,10 +31,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public async Task<Report?> GetLastUserReport(long UserId, long TargetTypeId, long TargetId, long ReasonTypeId, CancellationToken token = default)
         {
-            return await _context.Reports.AsNoTracking()
+            return await _context.Reports.Include(r => r.ModerationTask)
                 .Where(r => r.CreatedBy == UserId
-                && r.TargetId == TargetId
-                && r.ReasonTypeId == ReasonTypeId).OrderByDescending(r => r.CreatedAt)
+                && r.TargetId == TargetId 
+                && r.TargetTypeId == TargetTypeId
+                && r.ReasonTypeId == ReasonTypeId 
+                //&& (r.ModerationTaskId== null || 
+                //r.ModerationTask!=null && r.ModerationTask.StatusId==2)
+                ).OrderByDescending(r => r.CreatedAt)
                 .FirstOrDefaultAsync(token);
                 
         }
@@ -47,7 +51,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             
             IQueryable<Report> query = _context.Reports
-                .AsNoTracking().Include(r=>r.ModerationTask);
+                .Include(r=>r.ModerationTask);
             if(TargetTypeFilter && LastTargetTypeId is not null)
             {
                 query = query.Where(r => r.TargetTypeId == LastTargetTypeId);

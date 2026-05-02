@@ -52,7 +52,7 @@ namespace Chronolibris.Application.Handlers.Reports
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,
-                request.TargetTypeId, cancellationToken);
+                request.TargetTypeId, request.ReasonTypeId, cancellationToken);
 
             var report = new Report
             {
