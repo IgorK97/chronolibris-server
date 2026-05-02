@@ -104,7 +104,6 @@ namespace ChronolibrisWeb.Controllers
             var result = await _mediator.Send(new CreateModerationTaskCommand(
                 request.TargetId,
                 request.TargetTypeId,
-                request.ReportTypeId,
                 moderatorId));
 
             return Ok(result);

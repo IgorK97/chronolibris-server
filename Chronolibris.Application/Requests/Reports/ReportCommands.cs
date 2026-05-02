@@ -20,7 +20,6 @@ namespace Chronolibris.Application.Requests.Reports
     public record CreateModerationTaskCommand(
         long TargetId,
         long TargetTypeId,
-        long ReportTypeId,
         long ModeratorId) : IRequest<CreateModerationTaskResponse>;
 
     public record ResolveTaskCommand(

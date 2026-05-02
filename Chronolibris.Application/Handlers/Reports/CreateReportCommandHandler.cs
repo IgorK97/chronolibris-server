@@ -51,8 +51,50 @@ namespace Chronolibris.Application.Handlers.Reports
                 throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы одного типа можно отправлять" +
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
+            bool isHidden = false; //не успеваю сделать по-хорошему, TODO!!!
+            //по идее, проверка на удаленность будет единственная корректная только при сохранении изменений уже в бд,
+            //так что там нужно обрабатывать исключение, чтобы корректно сообщение передавать.
+            //а что касается проверки на скрытость контента, то здесь лучше бы SELECT FOR UPDATE 
+            //реализовать (особый метод) - только для жалобщиков и модеров как раз, поэтому на остальных никак не скажется.
+            //но на данный момент не считаю это критичным - может прийти до нескольких жалоб на уже
+            //скрытый контент теоретически, но это можно решить и иными способами
+            switch (request.TargetTypeId)
+            {
+                case 3:
+                    {
+                        var comment = await _unitOfWork.Comments.GetByIdAsync(request.TargetId, cancellationToken);
+                        if (comment is not null && comment.IsDeleted || comment == null)
+                        {
+                            isHidden = true;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        var review = await _unitOfWork.Reviews.GetByIdAsync(request.TargetId, cancellationToken);
+                        if (review is not null && review.IsDeleted || review == null)
+                        {
+                            isHidden = true;
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        var book = await _unitOfWork.Books.GetByIdAsync(request.TargetId, cancellationToken);
+                        if (book is not null && !book.IsAvailable || book == null)
+                        {
+                            isHidden = true;
+                        }
+                        break;
+                    }
+            }
+            if (isHidden)
+            {
+                throw new ChronolibrisException("Не найден активный контент для жалобы", ErrorType.NotFound);
+            }
+
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,
-                request.TargetTypeId, request.ReasonTypeId, cancellationToken);
+                request.TargetTypeId, cancellationToken);
 
             var report = new Report
             {

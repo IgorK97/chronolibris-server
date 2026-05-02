@@ -27,14 +27,13 @@ namespace Chronolibris.Domain.Models
         public int Count { get; set; }
         public long LastTargetId { get; set; }
         public long LastTargetTypeId { get; set; }
-        public long LastReportTypeId { get; set; }
     }
 
     public class ReportShortDto
     {
         public long TargetId {  get; set; }
         public long TargetTypeId { get; set; }
-        public long ReasonTypeId { get; set; }
+        public List<long> ReasonTypeIds { get; set; } = new List<long>();
         public int Count { get; set; }
         public DateTime FirstReportDate { get; set; }
         public DateTime LastReportDate { get; set; }
@@ -61,6 +60,8 @@ namespace Chronolibris.Domain.Models
         public string? BookDescription { get; set; }
         public required long BookId { get; set; }
         public string? ParentCommentText { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime LastUpdatedAt { get; set; }
     }
 
     public class GetTargetReportsRequest
@@ -92,7 +93,6 @@ namespace Chronolibris.Domain.Models
     {
         public long TargetId { get; set; }
         public long TargetTypeId { get; set; }
-        public long ReportTypeId { get; set; }
     }
     public class CreateModerationTaskResponse
     {

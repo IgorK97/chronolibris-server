@@ -47,7 +47,6 @@ namespace Chronolibris.Application.Handlers.Reports
                 Count = items.Count,
                 LastTargetId = last?.TargetId ?? 0,
                 LastTargetTypeId = last?.TargetTypeId ?? 0,
-                LastReportTypeId = last?.ReasonTypeId ?? 0,
             };
         }
     }

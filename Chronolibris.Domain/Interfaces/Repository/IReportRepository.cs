@@ -24,7 +24,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
             long TargetTypeId, long TargetId,
             long ReasonTypeId, CancellationToken token = default);
 
-        Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token);
+        Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, CancellationToken token);
 
 
         //Task<ModerationTask?> CreateModerationTaskWithReportsAsync(

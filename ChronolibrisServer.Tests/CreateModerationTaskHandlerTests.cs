@@ -43,8 +43,8 @@ namespace ChronolibrisServer.Tests.Reports
         private CreateModerationTaskCommand BuildCommand() => new(
             TargetId : targetId,
             TargetTypeId : 1,
-            ModeratorId : moderatorId,
-            ReportTypeId : 2
+            ModeratorId : moderatorId
+            //ReportTypeId : 2
         );
 
         private CreateModerationTaskCommandHandler CreateHandler() =>
@@ -66,7 +66,6 @@ namespace ChronolibrisServer.Tests.Reports
             var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
             captured.Should().NotBeNull();
-            captured.CheckNumber.Should().Be(1);
             captured.StatusId.Should().Be(2);
             captured.ModeratedBy.Should().Be(moderatorId);
             result.TaskStatusId.Should().Be(2);
@@ -75,7 +74,7 @@ namespace ChronolibrisServer.Tests.Reports
         [Fact]
         public async Task Handle_LastTaskExists_NotActive_IncrementsCheckNumber()
         {
-            var lastTask = new ModerationTask { StatusId = 3, CheckNumber = 2 };
+            var lastTask = new ModerationTask { StatusId = 3 };
 
             _taskRepoMock
                 .Setup(r => r.GetLastTaskAsync(targetId, 1, It.IsAny<CancellationToken>()))
@@ -90,7 +89,6 @@ namespace ChronolibrisServer.Tests.Reports
             var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
             captured.Should().NotBeNull();
-            captured.CheckNumber.Should().Be(3);
             result.TaskStatusId.Should().Be(2);
         }
 

@@ -31,12 +31,12 @@ namespace Chronolibris.Application.Handlers.Reports
             {
                 var lastTask = await _unitOfWork.ModerationTasks.GetLastTaskAsync(request.TargetId, request.TargetTypeId, token);
 
-                if (lastTask != null && lastTask.StatusId == 2 && lastTask.ReasonTypeId == request.ReportTypeId)
+                if (lastTask != null && lastTask.StatusId == 2)
                 {
                     throw new ChronolibrisException("Для данного контента уже существует активная задача модерации", ErrorType.Conflict);
                 }
 
-                var checkNumber = (lastTask?.CheckNumber ?? 0) + 1;
+                //var checkNumber = (lastTask?.CheckNumber ?? 0) + 1;
 
                 var newTask = new ModerationTask
                 {
@@ -46,8 +46,8 @@ namespace Chronolibris.Application.Handlers.Reports
                     StartedAt = DateTime.UtcNow,
                     StatusId = 2,
                     Comment = "",
-                    CheckNumber = checkNumber,
-                    ReasonTypeId = request.ReportTypeId,
+                    //CheckNumber = checkNumber,
+                    //ReasonTypeId = request.ReportTypeId,
                 };
 
                 var newTaskId = await _unitOfWork.ModerationTasks.TryCreateActiveTaskAsync(newTask, token);
@@ -60,7 +60,6 @@ namespace Chronolibris.Application.Handlers.Reports
                     (long)newTaskId,
                     request.TargetId,
                     request.TargetTypeId,
-                    request.ReportTypeId,
                     token);
                 await _unitOfWork.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);

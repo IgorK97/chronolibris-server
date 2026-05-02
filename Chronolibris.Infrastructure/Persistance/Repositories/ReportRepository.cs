@@ -17,12 +17,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
     {
         public ReportRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, long reportTypeId, CancellationToken token)
+        public async Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, CancellationToken token)
         {
             await _context.Reports.Include(r => r.ModerationTask)
                 .Where(r => r.TargetId == targetId &&
                             r.TargetTypeId == targetTypeId &&
-                            r.ReasonTypeId == reportTypeId &&
                             r.ModerationTaskId == null)
                 .ExecuteUpdateAsync(s => s.SetProperty(r => r.ModerationTaskId, taskId), token);
         }
@@ -56,10 +55,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             {
                 query = query.Where(r => r.TargetTypeId == LastTargetTypeId);
             }
-            if(ReportTypeFilter && LastReportTypeId is not null)
-            {
-                query = query.Where(r => r.ReasonTypeId == LastReportTypeId);
-            }
+            //if(ReportTypeFilter && LastReportTypeId is not null)
+            //{
+            //    query = query.Where(r => r.ReasonTypeId == LastReportTypeId);
+            //}
             if(ReportStatusFilter)
             {
                 if (ReportStatusId is not null) {
@@ -73,7 +72,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 }
             }
             var queryGrouping = query
-                .GroupBy(r => new { r.TargetId, r.TargetTypeId, r.ReasonTypeId })
+                .GroupBy(r => new { r.TargetId, r.TargetTypeId })
                 .Select(r=>new ReportShortDto
                 {
                     //Здесь нужно наверное это убрать и написать просто каунт, нет?
@@ -84,7 +83,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                      .Select(r=>r.ModerationTaskId).FirstOrDefault(),
                     TargetId = r.Key.TargetId,
                     TargetTypeId = r.Key.TargetTypeId,
-                    ReasonTypeId = r.Key.ReasonTypeId,
+                    ReasonTypeIds = r.Select(r =>r.ReasonTypeId).Distinct().ToList(),
                     Comment = r
                      .Where(r => r.ModerationTaskId!=null).Select(r => r.ModerationTask.Comment).FirstOrDefault() ?? "",
                     //ReasonTypeId = r.Select(r=>r.ReasonTypeId).FirstOrDefault(),
@@ -120,6 +119,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     Text = null,
                     ReaderId = null,
                     BookId = b.Id,
+                    IsActive = b.IsAvailable,
+                    LastUpdatedAt = b.UpdatedAt ?? b.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
             else if (TargetTypeId == 2)
@@ -135,6 +136,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ParentCommentText = c.ParentComment != null ? c.ParentComment.Text : null,
                     ReaderId = c.UserId,
                     BookId = c.BookId,
+                    IsActive = !c.IsDeleted,
+                    LastUpdatedAt = c.DeletedAt ?? c.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
             else if (TargetTypeId == 3)
@@ -149,6 +152,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     Text = r.ReviewText,
                     ReaderId = r.UserId,
                     BookId= r.BookId,
+                    IsActive = !r.IsDeleted,
+                    LastUpdatedAt = r.DeletedAt ?? r.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
             return null;

@@ -18,10 +18,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasForeignKey(mt=>mt.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(mt => mt.ReasonType)
-                .WithMany(s => s.ModerationTasks)
-                .HasForeignKey(mt => mt.ReasonTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(mt => mt.ReasonType)
+            //    .WithMany(s => s.ModerationTasks)
+            //    .HasForeignKey(mt => mt.ReasonTypeId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(mt=>mt.TargetType)
                 .WithMany(rtt=>rtt.ModerationTasks)
@@ -33,10 +33,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasForeignKey(mt => mt.ModeratedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(mt => new { mt.TargetId, mt.TargetTypeId, mt.ReasonTypeId })
+            builder.HasIndex(mt => new { mt.TargetId, mt.TargetTypeId })
                 .IsUnique()
                 .HasFilter("status_id = 2")
-                .HasDatabaseName("ix_moderation_tasks_target_active_only");
+                .HasDatabaseName("ix_moderation_tasks_one_active_only");
         }
     }
 }

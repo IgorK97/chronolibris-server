@@ -16,14 +16,14 @@ namespace Chronolibris.Domain.Entities
         public DateTime StartedAt { get; set; }
         public DateTime? ResolvedAt { get; set; }
         public long StatusId { get; set; }
-        public int CheckNumber { get; set; }
-        public long ReasonTypeId { get; set; }
-        [MaxLength(2000)]
+        //public int CheckNumber { get; set; }
+        //public long ReasonTypeId { get; set; }
+        [MaxLength(5000)]
         [Required]
         public string Comment { get; set; } = String.Empty;
         public ICollection<Report> Reports { get; set; } = [];
         public ReportStatus Status { get; set; } = null!;
-        public ReportReasonType ReasonType { get; set; } = null!;
+        //public ReportReasonType ReasonType { get; set; } = null!;
         public ReportTargetType TargetType { get; set; } = null!;
 
     }
