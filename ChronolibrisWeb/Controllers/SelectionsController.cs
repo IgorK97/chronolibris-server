@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.Contracts;
+using System.Security.Claims;
 using Chronolibris.Application.Requests.Selections;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -124,6 +125,13 @@ namespace ChronolibrisWeb.Controllers
             var result = await _mediator.Send(
                 new GetSelectionBooksQuery(selectionId, lastId, limit, userId, mode));
 
+            return Ok(result);
+        }
+
+        [HttpGet("books/{bookId}")]
+        public async Task<IActionResult> SeekBookInSelection(long bookId, CancellationToken ct)
+        {
+            var result = await _mediator.Send(new SeekBookInSelectionsQuery(bookId), ct);
             return Ok(result);
         }
 

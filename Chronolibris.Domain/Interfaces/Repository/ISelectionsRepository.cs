@@ -26,6 +26,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         //Task<bool> DeleteAsync(long selectionId, CancellationToken ct);
+        Task<List<long>> SeekBookInSelections(long bookId, CancellationToken ct);
     }
 
 }

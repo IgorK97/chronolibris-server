@@ -210,5 +210,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
             return false;
         }
+
+        public Task<List<long>> SeekBookInSelections(long bookId, CancellationToken ct)
+        {
+            return _context.Selections.Where(s => s.Books.Any(b => b.Id == bookId))
+                .Select(s => s.Id).ToListAsync(ct);
+        }
     }
 }
