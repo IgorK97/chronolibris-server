@@ -23,10 +23,10 @@ namespace Chronolibris.Application.Handlers.Reports
         {
             var items = await _reports.GetReports(request.ModeratorId, request.LastTargetId,
                 request.LastTargetTypeId,
-                request.LastReportTypeId,
+                //request.LastReportTypeId,
                 request.Count + 1,
                 request.TargetTypeFilter,
-                request.ReportTypeFilter,
+                //request.ReportTypeFilter,
                 request.ReportStatusFilter,
                 request.ReportStatusId,
                 request.LastDate);

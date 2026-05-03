@@ -43,8 +43,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
 
         public async Task<List<ReportShortDto>> GetReports(long moderatorId, long? LastTargetId, 
-            long? LastTargetTypeId, long? LastReportTypeId, 
-            int Count, bool TargetTypeFilter, bool ReportTypeFilter,
+            long? LastTargetTypeId,
+            int Count, bool TargetTypeFilter,
             bool ReportStatusFilter,
             long? ReportStatusId, DateTime? LastDate)
         {
@@ -125,7 +125,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             }
             else if (TargetTypeId == 2)
             {
-                return await _context.Comments.Where(c => c.Id == TargetId).Select(c =>
+                return await _context.Comments.Where(c => c.Id == TargetId).Join(_context.Users, c => c.UserId, u => u.Id, (c, u) =>
                 new GetTargetInfoResponse
                 {
                     TargetId = c.Id,
@@ -135,6 +135,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     Text = c.Text,
                     ParentCommentText = c.ParentComment != null ? c.ParentComment.Text : null,
                     ReaderId = c.UserId,
+                    ReaderName = u.UserName,
                     BookId = c.BookId,
                     IsActive = !c.IsDeleted,
                     LastUpdatedAt = c.DeletedAt ?? c.CreatedAt,
@@ -142,7 +143,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             }
             else if (TargetTypeId == 3)
             {
-                return await _context.Reviews.Where(c => c.Id == TargetId).Select(r =>
+                return await _context.Reviews.Where(c => c.Id == TargetId).Join(_context.Users, r => r.UserId, u => u.Id, (r, u) =>
                 new GetTargetInfoResponse
                 {
                     TargetId = r.Id,
@@ -151,7 +152,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     TargetTypeId = TargetTypeId,
                     Text = r.ReviewText,
                     ReaderId = r.UserId,
-                    BookId= r.BookId,
+                    ReaderName = u.UserName,
+                    BookId = r.BookId,
                     IsActive = !r.IsDeleted,
                     LastUpdatedAt = r.DeletedAt ?? r.CreatedAt,
                 }).FirstOrDefaultAsync();

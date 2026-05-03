@@ -12,10 +12,10 @@ namespace Chronolibris.Application.Requests.Reports
         long ModeratorId,
         long? LastTargetId,
         long? LastTargetTypeId,
-        long? LastReportTypeId,
+        //long? LastReportTypeId,
         int Count,
         bool TargetTypeFilter,
-        bool ReportTypeFilter,
+        //bool ReportTypeFilter,
         bool ReportStatusFilter,
         long? ReportStatusId,
         DateTime? LastDate):IRequest<GetReportsResponse>;

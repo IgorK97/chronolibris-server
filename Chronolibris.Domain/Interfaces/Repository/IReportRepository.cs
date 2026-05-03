@@ -11,8 +11,8 @@ namespace Chronolibris.Domain.Interfaces.Repository
     public interface IReportRepository : IGenericRepository<Report>
     {
         Task<List<ReportShortDto>> GetReports(long moderatorId, long? LastTargetId, 
-            long? LastTargetTypeId, long? LastReportTypeId,
-            int Count, bool TargetTypeFilter, bool ReportTypeFilter, 
+            long? LastTargetTypeId,
+            int Count, bool TargetTypeFilter,
             bool ReportStatusFilter, long? ReportStatusId, DateTime? LastDate);
 
         Task<GetTargetInfoResponse?> GetTargetInfo(long TargetId, long targetTypeId);

@@ -57,10 +57,10 @@ namespace ChronolibrisWeb.Controllers
                 userId,
                 request.LastTargetId,
                 request.LastTargetTypeId,
-                request.LastReportTypeId,
+                //request.LastReportTypeId,
                 request.Count,
                 request.TargetTypeFilter,
-                request.ReportTypeFilter,
+                //request.ReportTypeFilter,
                 request.ReportStatusFilter,
                 request.ReportStatusId,
                 request.LastDate));

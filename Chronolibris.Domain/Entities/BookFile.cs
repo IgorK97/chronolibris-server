@@ -22,7 +22,8 @@ namespace Chronolibris.Domain.Entities
         [Required]
         public string StorageUrl { get; set; } = String.Empty;
         [Required]
-        public long FileSizeBytes { get; set; }
+        public long OriginalSize { get; set; }
+        public long StoredSize { get; set; }
         [Required]
         public bool IsReadable { get; set; }
         [Required]

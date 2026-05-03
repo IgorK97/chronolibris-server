@@ -36,7 +36,8 @@ namespace Chronolibris.Application.Handlers.Books
                 FormatId = bf.FormatId,
                 FormatName = bf.Format?.Name,
                 StorageUrl = bf.StorageUrl,
-                FileSizeBytes = bf.FileSizeBytes,
+                FileSizeBytes = bf.OriginalSize,
+                StoredSizeBytes = bf.StoredSize,
                 IsReadable = bf.IsReadable,
                 CreatedAt = bf.CreatedAt,
                 CompletedAt = bf.CompletedAt,
@@ -63,7 +64,7 @@ namespace Chronolibris.Application.Handlers.Books
         {
             var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
             if (bookFile == null || string.IsNullOrEmpty(bookFile.StorageUrl)) return null;
-            string extension = ".fb2";
+            string extension = ".fb2.zip";
             if (bookFile.FormatId == 2)
                 extension = ".epub";
             return await _bookStorage.ReadBookSourceAsync(bookFile.Id.ToString(), extension, cancellationToken);
@@ -120,7 +121,7 @@ namespace Chronolibris.Application.Handlers.Books
                 BookId = request.BookId,
                 FormatId = request.FormatId,
                 StorageUrl = "",
-                FileSizeBytes = request.FileSizeBytes,
+                OriginalSize = request.FileSizeBytes,
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = request.CreatedBy,
@@ -143,14 +144,45 @@ namespace Chronolibris.Application.Handlers.Books
                 else if (extension == ".fb2")
                     ValidateFb2(buffer);
 
-                var storageUrl = await _bookStorage.SaveBookSourceAsync(
-                    bookFile.Id.ToString(),
-                    extension,
-                    buffer,
-                    cancellationToken);
+                Stream storageStream;
+                string storageExtension;
+                long compressedSize;
 
-                bookFile.StorageUrl = storageUrl;
-                bookFile.BookFileStatusId = request.IsReadable ? BookFileStatuses.UPLOADED : BookFileStatuses.COMPLETED;
+                if (extension == ".fb2")
+                {
+                    var zipped = CompressFb2ToZip(buffer, request.FileName);
+                    compressedSize = zipped.Length;
+                    storageStream = zipped;
+                    storageExtension = ".fb2.zip";
+                }
+
+                else
+                {
+                    compressedSize = buffer.Length; // EPUB и так архив
+                    storageStream = buffer;
+                    storageExtension = ".epub";
+                }
+
+                //var storageUrl = await _bookStorage.SaveBookSourceAsync(
+                //    bookFile.Id.ToString(),
+                //    extension,
+                //    buffer,
+                //    cancellationToken);
+
+                using (storageStream)
+                {
+                    string storageUrl = await _bookStorage.SaveBookSourceAsync(
+                        bookFile.Id.ToString(),
+                        storageExtension,
+                        storageStream,
+                        cancellationToken);
+                    bookFile.StorageUrl = storageUrl;
+                }
+
+                bookFile.StoredSize = compressedSize;
+                bookFile.BookFileStatusId = request.IsReadable
+                    ? BookFileStatuses.UPLOADED
+                    : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
 
                 _bookFileRepository.Update(bookFile);
@@ -190,6 +222,21 @@ namespace Chronolibris.Application.Handlers.Books
                 throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов или в процессе конвертации. " + message+
                     ex.Message, ErrorType.ServerException);
             }
+        }
+
+        private static MemoryStream CompressFb2ToZip(Stream fb2Stream, string originalFileName)
+        {
+            var ms = new MemoryStream();
+            using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+            {
+                var entryName = Path.GetFileName(originalFileName);
+                var entry = zip.CreateEntry(entryName, CompressionLevel.Optimal);
+                using var entryStream = entry.Open();
+                fb2Stream.Position = 0;
+                fb2Stream.CopyTo(entryStream);
+            }
+            ms.Position = 0;
+            return ms;
         }
 
         private static void ValidateEpub(Stream stream)

@@ -12,11 +12,11 @@ namespace Chronolibris.Domain.Models
     {
         public long? LastTargetId {  get; set; }
         public long? LastTargetTypeId { get; set; }
-        public long? LastReportTypeId { get; set; }
+        //public long? LastReportTypeId { get; set; }
         public int Count { get; set; }
         public long? ReportStatusId { get; set; }
         public bool TargetTypeFilter { get; set; }
-        public bool ReportTypeFilter { get; set; }
+        //public bool ReportTypeFilter { get; set; }
         public bool ReportStatusFilter { get; set; }
         public DateTime? LastDate { get; set; }
     }
@@ -56,6 +56,7 @@ namespace Chronolibris.Domain.Models
         public long TargetTypeId { get; set; }
         public string? Text { get; set; }
         public long? ReaderId { get; set; }
+        public string? ReaderName { get; set; }
         public string? BookTitle { get; set; }
         public string? BookDescription { get; set; }
         public required long BookId { get; set; }

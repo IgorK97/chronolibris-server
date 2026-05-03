@@ -161,6 +161,8 @@ namespace Chronolibris.Infrastructure.Services.Files
         private static string ResolveContentType(string ext) => ext.ToLowerInvariant() switch
         {
             ".fb2" => "application/xml", //на что это влияет?
+            ".fb2.zip" => "application/zip",
+            ".epub" => "application/epub+zip",
             _ => "application/octet-stream"
         };
     }
