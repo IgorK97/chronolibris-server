@@ -10,10 +10,10 @@ namespace ChronolibrisWeb.InputModels
     }
     public class CreateBookInputModel
     {
-        [Required(ErrorMessage = "Название книги отсутствует")]
+        [MinLength(1, ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500, ErrorMessage ="Максимальная длина названия - 500 символов")]
         public string Title { get; init; } = string.Empty;
-        [Required(ErrorMessage = "Описание книги отсутствует")]
+        //[Required(ErrorMessage = "Описание книги отсутствует")]
         [MaxLength(5000, ErrorMessage = "Максимальная длина описания - 5000 символов")]
         [MinLength(120, ErrorMessage = "Минимальная длина описания - 120 символов")]
         public string Description { get; init; } = string.Empty;

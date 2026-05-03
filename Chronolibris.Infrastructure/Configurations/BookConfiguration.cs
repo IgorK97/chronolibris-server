@@ -17,23 +17,23 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(b => b.Books)
                 .UsingEntity<BookParticipation>();
 
-            //builder.HasMany(b => b.Shelves)
-            //    .WithMany(s => s.Books)
-            //    .UsingEntity(j => j.ToTable("book_shelf"),
-            //    j => j.HasOne<Shelf>().WithMany().HasForeignKey("shelf_id"),
-            //    j => j.HasOne<Book>().WithMany().HasForeignKey("book_id"));
+            builder.Property(b => b.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            //builder.HasMany(b => b.Shelves)
-            //    .WithMany(s => s.Books)
-            //    .UsingEntity(
-            //        r => r.HasOne(typeof(Shelf))
-            //              .WithMany()
-            //              .HasForeignKey("shelf_id"),
-            //        l => l.HasOne(typeof(Book))
-            //              .WithMany()
-            //              .HasForeignKey("book_id"),
-            //        j => j.ToTable("book_shelf")
-            //    );
+            builder.ToTable("books", t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_books_title_alnum",
+                    "title ~ '[[:alnum:]]'");
+
+                t.HasCheckConstraint(
+                    "CK_books_description_min_length",
+                    "LENGTH(description) >= 120");
+
+                t.HasCheckConstraint(
+                    "CK_books_year_range",
+                    "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
+            });
 
             builder.HasMany(b => b.Shelves)
                 .WithMany(s => s.Books)

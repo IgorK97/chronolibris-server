@@ -15,11 +15,22 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<BookFile> builder)
         {
-            builder.ToTable("book_files");
+            builder.ToTable("book_files", t =>
+            {
+                t.HasCheckConstraint("CK_book_files_original_size_positive",
+                    "original_size > 0");
+
+                t.HasCheckConstraint("CK_book_files_stored_size_not_negative",
+                    "stored_size>=0");
+            });
             builder.HasOne(bf => bf.BookFileStatus)
                 .WithMany(bs => bs.BookFiles)
                 .HasForeignKey(b => b.BookFileStatusId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(bf => bf.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             builder
                 .HasIndex(bf => new { bf.BookId, bf.IsReadable })
                 .IsUnique()

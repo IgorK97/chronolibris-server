@@ -16,6 +16,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
         {
             builder.HasKey(c => c.Id);
 
+            //builder.ToTable("comments", t =>
+            //{
+            //    t.HasCheckConstraint("CK_comments_text_min_length",
+            //        "text !~ '^\\s*$'"
+            //        );
+            //});
+
             builder.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(b => b.UserId)
@@ -31,6 +38,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentCommentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(c => c.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasIndex(c => new { c.BookId, c.CreatedAt });
             builder.HasIndex(c => c.ParentCommentId);

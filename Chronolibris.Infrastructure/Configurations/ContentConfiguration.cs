@@ -13,19 +13,27 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Content> builder)
         {
-            //builder.HasMany(c => c.Books)
-            //    .WithMany(b => b.Contents)
-            //    .UsingEntity<ContentBook>();
+
+            builder.ToTable("contents", t =>
+            {
+                t.HasCheckConstraint("CK_contents_title_alnum",
+                    "title ~ '[[:alnum:]]'");
+
+                t.HasCheckConstraint("CK_contents_description_min_length",
+                    "LENGTH(description)>=120");
+
+                t.HasCheckConstraint("CK_contents_years",
+                    "(year_from is null AND year_to is null) " +
+                    "OR (year_from >= -10000 AND year_from <= year_to AND year_to <= EXTRACT(YEAR FROM CURRENT_TIMESTAMP)+1)" +
+                    "OR (year_from is null AND -10000 <= year_to AND year_to <= EXTRACT(YEAR FROM CURRENT_TIMESTAMP)+1)" +
+                    "OR (year_to is null AND -10000 <= year_from AND year_from <= EXTRACT(YEAR FROM CURRENT_TIMESTAMP)+1)");
+            });
 
             builder.HasMany(c => c.Tags)
                 .WithMany(t => t.Contents)
                 .UsingEntity(j => j.ToTable("content_tags"));
 
-            //builder.HasOne(c => c.ParentContent)
-            //    .WithMany()
-            //    .HasForeignKey(c => c.ParentContentId)
-            //    .IsRequired(false)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(c => c.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(c => c.ContentType)
                 .WithMany(ct =>ct.Contents)
@@ -36,9 +44,6 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany(p => p.Contents)
                 .UsingEntity<ContentParticipation>();
 
-            //builder.HasMany(c => c.Themes)
-            //    .WithMany(th => th.Contents)
-            //    .UsingEntity("content_theme");
 
             builder.HasMany(c => c.Themes)
                 .WithMany(th => th.Contents)

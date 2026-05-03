@@ -19,6 +19,8 @@ namespace Chronolibris.Infrastructure.Configurations
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(s => s.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
 

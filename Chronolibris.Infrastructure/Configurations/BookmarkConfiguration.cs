@@ -14,6 +14,8 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Bookmark> builder)
         {
+            builder.Property(bm => bm.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
             //builder.ToTable("bookmarks");
 
             //builder.HasOne(b => b.Book)

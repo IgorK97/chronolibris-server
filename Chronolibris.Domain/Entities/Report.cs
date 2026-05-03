@@ -14,7 +14,7 @@ namespace Chronolibris.Domain.Entities
         public long TargetId { get; set; }
         public long TargetTypeId { get; set; }
         [MaxLength(2000)]
-        public string Description { get; set; }
+        public string Description { get; set; } = String.Empty;
         //public long StatusId { get; set; }
         public long ReasonTypeId { get; set; }
         public DateTime CreatedAt { get; set; }

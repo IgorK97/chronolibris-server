@@ -13,6 +13,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<ModerationTask> builder)
         {
+
             builder.HasOne(mt=>mt.Status)
                 .WithMany(s=>s.Tasks)
                 .HasForeignKey(mt=>mt.StatusId)
@@ -32,6 +33,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .WithMany()
                 .HasForeignKey(mt => mt.ModeratedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(mt => mt.StartedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasIndex(mt => new { mt.TargetId, mt.TargetTypeId })
                 .IsUnique()

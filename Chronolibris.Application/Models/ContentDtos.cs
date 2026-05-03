@@ -9,11 +9,11 @@ namespace Chronolibris.Application.Models
    
     public class CreateContentRequest
     {
-        [Required]
+        [MinLength(1)]
         [MaxLength(500)]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
+        [MinLength(120)]
         [MaxLength(5000)]
         public string Description { get; set; } = string.Empty;
 

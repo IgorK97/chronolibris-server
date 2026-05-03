@@ -14,8 +14,14 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
-            builder.ToTable(r => r.HasCheckConstraint("ck_review_rating", 
-                "score >=0.0 AND score<=5.0"));
+            builder.ToTable(r =>
+            {
+                r.HasCheckConstraint("ck_review_rating",
+                    "score IN (1,2,3,4,5)");
+            }
+            );
+
+            builder.Property(r => r.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne<User>() 
                    .WithMany()     

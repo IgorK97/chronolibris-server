@@ -43,6 +43,8 @@ namespace Chronolibris.Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(255);
 
+            builder.Property(u => u.RegisteredAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             var dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
             builder.HasData(
