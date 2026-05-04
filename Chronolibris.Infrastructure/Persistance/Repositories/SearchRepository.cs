@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Chronolibris.Domain.Entities;
+﻿using System.Text;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Models.Search;
@@ -23,9 +16,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             _context = context;
         }
-        
-
-
         public async Task<PagedBooks<BookSearchResult>>SearchKeysetAsync(
             SimpleSearchKeysetRequest request, CancellationToken token)
         {
@@ -40,8 +30,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 parameters.Add(request.LastId.Value);
 
                 cursorClause = @"
-                    WHERE (sub.best_similarity < {" + p.ToString() +@"} 
-                    OR (sub.best_similarity = {" + p.ToString() + @"} AND sub.id > {" + (p+1).ToString() + @"}))
+                    WHERE (sub.best_similarity < {" + p +@"} 
+                    OR (sub.best_similarity = {" + p + @"} AND sub.id > {" + (p+1).ToString() + @"}))
                     ";
 
             }
@@ -99,32 +89,36 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var pagedIds = await _context.Database.SqlQueryRaw<SearchIdScore>(sql, parameters.ToArray())
                 .ToListAsync(token);
 
-            var hasNext = pagedIds.Count > request.PageSize;
-            var pageItems = pagedIds.Take(request.PageSize).ToList();
+            return await BuildPageAsync(pagedIds, request.PageSize,
+                    request.UserId,
+                    token);
 
-            if (pageItems.Count == 0)
-                return new PagedBooks<BookSearchResult>
-                {
-                    Items = [],
-                    HasNext = false,
-                    LastId = null,
-                    LastBestSimilarity = null,
-                };
+            //var hasNext = pagedIds.Count > request.PageSize;
+            //var pageItems = pagedIds.Take(request.PageSize).ToList();
 
-            var ids = pageItems.Select(x => x.Id).ToList();
-            var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
+            //if (pageItems.Count == 0)
+            //    return new PagedBooks<BookSearchResult>
+            //    {
+            //        Items = [],
+            //        HasNext = false,
+            //        LastId = null,
+            //        LastBestSimilarity = null,
+            //    };
 
-            var items = ids.Where(id => itemsDict.ContainsKey(id)).Select(ids => itemsDict[ids])
-                .ToList();
+            //var ids = pageItems.Select(x => x.Id).ToList();
+            //var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
 
-            var last = pageItems.Last();
-            return new PagedBooks<BookSearchResult>
-            {
-                Items = items,
-                HasNext = hasNext,
-                LastId = last.Id,
-                LastBestSimilarity = last.BestSimilarity,
-            };
+            //var items = ids.Where(id => itemsDict.ContainsKey(id)).Select(ids => itemsDict[ids])
+            //    .ToList();
+
+            //var last = pageItems.Last();
+            //return new PagedBooks<BookSearchResult>
+            //{
+            //    Items = items,
+            //    HasNext = hasNext,
+            //    LastId = last.Id,
+            //    LastBestSimilarity = last.BestSimilarity,
+            //};
 
         }
 
@@ -158,33 +152,36 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var pagedIds = await _context.Database.SqlQueryRaw<SearchIdScore>(sql, parameters.ToArray())
                 .ToListAsync(token);
 
-            var hasNext = pagedIds.Count > request.PageSize;
+            return await BuildPageAsync(pagedIds, request.PageSize,
+                request.UserId,
+                token);
+            //var hasNext = pagedIds.Count > request.PageSize;
 
-            var pageItems = pagedIds.Take(request.PageSize).ToList();
+            //var pageItems = pagedIds.Take(request.PageSize).ToList();
 
-            if (pageItems.Count == 0)
-                return new PagedBooks<BookSearchResult>
-                {
-                    Items = [],
-                    HasNext = false,
-                    LastId = null,
-                    LastBestSimilarity = null,
-                };
+            //if (pageItems.Count == 0)
+            //    return new PagedBooks<BookSearchResult>
+            //    {
+            //        Items = [],
+            //        HasNext = false,
+            //        LastId = null,
+            //        LastBestSimilarity = null,
+            //    };
 
-            var ids = pageItems.Select(x => x.Id).ToList();
-            var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
-            var items = ids.Where(ids => itemsDict.ContainsKey(ids))
-                .Select(ids => itemsDict[ids])
-                .ToList();
+            //var ids = pageItems.Select(x => x.Id).ToList();
+            //var itemsDict = await ProjectByIdsAsync(ids, request.UserId, token);
+            //var items = ids.Where(ids => itemsDict.ContainsKey(ids))
+            //    .Select(ids => itemsDict[ids])
+            //    .ToList();
 
-            var last = pageItems.Last();
-            return new PagedBooks<BookSearchResult>
-            {
-                Items = items,
-                HasNext = hasNext,
-                LastId = last.Id,
-                LastBestSimilarity = last.BestSimilarity,
-            };
+            //var last = pageItems.Last();
+            //return new PagedBooks<BookSearchResult>
+            //{
+            //    Items = items,
+            //    HasNext = hasNext,
+            //    LastId = last.Id,
+            //    LastBestSimilarity = last.BestSimilarity,
+            //};
         }
 
         private static (string Sql, List<object> Parameters) BuildString(
@@ -195,15 +192,334 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             var isStringSearch = !string.IsNullOrEmpty(query);
             var parameters = new List<object> { query };
 
-            var bookFilters = new StringBuilder();
+            //var bookFilters = new StringBuilder();
+            var bookFilters = BuildCommonFilters(request, parameters);
+            var availFilter = !request.mode ? "b.is_available = true AND" : "";
 
+
+            //foreach (var pf in request.PersonFilters)
+            //{
+            //    var pRole = parameters.Count;
+            //    var pPersons = parameters.Count + 1;
+            //    parameters.Add(pf.RoleId);
+            //    parameters.Add(pf.PersonIds.ToArray());
+            //    bookFilters.AppendLine($$""" 
+            //        AND (
+            //            EXISTS (
+            //                SELECT 1 FROM book_participations p
+            //                WHERE p.book_id = b.id
+            //                  AND p.person_role_id = {{{pRole}}}
+            //                  AND p.person_id = ANY({{{pPersons}}})
+            //            )
+            //            OR EXISTS (
+            //                SELECT 1
+            //                FROM book_content bc
+            //                JOIN content_participations p ON p.content_id = bc.content_id
+            //                WHERE bc.book_id = b.id
+            //                  AND p.person_role_id = {{{pRole}}}
+            //                  AND p.person_id = ANY({{{pPersons}}})
+            //            )
+            //        ) 
+            //        """);
+            //}
+
+            //if (request.ThemeId > 0)
+            //{
+            //    var p = parameters.Count;
+            //    parameters.Add(request.ThemeId);
+            //    //bookFilters.AppendLine($$""" 
+            //    //    AND EXISTS (
+            //    //        SELECT 1
+            //    //        FROM book_content bc
+            //    //        JOIN content_theme ct ON ct.content_id = bc.content_id
+            //    //        WHERE bc.book_id = b.id
+            //    //          AND ct.theme_id = {{{p}}}
+            //    //    ) 
+            //    //    """);
+
+            //    bookFilters.AppendLine($$"""
+            //        AND EXISTS (
+            //           WITH RECURSIVE expanded_themes AS (
+            //              SELECT id FROM themes WHERE id = {{{p}}}
+            //              UNION
+            //              SELECT themes.id FROM themes
+            //              INNER JOIN expanded_themes ethe ON themes.parent_theme_id = ethe.id
+            //            )
+            //        SELECT 1
+            //        FROM book_content bc
+            //        JOIN content_theme cthe ON cthe.content_id = bc.content_id
+            //        WHERE bc.book_id = b.id
+            //           AND cthe.theme_id IN (SELECT id FROM expanded_themes)
+            //        )
+            //        """);
+            //}
+
+            //if (request.SelectionId > 0)
+            //{
+            //    var p = parameters.Count;
+            //    parameters.Add(request.SelectionId);
+            //    bookFilters.AppendLine($$""" 
+            //        AND EXISTS (
+            //            SELECT 1
+            //            FROM book_selection bs
+            //            --FROM book_content bc
+            //            --JOIN books b ON bc.content_id = b.id
+            //            --JOIN book_selection bs ON b.id = bs.book_id
+            //            WHERE bs.selection_id = {{{p}}} AND bs.book_id = b.id
+            //        ) 
+            //        """);
+            //}
+
+            //if (request.RequiredTagIds.Count > 0)
+            //{
+            //    foreach (var tagId in request.RequiredTagIds)
+            //    {
+            //        var p = parameters.Count;
+            //        parameters.Add(tagId);
+
+            //        bookFilters.AppendLine($$"""
+            //            AND EXISTS (
+            //               WITH RECURSIVE expanded_tags AS (
+            //                  SELECT id FROM tags WHERE id = {{{p}}}
+            //                  UNION
+            //                  SELECT t.id FROM tags t
+            //                  INNER JOIN expanded_tags et ON t.parent_tag_id = et.id
+            //               )
+            //               SELECT 1
+            //               FROM book_content bc
+            //               JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+            //               WHERE bc.book_id = b.id
+            //                  AND ctg.tags_id IN (SELECT id FROM expanded_tags)
+            //            )
+            //            """);
+            //    }
+
+
+
+            //    //    //var p = parameters.Count;
+            //    //    //parameters.Add(request.RequiredTagIds.ToArray());
+            //    //    //bookFilters.AppendLine($$""" 
+            //    //    //    AND EXISTS (
+            //    //    //        SELECT 1
+            //    //    //        FROM book_content bc
+            //    //    //        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+            //    //    //        WHERE bc.book_id = b.id
+            //    //    //          AND ctg.tags_id = ANY({{{p}}})
+            //    //    //    ) 
+            //    //    //    """);
+            //}
+
+            //if (request.ExcludedTagIds.Count > 0)
+            //{
+            //    var p = parameters.Count;
+            //    parameters.Add(request.ExcludedTagIds.ToArray());
+
+            //    bookFilters.AppendLine($$"""
+            //        AND NOT EXISTS (
+            //           WITH RECURSIVE expanded_excluded_tags AS (
+            //              SELECT id FROM tags WHERE id = ANY({{{p}}})
+            //              UNION
+            //              SELECT t.id FROM tags t
+            //              INNER JOIN expanded_excluded_tags eet ON t.parent_tag_id = eet.id
+            //           )
+            //           SELECT 1
+            //           FROM book_content bc
+            //           JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+            //           WHERE bc.book_id = b.id
+            //              AND ctg.tags_id IN (SELECT id FROM expanded_excluded_tags)
+            //        )
+            //        """);
+
+            //    //bookFilters.AppendLine($$""" 
+            //    //    AND NOT EXISTS (
+            //    //        SELECT 1
+            //    //        FROM book_content bc
+            //    //        JOIN content_tags ctg ON ctg.contents_id = bc.content_id
+            //    //        WHERE bc.book_id = b.id
+            //    //          AND ctg.tags_id = ANY({{{p}}})
+            //    //    ) 
+            //    //    """);
+            //}
+            //var filters = bookFilters.ToString();
+
+            if (isStringSearch)
+            {
+                return BuildStringScoredSql(bookFilters.ToString(), availFilter, parameters);
+                //var scoringSubquery = $$""" 
+                //GREATEST(
+                //    word_similarity({{{0}}}::text, b.title),
+                //    COALESCE((
+                //        SELECT word_similarity({{{0}}}::text, c.title)
+                //        FROM book_content bc
+                //        JOIN contents c ON c.id = bc.content_id
+                //        WHERE bc.book_id = b.id
+                //        ORDER BY 1 DESC
+                //        LIMIT 1
+                //    ), 0)
+                //) 
+                //""";
+
+                //var sql = $$""" 
+                //SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
+                //FROM books b
+                //WHERE  
+                //""" + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + 
+                //$$"""
+                //  b.title%>{{{0}}}::text
+                
+                //{{filters}}
+ 
+                //UNION
+ 
+                //SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
+                //FROM books b
+                //WHERE  
+                //""" + (!request.mode ? $$""" b.is_available = true AND """ : " ")  +
+                // $$"""
+                  
+                // EXISTS (
+                 
+                //      SELECT 1
+                //      FROM book_content bc
+                //      JOIN contents c ON c.id = bc.content_id
+                //      WHERE bc.book_id = b.id
+                //        AND c.title%>{{{0}}}::text
+                //  )
+                //{{filters}}
+                //""";
+
+                //return (sql, parameters);
+            }
+            else
+            {
+                return BuildTagScoredSql(request.RequiredTagIds, bookFilters.ToString(), availFilter, parameters);
+                //var sql = $"""
+                //    SELECT b.id AS id, 1.0 AS best_similarity
+                //    FROM books b 
+                //    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : string.IsNullOrEmpty(filters)? " " : " WHERE 1=1 ") + //потом посмотреть, как подправить
+                //    $"""
+                //    {filters}
+                    
+                //    """;
+                //return (sql, parameters);
+            }
+
+        }
+
+        private static (string Sql, List<object> Parameters) BuildStringScoredSql(
+            string filters, string availFilter, List<object> parameters)
+        {
+            var scoringSubquery = $$""" 
+                GREATEST(
+                    word_similarity({{{0}}}::text, b.title),
+                    COALESCE((
+                        SELECT word_similarity({{{0}}}::text, c.title)
+                        FROM book_content bc
+                        JOIN contents c ON c.id = bc.content_id
+                        WHERE bc.book_id = b.id
+                        ORDER BY 1 DESC
+                        LIMIT 1
+                    ), 0)
+                ) 
+                """;
+
+            var sql = $$""" 
+                SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
+                FROM books b
+                WHERE {{availFilter}} 
+                  b.title%>{{{0}}}::text
+                
+                {{filters}}
+ 
+                UNION
+ 
+                SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
+                FROM books b
+                WHERE  {{availFilter}}  
+                EXISTS (
+                 
+                      SELECT 1
+                      FROM book_content bc
+                      JOIN contents c ON c.id = bc.content_id
+                      WHERE bc.book_id = b.id
+                        AND c.title%>{{{0}}}::text
+                  )
+                {{filters}}
+                """;
+
+            return (sql, parameters);
+        }
+
+        private static (string Sql, List<object> Parameters) BuildTagScoredSql(
+            IReadOnlyList<long> requiredTagIds,
+            string filters,
+            string availFilter,
+            List<object> parameters)
+        {
+            if(requiredTagIds.Count == 0)
+            {
+                var plainSql = $"""
+                    SELECT b.id AS id, 1.0 AS best_similarity
+                    FROM books b
+                    {(!string.IsNullOrWhiteSpace(availFilter) || !string.IsNullOrWhiteSpace(filters) ?
+                    $"where {availFilter} 1=1" : "")}
+                    {filters}
+                    """;
+                return (plainSql, parameters);
+            }
+
+            var depthSubqueries = new List<string>();
+            foreach(var tagId in requiredTagIds)
+            {
+                var p = parameters.Count;
+                parameters.Add(tagId);
+
+                depthSubqueries.Add($$"""
+                    COALESCE((
+                       WITH RECURSIVE tag_descendants AS (
+                          SELECT id, 0 AS depth
+                          FROM tags
+                          WHERE id = {{{p}}}
+
+                          UNION ALL
+
+                          SELECT t.id, td.depth + 1
+                          FROM tags t
+                          JOIN tag_descendants td ON t.parent_tag_id = td.id
+                      )
+                      SELECT MIN(td.depth)
+                      FROM tag_descendants td
+                      JOIN content_tags ctg ON ctg.tags_id = td.id
+                      JOIN book_content bc ON bc.content_id = ctg.contents_id
+                      WHERE bc.book_id = b.id
+                    ), 999)
+                    """); //в прицнипе, задавая такое большое значение,
+                //можно, наверное, дополнительно не проверять на точное наличие, но
+                //это можно будеть оптимизировать при наличии проблем с производительностью   
+            }
+            var depthAvg = $"(({string.Join(" + ", depthSubqueries)}) / {requiredTagIds.Count}.0)";
+            var scoringExpr = $"(1.0 / (1.0 + {depthAvg}))";
+            var taggedSql = $"""
+                    SELECT b.id AS id, {scoringExpr} AS best_similarity
+                    FROM books b
+                    WHERE {availFilter} 1=1
+                    {filters}
+                    """;
+            return (taggedSql, parameters);
+        }
+
+        private static string BuildCommonFilters(AdvancedSearchKeysetRequest request, List<object> parameters)
+        {
+            var sb = new StringBuilder();
             foreach (var pf in request.PersonFilters)
             {
                 var pRole = parameters.Count;
                 var pPersons = parameters.Count + 1;
+
                 parameters.Add(pf.RoleId);
                 parameters.Add(pf.PersonIds.ToArray());
-                bookFilters.AppendLine($$""" 
+
+                sb.AppendLine($$"""
                     AND (
                         EXISTS (
                             SELECT 1 FROM book_participations p
@@ -221,6 +537,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                         )
                     ) 
                     """);
+
             }
 
             if (request.ThemeId > 0)
@@ -237,7 +554,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 //    ) 
                 //    """);
 
-                bookFilters.AppendLine($$"""
+                sb.AppendLine($$"""
                     AND EXISTS (
                        WITH RECURSIVE expanded_themes AS (
                           SELECT id FROM themes WHERE id = {{{p}}}
@@ -252,13 +569,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                        AND cthe.theme_id IN (SELECT id FROM expanded_themes)
                     )
                     """);
-            } 
+            }
 
-            if(request.SelectionId > 0)
+            if (request.SelectionId > 0)
             {
                 var p = parameters.Count;
                 parameters.Add(request.SelectionId);
-                bookFilters.AppendLine($$""" 
+                sb.AppendLine($$""" 
                     AND EXISTS (
                         SELECT 1
                         FROM book_selection bs
@@ -269,15 +586,22 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ) 
                     """);
             }
-
+            //потом здесь добавить логику-разветвление - 
+            //если пользователь указал несколько тегов, может, он ожидает, что
+            //будет не полное совпадение, а наиболее полное - 
+            //в таком случае либо чтобы было полное совпадение,
+            //либо частичное. Однако это поведение может
+            //быть реализовано пользователем обычной сменой тегов,
+            //поэтому дорабатывать только при необходимости стоит,
+            //на мой взгляд
             if (request.RequiredTagIds.Count > 0)
             {
-                foreach(var tagId in request.RequiredTagIds)
+                foreach (var tagId in request.RequiredTagIds)
                 {
                     var p = parameters.Count;
                     parameters.Add(tagId);
 
-                    bookFilters.AppendLine($$"""
+                    sb.AppendLine($$"""
                         AND EXISTS (
                            WITH RECURSIVE expanded_tags AS (
                               SELECT id FROM tags WHERE id = {{{p}}}
@@ -292,10 +616,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                               AND ctg.tags_id IN (SELECT id FROM expanded_tags)
                         )
                         """);
-                };
-
-
-
+                }
                 //var p = parameters.Count;
                 //parameters.Add(request.RequiredTagIds.ToArray());
                 //bookFilters.AppendLine($$""" 
@@ -314,7 +635,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 var p = parameters.Count;
                 parameters.Add(request.ExcludedTagIds.ToArray());
 
-                bookFilters.AppendLine($$"""
+                sb.AppendLine($$"""
                     AND NOT EXISTS (
                        WITH RECURSIVE expanded_excluded_tags AS (
                           SELECT id FROM tags WHERE id = ANY({{{p}}})
@@ -340,67 +661,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 //    ) 
                 //    """);
             }
-            var filters = bookFilters.ToString();
 
-            if (isStringSearch)
-            {
-                var scoringSubquery = $$""" 
-                GREATEST(
-                    word_similarity({{{0}}}::text, b.title),
-                    COALESCE((
-                        SELECT word_similarity({{{0}}}::text, c.title)
-                        FROM book_content bc
-                        JOIN contents c ON c.id = bc.content_id
-                        WHERE bc.book_id = b.id
-                        ORDER BY 1 DESC
-                        LIMIT 1
-                    ), 0)
-                ) 
-                """;
-
-                var sql = $$""" 
-                SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
-                FROM books b
-                WHERE  
-                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  + 
-                $$"""
-                  b.title%>{{{0}}}::text
-                
-                {{filters}}
- 
-                UNION
- 
-                SELECT b.id AS id, {{scoringSubquery}} AS best_similarity
-                FROM books b
-                WHERE  
-                """ + (!request.mode ? $$""" b.is_available = true AND """ : " ")  +
-                 $$"""
-                  
-                 EXISTS (
-                 
-                      SELECT 1
-                      FROM book_content bc
-                      JOIN contents c ON c.id = bc.content_id
-                      WHERE bc.book_id = b.id
-                        AND c.title%>{{{0}}}::text
-                  )
-                {{filters}}
-                """;
-
-                return (sql, parameters);
-            }
-            else
-            {
-                var sql = $"""
-                    SELECT b.id AS id, 1.0 AS best_similarity
-                    FROM books b 
-                    """ + (!request.mode ? $$""" WHERE b.is_available = true """ : string.IsNullOrEmpty(filters)? " " : " WHERE 1=1 ") + //потом посмотреть, как подправить
-                    $"""
-                    {filters}
-                    
-                    """;
-                return (sql, parameters);
-            }
+            return sb.ToString();
 
         }
 
@@ -410,7 +672,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             CancellationToken cancellationToken)
         {
             var favoriteShelfType = 1;
-            var publishedStatus = 2;
             return await _context.Books
                 .AsNoTracking()
                 .Where(b => ids.Contains(b.Id))
@@ -445,6 +706,39 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             public long Id { get; set; }
             public double BestSimilarity { get; set; }
+        }
+
+
+        private async Task<PagedBooks<BookSearchResult>> BuildPageAsync(
+            List<SearchIdScore> pagedIds,
+            int pageSize,
+            long? userId,
+            CancellationToken token)
+        {
+            var hasNext = pagedIds.Count > pageSize;
+            var pageItems = pagedIds.Take(pageSize).ToList();
+            if (pageItems.Count == 0)
+                return new PagedBooks<BookSearchResult>
+                {
+                    Items = [],
+                    HasNext = false,
+                    LastId = null,
+                    LastBestSimilarity = null,
+                };
+
+            var ids = pageItems.Select(x => x.Id).ToList();
+            var itemsDict = await ProjectByIdsAsync(ids, userId, token);
+            var items = ids.Where(ids => itemsDict.ContainsKey(ids))
+                .Select(ids => itemsDict[ids]).ToList();
+            var last = pageItems.Last();
+            return new PagedBooks<BookSearchResult>
+            {
+                Items = items,
+                HasNext = hasNext,
+                LastId = last.Id,
+                LastBestSimilarity = last.BestSimilarity
+            };
+
         }
 
         public Task<List<PersonSuggestionDto>> GetPersonsByIdsAsync(
