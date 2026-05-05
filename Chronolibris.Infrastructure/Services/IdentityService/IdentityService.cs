@@ -47,12 +47,29 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             bool isValid = util.IsValidNumber(number);
             if (!isValid)
                 throw new ChronolibrisException("Невалидный номер телефона", ErrorType.Validation);
+            var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
 
-            var existingUser = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+            var isPhoneAssignedToRole = await _userManager.Users.Where(u => u.PhoneNumber == request.PhoneNumber)
+                .AnyAsync(u => dbContext.UserRoles
+                        .Join(dbContext.Roles,
+                            ur => ur.RoleId,
+                            r => r.Id, (ur, r) => new { ur, r }
+                        )
+                        .Any(joined => 
+                        joined.ur.UserId == u.Id && 
+                        joined.r.Name == role)
+                );
 
-            if (existingUser != null)
+            if (isPhoneAssignedToRole)
+            {
                 throw new ChronolibrisException("Номер телефона уже занят", ErrorType.Conflict);
+            }
+
+            //var existingUser = await _userManager.Users
+            //    .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+            //if (existingUser != null)
+            //    throw new ChronolibrisException("Номер телефона уже занят", ErrorType.Conflict);
 
             var user = new User
             {
@@ -74,7 +91,6 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 throw new ChronolibrisException(string.Join(", ", result.Errors.Select(e => e.Description)), ErrorType.Conflict);
             };
 
-            var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
 
             await _userManager.AddToRoleAsync(user, role);
 
