@@ -16,7 +16,7 @@ namespace Chronolibris.Domain.Models.Search
         public bool mode { get; set; }
     }
 
-    public class AdvancedSearchKeysetRequest
+    public class ComplexSearchRequest
     {
         public string? Query { get; set; }
         public int PageSize { get; set; } = 20;

@@ -122,10 +122,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         }
 
-        public async Task<PagedBooks<BookSearchResult>> AdvancedSearchKeysetAsync(
-            AdvancedSearchKeysetRequest request, CancellationToken token)
+        public async Task<PagedBooks<BookSearchResult>> ComplexSearchAsync(
+            ComplexSearchRequest request, CancellationToken token)
         {
-            var (stringSQL, parameters) = BuildString(request.Query, request);
+            var (stringSQL, parameters) = BuildString(request);
 
             var cursorClause = "";
             if(request.LastBestSimilarity.HasValue && request.LastId.HasValue)
@@ -185,10 +185,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
 
         private static (string Sql, List<object> Parameters) BuildString(
-            string? rawQuery,AdvancedSearchKeysetRequest request) //порядок аргументов не важен?
+            ComplexSearchRequest request) //порядок аргументов не важен?
         {
 
-            var query = rawQuery?.Trim() ?? string.Empty;
+            var query = request.Query?.Trim() ?? string.Empty;
             var isStringSearch = !string.IsNullOrEmpty(query);
             var parameters = new List<object> { query };
 
@@ -508,7 +508,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             return (taggedSql, parameters);
         }
 
-        private static string BuildCommonFilters(AdvancedSearchKeysetRequest request, List<object> parameters)
+        private static string BuildCommonFilters(ComplexSearchRequest request, List<object> parameters)
         {
             var sb = new StringBuilder();
             foreach (var pf in request.PersonFilters)

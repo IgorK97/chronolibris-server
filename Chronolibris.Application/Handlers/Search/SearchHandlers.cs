@@ -33,7 +33,7 @@ namespace Chronolibris.Application.Handlers.Search
     }
 
     public class AdvancedSearchKeysetQueryHandler
-        : IRequestHandler<AdvancedSearchKeysetQuery, PagedBooks<BookSearchResult>>
+        : IRequestHandler<ComplexSearchQuery, PagedBooks<BookSearchResult>>
     {
         private readonly ISearchRepository _searchRepository;
 
@@ -43,10 +43,10 @@ namespace Chronolibris.Application.Handlers.Search
         }
 
         public Task<PagedBooks<BookSearchResult>> Handle(
-            AdvancedSearchKeysetQuery request, CancellationToken cancellationToken)
+            ComplexSearchQuery request, CancellationToken cancellationToken)
         {
-            return _searchRepository.AdvancedSearchKeysetAsync(
-               new AdvancedSearchKeysetRequest
+            return _searchRepository.ComplexSearchAsync(
+               new ComplexSearchRequest
                {
                    Query = request.Query,
                    PageSize = request.PageSize,

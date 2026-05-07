@@ -1,4 +1,5 @@
-﻿using Chronolibris.Application.Handlers.Reports;
+﻿using System.Threading;
+using Chronolibris.Application.Handlers.Reports;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
@@ -17,6 +18,7 @@ public class CreateReportCommandHandlerTests
     private readonly Mock<IModerationTasksRepository> _tasksRepoMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<ITransaction> _transactionMock = new();
+    private readonly Mock<IReviewRepository> _reviewRepoMock = new();
 
 
     private const int UserId = 1;
@@ -33,6 +35,7 @@ public class CreateReportCommandHandlerTests
     {
         _unitOfWorkMock.Setup(u => u.Reports).Returns(_reportRepoMock.Object);
         _unitOfWorkMock.Setup(u => u.ModerationTasks).Returns(_tasksRepoMock.Object);
+        _unitOfWorkMock.Setup(u => u.Reviews).Returns(_reviewRepoMock.Object);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
         _identityServiceMock.Setup(i => i.IsUserActiveAsync(It.IsAny<long>())).ReturnsAsync(true);
@@ -54,10 +57,19 @@ public class CreateReportCommandHandlerTests
         _tasksRepoMock
             .Setup(r => r.GetActiveByTarget(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ModerationTask?)null);
+        _reviewRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Review
+        {
+            BookId = 1,
+            CreatedAt = DateTime.Now,
+            Id = 10,
+            IsDeleted = false,
+            Score = 5,
+            UserId = 1
+        });
     }
 
-    private CreateReportCommandHandler CreateHandler(ReportingOptions? options = null)
-        => new(_unitOfWorkMock.Object, options ?? _defaultOptions, _identityServiceMock.Object);
+    private CreateReportCommandHandler CreateHandler()
+        => new(_unitOfWorkMock.Object, _defaultOptions, _identityServiceMock.Object);
 
     private CreateReportCommand BuildCommand(
         long userId = UserId,
@@ -111,7 +123,8 @@ public class CreateReportCommandHandlerTests
 
         var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
-        savedReport!.ModerationTaskId.Should().BeNull();
+        savedReport.Should().NotBeNull();
+        savedReport.ModerationTaskId.Should().BeNull();
         result.Success.Should().BeTrue();
 
     }

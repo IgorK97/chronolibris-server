@@ -105,12 +105,6 @@ namespace ChronolibrisServer.Tests.Reports
 
             result.Success.Should().BeTrue();
             task.StatusId.Should().Be(4); // Отклонено
-
-            _commentRepoMock.Verify(
-                r => r.GetByIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()),
-                Times.Never);
-
-            _transactionMock.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

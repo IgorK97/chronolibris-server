@@ -76,7 +76,7 @@ namespace ChronolibrisWeb.Controllers
                 .ToList();
 
             var result = await _mediator.Send(
-                new AdvancedSearchKeysetQuery(
+                new ComplexSearchQuery(
                     Query: request.Query,
                     PageSize: request.PageSize,
                     UserId: TryGetUserId(),

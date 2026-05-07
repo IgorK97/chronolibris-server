@@ -9,16 +9,16 @@ namespace Chronolibris.Application.Handlers.References
 {
     public class GetAllLanguagesHandler : IRequestHandler<GetAllLanguagesQuery, IEnumerable<LanguageDto>>
     {
-        private readonly IGenericRepository<Language> _repository;
+        private readonly ISearchRepository _repository;
 
-        public GetAllLanguagesHandler(IGenericRepository<Language> repository)
+        public GetAllLanguagesHandler(ISearchRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<IEnumerable<LanguageDto>> Handle(GetAllLanguagesQuery request, CancellationToken cancellationToken)
         {
-            var languages = await _repository.GetAllAsync(cancellationToken);
+            var languages = await _repository.GetAllLanguagesAsync(cancellationToken);
             return languages.Select(l => new LanguageDto
             {
                 Id = l.Id,

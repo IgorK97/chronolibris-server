@@ -12,7 +12,7 @@ namespace Chronolibris.Application.Requests.Search
         long? LastId,
         bool Mode
     ) : IRequest<PagedBooks<BookSearchResult>>;
-    public record AdvancedSearchKeysetQuery(
+    public record ComplexSearchQuery(
         string? Query,
         int PageSize,
         long? UserId,

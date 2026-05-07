@@ -13,8 +13,8 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<PagedBooks<BookSearchResult>> SearchKeysetAsync(
            SimpleSearchKeysetRequest request, CancellationToken token);
 
-        Task<PagedBooks<BookSearchResult>> AdvancedSearchKeysetAsync(
-            AdvancedSearchKeysetRequest request, CancellationToken token);
+        Task<PagedBooks<BookSearchResult>> ComplexSearchAsync(
+            ComplexSearchRequest request, CancellationToken token);
 
         Task<List<LanguageDto>> GetAllLanguagesAsync(CancellationToken ct = default);
 
