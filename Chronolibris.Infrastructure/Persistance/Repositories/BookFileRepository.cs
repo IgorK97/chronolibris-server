@@ -52,7 +52,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             if (fragments.Count > 0)
                 await _context.BookFragments.AddRangeAsync(fragments, ct);
 
-            bookFile.BookFileStatusId = BookFileStatuses.COMPLETED;
+            bookFile.StatusId = BookFileStatuses.COMPLETED;
             bookFile.CompletedAt = result.CompletedAt;
 
             await _context.SaveChangesAsync(ct);

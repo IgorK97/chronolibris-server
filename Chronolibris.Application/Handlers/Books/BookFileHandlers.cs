@@ -41,9 +41,9 @@ namespace Chronolibris.Application.Handlers.Books
                 IsReadable = bf.IsReadable,
                 CreatedAt = bf.CreatedAt,
                 CompletedAt = bf.CompletedAt,
-                CreatedBy = bf.CreatedBy,
+                //CreatedBy = bf.CreatedBy,
                 //Version = bf.Version,
-                BookFileStatusId = bf.BookFileStatusId,
+                BookFileStatusId = bf.StatusId,
                 BookFileStatusName = bf.BookFileStatus?.Name
             }).ToList();
         }
@@ -124,8 +124,8 @@ namespace Chronolibris.Application.Handlers.Books
                 OriginalSize = request.FileSizeBytes,
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = request.CreatedBy,
-                BookFileStatusId = BookFileStatuses.PENDING
+                //CreatedBy = request.CreatedBy,
+                StatusId = BookFileStatuses.PENDING
             };
 
             await _bookFileRepository.AddAsync(bookFile, cancellationToken);
@@ -180,7 +180,7 @@ namespace Chronolibris.Application.Handlers.Books
                 }
 
                 bookFile.StoredSize = compressedSize;
-                bookFile.BookFileStatusId = request.IsReadable
+                bookFile.StatusId = request.IsReadable
                     ? BookFileStatuses.UPLOADED
                     : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
@@ -212,12 +212,14 @@ namespace Chronolibris.Application.Handlers.Books
                 string message = "";
                 try
                 {
-                    _bookFileRepository.Delete(bookFile);
-                    await _unitOfWork.SaveChangesAsync(CancellationToken.None); //чтобы удаление не отменилось при отмене основного токена
+                    //_bookFileRepository.Delete(bookFile);
+                    bookFile.StatusId = BookFileStatuses.FAILED;
+                    bookFile.CompletedAt = DateTime.UtcNow;
+                    await _unitOfWork.SaveChangesAsync(CancellationToken.None); //чтобы не отменилось при отмене основного токена (а дефолт что это)
                 }
                 catch (Exception ex1)
                 {
-                    message = $"Ошибка при очистке данных о файле после неудачной загрузки";
+                    message = $"Ошибка при изменении данных о файле после неудачной загрузки";
                 }
                 throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов или в процессе конвертации. " + message+
                     ex.Message, ErrorType.ServerException);

@@ -25,7 +25,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             });
             builder.HasOne(bf => bf.BookFileStatus)
                 .WithMany(bs => bs.BookFiles)
-                .HasForeignKey(b => b.BookFileStatusId)
+                .HasForeignKey(b => b.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(bf => bf.CreatedAt)

@@ -27,8 +27,8 @@ namespace Chronolibris.Application.Handlers.References
                 Name = p.Name,
                 Description = p.Description,
                 CreatedAt = p.CreatedAt,
-                CountryId = p.CountryId,
-                CountryName = countries.FirstOrDefault(c => c.Id == p.CountryId)?.Name
+                //CountryId = p.CountryId,
+                //CountryName = countries.FirstOrDefault(c => c.Id == p.CountryId)?.Name
             });
         }
     }
@@ -48,7 +48,7 @@ namespace Chronolibris.Application.Handlers.References
             var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
             if (publisher == null) return null;
 
-            var country = await _unitOfWork.Countries.GetByIdAsync(publisher.CountryId, cancellationToken);
+            //var country = await _unitOfWork.Countries.GetByIdAsync(publisher.CountryId, cancellationToken);
 
             return new PublisherDto
             {
@@ -56,8 +56,8 @@ namespace Chronolibris.Application.Handlers.References
                 Name = publisher.Name,
                 Description = publisher.Description,
                 CreatedAt = publisher.CreatedAt,
-                CountryId = publisher.CountryId,
-                CountryName = country?.Name
+                //CountryId = publisher.CountryId,
+                //CountryName = country?.Name
             };
         }
     }
@@ -80,7 +80,7 @@ namespace Chronolibris.Application.Handlers.References
                 Id=0,
                 Name = request.Name.Trim(),
                 Description = request.Description,
-                CountryId = request.CountryId,
+                //CountryId = request.CountryId,
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -109,7 +109,7 @@ namespace Chronolibris.Application.Handlers.References
 
             publisher.Name = request.Name.Trim();
             publisher.Description = request.Description;
-            publisher.CountryId = request.CountryId;
+            //publisher.CountryId = request.CountryId;
 
             _repository.Update(publisher);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

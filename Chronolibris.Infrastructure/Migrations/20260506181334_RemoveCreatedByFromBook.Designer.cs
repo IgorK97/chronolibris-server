@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506181334_RemoveCreatedByFromBook")]
+    partial class RemoveCreatedByFromBook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,6 +221,10 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BookFileStatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("book_file_status_id");
+
                     b.Property<long>("BookId")
                         .HasColumnType("bigint")
                         .HasColumnName("book_id");
@@ -244,10 +251,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("original_size");
 
-                    b.Property<long>("StatusId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("status_id");
-
                     b.Property<string>("StorageUrl")
                         .IsRequired()
                         .HasMaxLength(2048)
@@ -261,11 +264,11 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_book_files");
 
+                    b.HasIndex("BookFileStatusId")
+                        .HasDatabaseName("ix_book_files_book_file_status_id");
+
                     b.HasIndex("FormatId")
                         .HasDatabaseName("ix_book_files_format_id");
-
-                    b.HasIndex("StatusId")
-                        .HasDatabaseName("ix_book_files_status_id");
 
                     b.HasIndex("BookId", "FormatId")
                         .IsUnique()
@@ -2424,6 +2427,13 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.BookFile", b =>
                 {
+                    b.HasOne("Chronolibris.Domain.Entities.BookFileStatus", "BookFileStatus")
+                        .WithMany("BookFiles")
+                        .HasForeignKey("BookFileStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_book_files_book_file_statuses_book_file_status_id");
+
                     b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
@@ -2437,13 +2447,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_book_files_formats_format_id");
-
-                    b.HasOne("Chronolibris.Domain.Entities.BookFileStatus", "BookFileStatus")
-                        .WithMany("BookFiles")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_book_files_book_file_statuses_status_id");
 
                     b.Navigation("Book");
 

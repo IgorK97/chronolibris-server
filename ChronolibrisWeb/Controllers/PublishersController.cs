@@ -40,11 +40,7 @@ namespace ChronolibrisWeb.Controllers
         [HttpPost]
         public async Task<ActionResult<long>> CreatePublisher([FromBody] CreatePublisherRequest request, CancellationToken cancellationToken)
         {
-            //Можно ли это указать только в самой сущности и как это называется?
-            if (request.CountryId <= 0)
-                return BadRequest(new { message = "ID страны должен быть указан" });
-
-            var command = new CreatePublisherCommand(request.Name, request.Description, request.CountryId);
+            var command = new CreatePublisherCommand(request.Name, request.Description);
             var id = await _mediator.Send(command, cancellationToken);
 
             return Ok(id);
@@ -55,11 +51,7 @@ namespace ChronolibrisWeb.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePublisher(long id, [FromBody] UpdatePublisherRequest request, CancellationToken cancellationToken)
         {
-
-            if (request.CountryId <= 0)
-                return BadRequest(new { message = "ID страны должен быть указан" });
-
-            var command = new UpdatePublisherCommand(request.Id, request.Name, request.Description, request.CountryId);
+            var command = new UpdatePublisherCommand(request.Id, request.Name, request.Description);
             var result = await _mediator.Send(command, cancellationToken);
 
             return NoContent();

@@ -5,7 +5,7 @@ namespace ChronolibrisWeb.InputModels
 
     public class SimpleSearchInputModel
     {
-        [Required(ErrorMessage = "Параметр query обязателен")]
+        //[Required(ErrorMessage = "Параметр query обязателен")]
         [MaxLength(500, ErrorMessage = "Поисковый запрос слишком длинный")]
         public required string Query { get; set; }
 
@@ -17,10 +17,8 @@ namespace ChronolibrisWeb.InputModels
 
     public class PersonRoleFilterModel
     {
-        [Required]
         public long RoleId { get; set; }
 
-        [Required]
         [MinLength(1, ErrorMessage = "Укажите хотя бы одну персоналию")]
         public List<long> PersonIds { get; set; } = [];
     }
