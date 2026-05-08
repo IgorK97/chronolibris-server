@@ -25,17 +25,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        //public void SyncThemes(Content content, List<long> ThemeIds)
-        //{
-        //    foreach (var themeId in ThemeIds)
-        //    {
-        //        var themeStub = new Theme { Id = themeId };
-        //        _context.Entry(themeStub).State = EntityState.Unchanged;
-        //        content.Themes.Add(themeStub);
-        //    }
-        //}
-
-
         public async Task<Content?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             return await _context.Contents

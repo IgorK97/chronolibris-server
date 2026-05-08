@@ -45,13 +45,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
         }
 
-        //public async Task<IReadOnlyList<Theme>> GetAllAsync(CancellationToken cancellationToken = default)
-        //{
-        //    return await _set
-        //        .Include(t => t.ParentTheme)
-        //        .ToListAsync(cancellationToken);
-        //}
-
         public async Task<List<Theme>> GetByParentIdAsync(long? parentThemeId, CancellationToken cancellationToken = default)
         {
             return await _context.Themes

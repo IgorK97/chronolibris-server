@@ -79,7 +79,7 @@ namespace Chronolibris.Infrastructure.Persistance
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                throw new ChronolibrisException("Конфликт обновления данных - повторите попытке позднее", ErrorType.Conflict);
+                throw new ChronolibrisException("Ошибка обновления данных - повторите попытку позднее", ErrorType.Conflict);
             }
         }
 

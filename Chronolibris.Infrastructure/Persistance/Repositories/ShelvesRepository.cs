@@ -127,24 +127,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 shelf.Books.Remove(book);
         }
 
-        //public async Task<bool> IsInFavorite(long userId, long bookId)
-        //{
-        //    return await _context.Shelves
-        //        .AnyAsync(s =>
-        //            s.UserId == userId &&
-        //            s.ShelfType.Code == ShelfTypes.FAVORITES &&
-        //            s.Books.Any(b => b.Id == bookId));
-        //}
-
-        //public async Task<bool> IsRead(long userId, long bookId)
-        //{
-        //    return await _context.Shelves
-        //        .AnyAsync(s =>
-        //            s.UserId == userId &&
-        //            s.ShelfType.Code == ShelfTypes.READ &&
-        //            s.Books.Any(b => b.Id == bookId));
-        //}
-
         public async Task<bool> IsInShelf(long bookId, long shelfId)
         {
             return await _context.Shelves
