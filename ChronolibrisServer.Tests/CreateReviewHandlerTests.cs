@@ -34,10 +34,22 @@ namespace ChronolibrisServer.Tests.Reviews
             Score : score
         );
 
-        private void SetupNoExistingReview() =>
+        private void SetupReview(ReviewDetailsWithVote? review) =>
         _reviewRepoMock
             .Setup(r => r.GetActiveByUserAndBookAsync(userId, bookId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ReviewDetailsWithVote?)null);
+            .ReturnsAsync(review);
+
+        private void SetupReviewCreating(long assignedId)
+        {
+            _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+            _reviewRepoMock.Setup(r => r.AddAsync(It.IsAny<Review>(), It.IsAny<CancellationToken>()))
+                .Callback<Review, CancellationToken>((review, ct) =>
+                {
+                    review.Id = assignedId;
+                })
+                .Returns(Task.CompletedTask);
+        }
 
         private void SetupBook(bool isReviewable = true, bool isAvailable = true) =>
             _bookRepoMock
@@ -58,9 +70,10 @@ namespace ChronolibrisServer.Tests.Reviews
         [Fact]
         public async Task Handle_ExistingReview_ThrowsConflict()
         {
-            _reviewRepoMock
-                .Setup(r => r.GetActiveByUserAndBookAsync(userId, bookId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ReviewDetailsWithVote());
+            //_reviewRepoMock
+            //    .Setup(r => r.GetActiveByUserAndBookAsync(userId, bookId, It.IsAny<CancellationToken>()))
+            //    .ReturnsAsync(new ReviewDetailsWithVote());
+            SetupReview(new ReviewDetailsWithVote());
 
             var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
@@ -75,7 +88,7 @@ namespace ChronolibrisServer.Tests.Reviews
         [Fact]
         public async Task Handle_BookNotAvailable_ThrowsNotFound()
         {
-            SetupNoExistingReview();
+            SetupReview(null);
             SetupBook(isReviewable: true, isAvailable: false);
 
             var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
@@ -87,13 +100,26 @@ namespace ChronolibrisServer.Tests.Reviews
         [Fact]
         public async Task Handle_BookNotReviewable_ThrowsNotFound()
         {
-            SetupNoExistingReview();
+            SetupReview(null);
             SetupBook(isReviewable: false, isAvailable: true);
 
             var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
             await act.Should().ThrowAsync<ChronolibrisException>()
                 .Where(e => e.ErrorType == ErrorType.NotFound);
+        }
+
+        [Fact]
+        public async Task Handle_ValidRequest_ReturnsSuccess()
+        {
+            SetupReview(null);
+            SetupBook(isReviewable: true, isAvailable: true);
+            long expectedId = 17;
+            SetupReviewCreating(expectedId);
+
+            var result = await CreateHandler().Handle(BuildCommand(), CancellationToken.None);
+
+            result.Should().Be(expectedId);
         }
 
     }

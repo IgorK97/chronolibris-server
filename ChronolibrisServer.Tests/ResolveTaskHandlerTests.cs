@@ -23,10 +23,15 @@ namespace ChronolibrisServer.Tests.Reports
 
         public ResolveTaskHandlerTests()
         {
+            SetupMocks();
+        }
+
+        private void SetupMocks()
+        {
             _unitOfWorkMock.Setup(u =>
                 u.ModerationTasks).Returns(_taskRepoMock.Object);
             _unitOfWorkMock.Setup(u =>
-                u.Comments).Returns(_commentRepoMock.Object); 
+                u.Comments).Returns(_commentRepoMock.Object);
             _unitOfWorkMock.Setup(u =>
                 u.Reviews).Returns(_reviewRepoMock.Object);
             _unitOfWorkMock.Setup(u =>
@@ -39,7 +44,7 @@ namespace ChronolibrisServer.Tests.Reports
             _transactionMock.Setup(t => t.CommitAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            _transactionMock.Setup(t=>t.RollbackAsync(It.IsAny<CancellationToken>()))
+            _transactionMock.Setup(t => t.RollbackAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             _transactionMock.Setup(t => t.DisposeAsync())
@@ -61,19 +66,6 @@ namespace ChronolibrisServer.Tests.Reports
 
         private ResolveTaskCommandHandler CreateHandler() =>
             new(_unitOfWorkMock.Object);
-
-        //[Fact]
-        //public async Task Handle_TaskNotFound_ThrowsNotFound() 
-        //{
-        //    _taskRepoMock
-        //    .Setup(r => r.GetByIdAsync(taskId, It.IsAny<CancellationToken>()))
-        //    .ReturnsAsync((ModerationTask?)null);
-
-        //    var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None); //из-за Task, чтобы был вызван позднее
-
-        //    await act.Should().ThrowAsync<ChronolibrisException>()
-        //        .Where(e => e.ErrorType == ErrorType.NotFound);
-        //}
 
         [Theory]
         [InlineData(1)]
@@ -104,7 +96,7 @@ namespace ChronolibrisServer.Tests.Reports
                 BuildCommand(resolution: false), CancellationToken.None);
 
             result.Success.Should().BeTrue();
-            task.StatusId.Should().Be(4); // Отклонено
+            task.StatusId.Should().Be(4); //Отклонены
         }
 
         [Fact]
@@ -123,7 +115,7 @@ namespace ChronolibrisServer.Tests.Reports
             var result = await CreateHandler().Handle(BuildCommand(resolution: true), CancellationToken.None);
 
             result.Success.Should().BeTrue();
-            task.StatusId.Should().Be(3); // Одобрено
+            task.StatusId.Should().Be(3); //Приняты
             comment.IsDeleted.Should().BeTrue();
             comment.DeletedAt.Should().NotBeNull();
         }

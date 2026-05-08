@@ -20,6 +20,11 @@ namespace ChronolibrisServer.Tests.Reports
 
         public CreateModerationTaskHandlerTests()
         {
+            SetupMocks();
+        }
+
+        private void SetupMocks()
+        {
             _unitOfWorkMock.Setup(u => u.ModerationTasks).Returns(_taskRepoMock.Object);
             _unitOfWorkMock.Setup(u => u.Reports).Returns(_reportRepoMock.Object);
 

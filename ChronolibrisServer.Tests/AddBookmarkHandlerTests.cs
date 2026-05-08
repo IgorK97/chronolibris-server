@@ -61,18 +61,4 @@ public class AddBookmarkHandlerTests
 
         await act.Should().ThrowAsync<ChronolibrisException>();
     }
-
-    //[Fact]
-    //public async Task Handle_IndexOutOfBounds_ShouldThrowException()
-    //{
-    //    var command = new AddBookmarkCommand(UserId: 1, BookFileId: 10, ParaIndex: 999, NoteText: "");
-    //    var bookFile = new BookFile { MaxParaIndex = 100, Book = new Book { IsAvailable = true } };
-
-    //    _identityMock.Setup(s => s.IsUserActiveAsync(command.UserId)).ReturnsAsync(true);
-    //    _uowMock.Setup(u => u.BookFiles.GetByIdAsync(command.BookFileId, It.IsAny<CancellationToken>())).ReturnsAsync(bookFile);
-
-    //    Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-
-    //    await act.Should().ThrowAsync<ChronolibrisException>();
-    //}
 }

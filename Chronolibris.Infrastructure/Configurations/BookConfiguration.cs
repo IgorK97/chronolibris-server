@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +9,7 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Book> builder)
         {
             builder.HasMany(b => b.Persons)
-                .WithMany(b => b.Books)
+                .WithMany(p => p.Books)
                 .UsingEntity<BookParticipation>();
 
             builder.Property(b => b.CreatedAt)
@@ -35,7 +30,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
             });
 
-            builder.HasMany(b => b.Shelves)
+            builder.HasMany(b => b.Shelves) //уточнить, точно нельзя обойтись и по дефолту не сможет сконфигурировать или нет
                 .WithMany(s => s.Books)
                 .UsingEntity<BookShelf>(
                     l => l.HasOne(bs => bs.Shelf)
@@ -54,10 +49,6 @@ namespace Chronolibris.Infrastructure.Configurations
                     }
                 );
 
-            //builder.HasMany(b => b.Selections)
-            //    .WithMany(s => s.Books)
-            //    .UsingEntity("book_selection");
-
             builder.HasMany(b => b.Selections)
                 .WithMany(s => s.Books)
                 .UsingEntity(
@@ -69,48 +60,6 @@ namespace Chronolibris.Infrastructure.Configurations
                           .HasForeignKey("book_id"),
                     j => j.ToTable("book_selection")
                 );
-
-            DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
-
-
-            builder.HasData(
-                new Book
-                {
-                    Id = 1,
-                    CountryId = 1,
-                    CoverPath = "BuddismHistory/BuddismJapanGrig/MainFile.png",
-                    CreatedAt = dt,
-                    Description = "Монография является первой в отечественной литературе попыткой...",
-                    IsAvailable = true,
-                    LanguageId = 2,
-                    //RatingsCount = 0,
-                    //ReviewsCount = 0,
-                    Title = "Буддизм в Японии",
-                    Year = 1993,
-                    PublisherId = 2,
-                    IsReviewable = true,
-                },
-                new Book
-                {
-                    Id = 2,
-                    //AverageRating = 0,
-                    CountryId = 1,
-                    CoverPath = "EconomicHistory/StructureBrodel/MainFile.png",
-                    CreatedAt = dt,
-                    Description = "Это — второе крупное исследование Ф. Броделя...",
-                    //FilePath = "EconomicHistory/StructureBrodel/MainFile.epub",
-                    IsAvailable = true,
-                    //IsFragment = false,
-                    LanguageId = 2,
-                    //RatingsCount = 0,
-                    //ReviewsCount = 0,
-                    Title = "Структуры повседневности: возможное и невозможное",
-                    Year = 1986,
-                    PublisherId = 1,
-                    IsReviewable = true,
-                }
-            );
-
         }
     }
 }

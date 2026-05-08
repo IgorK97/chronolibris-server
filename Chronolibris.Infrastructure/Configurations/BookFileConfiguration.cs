@@ -34,7 +34,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             builder
                 .HasIndex(bf => new { bf.BookId, bf.IsReadable })
                 .IsUnique()
-                .HasFilter("\"is_readable\" = true");
+                .HasFilter("\"is_readable\" = true"); //наверное, уже лишнее, если есть оба нижних
 
             builder
                 .ToTable(t => t.HasCheckConstraint("ck_book_files_readable_format",
