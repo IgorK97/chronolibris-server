@@ -104,7 +104,7 @@ namespace ChronolibrisWeb.Controllers
 
             }
             var roleClaim = User.FindFirstValue(ClaimTypes.Role);
-            if (mode && (userId == 0 || roleClaim != "admin"))
+            if (mode && (userId == 0 || !((roleClaim == "admin") || (roleClaim == "moderator"))))
             {
                 return BadRequest();
             }

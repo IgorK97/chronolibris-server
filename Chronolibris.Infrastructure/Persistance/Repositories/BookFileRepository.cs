@@ -73,14 +73,19 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             }
         }
 
-        public async Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default)
+        public async Task<List<BookFile>> GetByBookIdAsync(long bookId, bool adminMode, CancellationToken cancellationToken = default)
         {
-            return await _context.BookFiles
+            var query = _context.BookFiles
                 .Include(bf => bf.Format)
                 .Include(bf => bf.BookFileStatus)
-                .Where(bf => bf.BookId == bookId)
-                .OrderBy(bf => bf.FormatId)
-                .ToListAsync(cancellationToken);
+                .Where(bf => bf.BookId == bookId);
+
+            if (!adminMode)
+                query = query.Where(bf => bf.StatusId == 4);
+
+            return await query.OrderBy(bf => bf.FormatId).ToListAsync(cancellationToken);
+                //.OrderBy(bf => bf.FormatId)
+                //.ToListAsync(cancellationToken);
         }
 
         public async Task<BookFile?> GetByBookIdAndFormatIdAsync(long bookId, int formatId, CancellationToken cancellationToken = default)

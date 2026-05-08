@@ -27,7 +27,7 @@ namespace Chronolibris.Application.Handlers.Books
 
         public async Task<List<BookFileDto>> Handle(GetBookFilesQuery request, CancellationToken cancellationToken)
         {
-            var bookFiles = await _bookFileRepository.GetByBookIdAsync(request.BookId, cancellationToken);
+            var bookFiles = await _bookFileRepository.GetByBookIdAsync(request.BookId, request.adminMode, cancellationToken);
 
             return bookFiles.Select(bf => new BookFileDto
             {

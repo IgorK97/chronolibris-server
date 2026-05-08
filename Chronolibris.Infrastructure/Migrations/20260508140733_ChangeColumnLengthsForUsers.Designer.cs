@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508140733_ChangeColumnLengthsForUsers")]
+    partial class ChangeColumnLengthsForUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2212,6 +2215,28 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "88d4f82e-f15b-4d84-8bba-6875af640148",
+                            Email = "mail@mail.com",
+                            EmailConfirmed = true,
+                            FirstName = "AQWERTY",
+                            IsDeleted = false,
+                            LastName = "KQWERTY",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MAIL@MAIL.COM",
+                            NormalizedUserName = "MAINADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDJFJc162io4pjNy1E/Nf//bvX+ki234hGsZCcYkJjtPeR9CZQ1k/4T7Q2i+CWbPMg==",
+                            PhoneNumberConfirmed = false,
+                            RegisteredAt = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SecurityStamp = "0d832e3a-efd3-490a-8572-c544467f8d83",
+                            TwoFactorEnabled = false,
+                            UserName = "MainAdmin"
+                        });
                 });
 
             modelBuilder.Entity("ContentTag", b =>

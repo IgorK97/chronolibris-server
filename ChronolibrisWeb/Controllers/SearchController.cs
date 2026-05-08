@@ -33,7 +33,7 @@ namespace ChronolibrisWeb.Controllers
                 //return Unauthorized();
                 userId = 0;
             var roleClaim = User.FindFirstValue(ClaimTypes.Role);
-            if (hiddenIsAvailableMode && (userId == 0 || roleClaim != "admin"))
+            if (hiddenIsAvailableMode && (userId == 0 || !((roleClaim == "admin") || (roleClaim == "moderator"))))
                 return BadRequest();
 
             var result = await _mediator.Send(
@@ -64,7 +64,7 @@ namespace ChronolibrisWeb.Controllers
                 //return Unauthorized();
                 userId = 0;
             var roleClaim = User.FindFirstValue(ClaimTypes.Role);
-            if (hiddenIsAvailableMode && (userId == 0 || roleClaim != "admin"))
+            if (hiddenIsAvailableMode && (userId == 0 || !((roleClaim == "admin") ||(roleClaim=="moderator"))))
                 return BadRequest();
 
             var personFilters = request.PersonFilters
@@ -99,13 +99,13 @@ namespace ChronolibrisWeb.Controllers
             return long.TryParse(claim, out var id) ? id : null;
         }
 
-        [HttpGet("languages")]
-        public Task<List<LanguageDto>> GetLanguages(CancellationToken ct)
-           => _mediator.Send(new GetLanguagesQuery(), ct);
+        //[HttpGet("languages")]
+        //public Task<List<LanguageDto>> GetLanguages(CancellationToken ct)
+        //   => _mediator.Send(new GetLanguagesQuery(), ct);
 
-        [HttpGet("countries")]
-        public Task<List<CountryDto>> GetCountries(CancellationToken ct)
-            => _mediator.Send(new GetCountriesQuery(), ct);
+        //[HttpGet("countries")]
+        //public Task<List<CountryDto>> GetCountries(CancellationToken ct)
+        //    => _mediator.Send(new GetCountriesQuery(), ct);
 
 
         [HttpGet("person-roles")]

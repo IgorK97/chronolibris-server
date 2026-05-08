@@ -20,8 +20,6 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task RemoveBookFromShelf(long shelfId, long bookId, CancellationToken token = default);
         Task<bool> IsInShelf(long bookId, long shelfId);
         Task<long[]> SeekBookInShelves(long userId, long bookId);
-        Task<int> UpdateNameByOwnerAsync(long shelfId, long userId, string newName, CancellationToken ct);
 
     }
-
 }

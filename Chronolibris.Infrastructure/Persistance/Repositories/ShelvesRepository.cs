@@ -27,16 +27,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
         }
 
-        public async Task<int> UpdateNameByOwnerAsync(long shelfId, long userId, string newName, CancellationToken ct)
-        {
-            return await _context.Shelves
-                .Where(s => s.Id == shelfId && s.UserId == userId)
-                .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(s => s.Name, newName),
-                    ct);
-        }
-
-
         public async Task<IEnumerable<Shelf>> GetForUserAsync(long userId, CancellationToken ct)
         {
             return await _context.Shelves

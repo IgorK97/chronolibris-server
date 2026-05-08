@@ -17,7 +17,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         //Task SetStatusAsync(long bookFileId, int status,
         //    CancellationToken ct = default);
 
-        Task<List<BookFile>> GetByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
+        Task<List<BookFile>> GetByBookIdAsync(long bookId, bool adminMode, CancellationToken cancellationToken = default);
         Task<BookFile?> GetByBookIdAndFormatIdAsync(long bookId, int formatId, CancellationToken cancellationToken = default);
         //Task<BookFile?> ExistsAvailableAsync(long id, CancellationToken cancellationToken = default);
     }

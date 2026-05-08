@@ -25,7 +25,11 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.HasOne<User>() 
                    .WithMany()    
                    .HasForeignKey(b => b.UserId) 
-                   .HasPrincipalKey(u => u.Id);  
+                   .HasPrincipalKey(u => u.Id);
+
+            builder.HasIndex(b => new { b.UserId, b.BookFileId, b.Xpointer })
+                .IsUnique()
+                .HasDatabaseName("uq_bookmark_user_book_position");
                                                 
         }
     }

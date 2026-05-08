@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Books
 {
-    public record GetBookFilesQuery(long BookId) : IRequest<List<BookFileDto>>;
+    public record GetBookFilesQuery(long BookId, bool adminMode) : IRequest<List<BookFileDto>>;
 
     //public record GetBookFileDtoQuery(long BookFileId) : IRequest<BookFileDto?>;
 

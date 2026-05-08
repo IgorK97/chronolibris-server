@@ -11,8 +11,6 @@ namespace Chronolibris.Infrastructure.Configurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        private const string AdminPasswordHash = "AQAAAAIAAYagAAAAEDJFJc162io4pjNy1E/Nf//bvX+ki234hGsZCcYkJjtPeR9CZQ1k/4T7Q2i+CWbPMg==";
-
         public void Configure(EntityTypeBuilder<User> builder)
         {
 
@@ -24,7 +22,7 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.Property(user => user.PasswordHash)
                 .IsUnicode(false)
                 .IsFixedLength(true)
-                .HasMaxLength(255); //84
+                .HasMaxLength(256); //84
 
             builder.Property(user => user.ConcurrencyStamp)
                 .IsUnicode(false)
@@ -41,31 +39,31 @@ namespace Chronolibris.Infrastructure.Configurations
             builder
                 .Property(u => u.UserName)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(256);
 
             builder.Property(u => u.RegisteredAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            var dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
+            //var dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
-            builder.HasData(
-                new User
-                {
-                    Id = 1,
-                    LastName = "KQWERTY",
-                    IsDeleted = false,
-                    //LastEnteredAt = dt,
-                    FirstName = "AQWERTY",
-                    RegisteredAt = dt,
-                    Email = "mail@mail.com",
-                    NormalizedEmail = "MAIL@MAIL.COM",
-                    UserName = "MainAdmin",
-                    NormalizedUserName = "MAINADMIN",
-                    EmailConfirmed = true,
-                    SecurityStamp = "0d832e3a-efd3-490a-8572-c544467f8d83",
-                    ConcurrencyStamp = "88d4f82e-f15b-4d84-8bba-6875af640148",
-                    PasswordHash = AdminPasswordHash
-                }
-            );
+            //builder.HasData(
+            //    new User
+            //    {
+            //        Id = 1,
+            //        LastName = "KQWERTY",
+            //        IsDeleted = false,
+            //        //LastEnteredAt = dt,
+            //        FirstName = "AQWERTY",
+            //        RegisteredAt = dt,
+            //        Email = "mail@mail.com",
+            //        NormalizedEmail = "MAIL@MAIL.COM",
+            //        UserName = "MainAdmin",
+            //        NormalizedUserName = "MAINADMIN",
+            //        EmailConfirmed = true,
+            //        SecurityStamp = "0d832e3a-efd3-490a-8572-c544467f8d83",
+            //        ConcurrencyStamp = "88d4f82e-f15b-4d84-8bba-6875af640148",
+            //        PasswordHash = AdminPasswordHash
+            //    }
+            //);
         }
     }
 }

@@ -19,9 +19,10 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("book/{bookId}")]
-        public async Task<ActionResult<List<BookFileDto>>> GetBookFiles(long bookId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<BookFileDto>>> GetBookFiles(long bookId, [FromQuery] bool mode, CancellationToken cancellationToken)
         {
-            var query = new GetBookFilesQuery(bookId);
+            bool adminMode = mode;
+            var query = new GetBookFilesQuery(bookId, adminMode);
             var files = await _mediator.Send(query, cancellationToken);
             return Ok(files);
         }
