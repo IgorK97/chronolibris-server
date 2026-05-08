@@ -138,50 +138,5 @@ namespace ChronolibrisWeb.Controllers
             var formats = await _mediator.Send(query, cancellationToken);
             return Ok(formats);
         }
-
-
-        //[HttpGet("formats/{id}")]
-        //public async Task<ActionResult<FormatDto?>> GetFormatById(int id, CancellationToken cancellationToken)
-        //{
-        //    var query = new GetFormatByIdQuery(id);
-        //    var format = await _mediator.Send(query, cancellationToken);
-
-        //    return Ok(format);
-        //}
-
-
-        //[Authorize(Roles ="admin")]
-        //[HttpPost("formats")]
-        //public async Task<ActionResult<int>> CreateFormat([FromBody] CreateFormatRequest request, CancellationToken cancellationToken)
-        //{
-
-        //    var command = new CreateFormatCommand(request.Name);
-        //    var id = await _mediator.Send(command, cancellationToken);
-
-        //    return Ok(id);
-        //}
-
-        //[Authorize(Roles ="admin")]
-        //[HttpPut("formats/{id}")]
-        //public async Task<ActionResult> UpdateFormat(int id, [FromBody] UpdateFormatRequest request, CancellationToken cancellationToken)
-        //{
-
-        //    var command = new UpdateFormatCommand(request.Id, request.Name);
-        //    var result = await _mediator.Send(command, cancellationToken);
-
-        //    return NoContent();
-        //}
-
-        //[Authorize(Roles ="admin")]
-        //[HttpDelete("formats/{id}")]
-        //public async Task<ActionResult> DeleteFormat(int id, CancellationToken cancellationToken)
-        //{
-        //    var command = new DeleteFormatCommand(id);
-        //    var result = await _mediator.Send(command, cancellationToken);
-
-        //    return NoContent();
-        //}
-
-
     }
 }
