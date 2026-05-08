@@ -16,7 +16,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
     {
         private static readonly JsonSerializerOptions JsonOpts = new JsonSerializerOptions()
         {
-            WriteIndented = true, //отступы
+            WriteIndented = true, //отступы, если уберу, то будет минифицирован
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, //не записывать поля со значением null
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping //допускание записи специальных символов в их исходном виде без unicode-послежовательностей типа \u003c
             //читабельность, уменьшение размера. Проблем со скриптами точно НЕ будет!!! React потому что
