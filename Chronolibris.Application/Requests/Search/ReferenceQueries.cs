@@ -9,10 +9,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Search
 {
-    public record GetLanguagesQuery : IRequest<List<LanguageDto>>;
-
-    public record GetCountriesQuery : IRequest<List<CountryDto>>;
-
     public record GetPersonRolesQuery : IRequest<List<PersonRoleDto>>;
 
     public record SearchPersonsQuery(string Name, int Limit = 10)

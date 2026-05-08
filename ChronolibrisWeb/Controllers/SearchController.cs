@@ -99,14 +99,6 @@ namespace ChronolibrisWeb.Controllers
             return long.TryParse(claim, out var id) ? id : null;
         }
 
-        //[HttpGet("languages")]
-        //public Task<List<LanguageDto>> GetLanguages(CancellationToken ct)
-        //   => _mediator.Send(new GetLanguagesQuery(), ct);
-
-        //[HttpGet("countries")]
-        //public Task<List<CountryDto>> GetCountries(CancellationToken ct)
-        //    => _mediator.Send(new GetCountriesQuery(), ct);
-
 
         [HttpGet("person-roles")]
         public Task<List<PersonRoleDto>> GetPersonRoles(CancellationToken ct)

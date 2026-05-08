@@ -11,22 +11,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers.Search
 {
-    public class GetLanguagesHandler : IRequestHandler<GetLanguagesQuery, List<LanguageDto>>
-    {
-        private readonly ISearchRepository _repo;
-        public GetLanguagesHandler(ISearchRepository repo) => _repo = repo;
-        public Task<List<LanguageDto>> Handle(GetLanguagesQuery _, CancellationToken ct)
-            => _repo.GetAllLanguagesAsync(ct);
-    }
-
-    public class GetCountriesHandler : IRequestHandler<GetCountriesQuery, List<CountryDto>>
-    {
-        private readonly ISearchRepository _repo;
-        public GetCountriesHandler(ISearchRepository repo) => _repo = repo;
-        public Task<List<CountryDto>> Handle(GetCountriesQuery _, CancellationToken ct)
-            => _repo.GetAllCountriesAsync(ct);
-    }
-
     public class GetPersonRolesHandler : IRequestHandler<GetPersonRolesQuery, List<PersonRoleDto>>
     {
         private readonly ISearchRepository _repo;
