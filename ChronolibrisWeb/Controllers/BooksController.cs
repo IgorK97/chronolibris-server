@@ -40,6 +40,7 @@ namespace ChronolibrisWeb.Controllers
                 request.IsAvailable,
                 request.IsReviewable,
                 request.PublisherId,
+                request.HasHistoricalVersions,
                 request.PersonFilters
             );
 
@@ -73,24 +74,14 @@ namespace ChronolibrisWeb.Controllers
                 request.PublisherId, request.PublisherIdProvided,
                request.PersonFilters,
                 request.ThemeIds,
-                request.DeleteCoverCommand
+                request.DeleteCoverCommand,
+                request.HasHistoricalVersions
             );
 
             await _mediator.Send(command, cancellationToken);
             return Ok();
 
         }
-
-        //[Authorize(Roles = "admin, moderator")]
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult> DeleteBook(long id, CancellationToken cancellationToken)
-        //{
-
-        //    var command = new DeleteBookCommand(id);
-        //    await _mediator.Send(command, cancellationToken);
-        //    return NoContent();
-
-        //}
 
         [HttpGet("{bookId}/info")]
         public async Task<ActionResult> GetBookMetadata(long bookId, bool mode)

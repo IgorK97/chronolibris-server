@@ -10,28 +10,9 @@ namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface IBookRepository : IGenericRepository<Book>
     {
-        //Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-        //Task<IReadOnlyList<Book>> GetAllAsync(CancellationToken cancellationToken = default);
-
         void SyncParticipations(Book book, List<PersonRoleFilter> personFilters);
         Task<List<Content>> GetContentsWithDetailsByBookIdAsync(long bookId, CancellationToken ct);
-
-        //Task<(List<Book> Items, int TotalCount, string? NextCursor, string? PrevCursor)> GetWithFilterAsync(
-        //    BookFilterRequest filter, CancellationToken cancellationToken = default);
         Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken cancellationToken = default);
-        //void Update(Book book);
-        //void Delete(Book book);
-        //Task UpdateAsync(Book book, List<PersonRoleFilter>? personFilters, CancellationToken ct);
-        //Task<List<string>> GetAuthorNamesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
-        //Task<List<Theme>> GetThemesByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
-
-        //Task<int> GetContentsCountAsync(long bookId, CancellationToken cancellationToken = default);
-        //Task<List<Content>> GetContentsByBookIdAsync(long bookId, CancellationToken cancellationToken = default);
-        //Task LinkContentToBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
-        //Task UnlinkContentFromBookAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
-        //Task<bool> IsLinkedToContentAsync(long bookId, long contentId, CancellationToken cancellationToken = default);
         Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token = default);
-        //Task<List<BookListItem>>
-        //    GetSearchedBooks(string query, long? lastId, int limit, long userId, CancellationToken token = default);
     }
 }

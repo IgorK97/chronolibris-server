@@ -46,6 +46,7 @@ namespace ChronolibrisWeb.Controllers
             [FromForm] long bookId,
             [FromForm] int formatId,
             [FromForm] bool isReadable,
+            [FromForm] bool? historical,
             IFormFile file,
             CancellationToken cancellationToken)
         {
@@ -56,7 +57,7 @@ namespace ChronolibrisWeb.Controllers
                 return Unauthorized();
 
 
-            var command = new UploadBookFileCommand(bookId, formatId, isReadable, file.OpenReadStream(), file.FileName, file.Length, userId);
+            var command = new UploadBookFileCommand(bookId, formatId, isReadable, historical, file.OpenReadStream(), file.FileName, file.Length, userId);
             var id = await _mediator.Send(command, cancellationToken);
             return Ok(id);
 

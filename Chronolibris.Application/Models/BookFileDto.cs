@@ -18,6 +18,7 @@ namespace Chronolibris.Application.Models
         public long StoredSizeBytes { get; set; }
         //public string FileSizeDisplay => FormatFileSize(FileSizeBytes);
         public bool IsReadable { get; set; }
+        public bool? HistoricalText { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public long CreatedBy { get; set; }

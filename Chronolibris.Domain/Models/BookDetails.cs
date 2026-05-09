@@ -27,6 +27,7 @@ namespace Chronolibris.Domain.Models
         public required bool IsFavorite { get; set; }
         public required bool IsRead { get; set; }
         public required bool IsReviewable { get; set; }
+        public required bool HasHistoricalVersions { get; set; }
         public PublisherDetails? Publisher { get; set; }
         public CountryDto Country { get; set; } = new();
         public LanguageDto Language { get; set; } = new();

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 using System.Xml;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
@@ -44,7 +39,8 @@ namespace Chronolibris.Application.Handlers.Books
                 //CreatedBy = bf.CreatedBy,
                 //Version = bf.Version,
                 BookFileStatusId = bf.StatusId,
-                BookFileStatusName = bf.BookFileStatus?.Name
+                BookFileStatusName = bf.BookFileStatus?.Name,
+                HistoricalText = bf.HistoricalText,
             }).ToList();
         }
     }
@@ -125,7 +121,8 @@ namespace Chronolibris.Application.Handlers.Books
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
                 //CreatedBy = request.CreatedBy,
-                StatusId = BookFileStatuses.PENDING
+                StatusId = BookFileStatuses.PENDING,
+                HistoricalText = request.HistoricalText
             };
 
             await _bookFileRepository.AddAsync(bookFile, cancellationToken);

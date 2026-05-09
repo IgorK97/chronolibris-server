@@ -54,6 +54,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     CountryName = b.Country.Name,
                     LanguageName = b.Language.Name,
                     PublisherId = b.PublisherId,
+                    HasHistoricalVersions = b.HasHistoricalVersions,
                     PublisherName = b.Publisher != null ? b.Publisher.Name : null,
                     Stats = b.IsReviewable ? new
                     {
@@ -116,6 +117,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     Name = raw.CountryName,
                     Id = raw.CountryId
                 },
+                HasHistoricalVersions = raw.HasHistoricalVersions,
                 Language = new()
                 {
                     Name = raw.LanguageName,

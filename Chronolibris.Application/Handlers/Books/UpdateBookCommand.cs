@@ -29,7 +29,8 @@ namespace Chronolibris.Application.Handlers.Books
         //int? SeriesId, bool SeriesIdProvided,
         List<PersonRoleFilter>? PersonFilters,
         List<int>? ThemeIds,
-        bool DeleteCoverCommand
+        bool DeleteCoverCommand,
+        bool HasHistoricalVersions
     ) : IRequest;
 
     public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand>
@@ -152,6 +153,7 @@ namespace Chronolibris.Application.Handlers.Books
             book.Description = cmd.Description.Trim();
             book.IsAvailable = cmd.IsAvailable;
             book.IsReviewable = cmd.IsReviewable;
+            book.HasHistoricalVersions = cmd.HasHistoricalVersions;
 
 
             if (cmd.CountryId != null) book.CountryId = cmd.CountryId.Value;
@@ -165,16 +167,6 @@ namespace Chronolibris.Application.Handlers.Books
             if (cmd.PublisherIdProvided) book.PublisherId = cmd.PublisherId;
 
             book.UpdatedAt = DateTime.UtcNow;
-        }
-        private static Stream DecodeCover(string base64)
-        {
-            var data = base64.Contains(',')
-                ? base64[(base64.IndexOf(',') + 1)..]
-                : base64;
-
-            var bytes = Convert.FromBase64String(data);
-
-            return new MemoryStream(bytes);
         }
     }
 }

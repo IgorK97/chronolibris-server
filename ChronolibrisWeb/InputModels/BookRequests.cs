@@ -43,6 +43,7 @@ namespace ChronolibrisWeb.InputModels
         //public string? CoverFileName { get; init; } = "cover";
         public bool IsAvailable { get; init; } = true;
         public bool IsReviewable { get; init; } = true;
+        public bool HasHistoricalVersions { get; init; }
         public long? PublisherId { get; init; }
         public List<PersonRoleFilter>? PersonFilters { get; init; }
     }
@@ -87,6 +88,7 @@ namespace ChronolibrisWeb.InputModels
 
         public long? PublisherId { get; set; }
         public bool PublisherIdProvided { get; set; }
+        public bool HasHistoricalVersions { get; init; }
 
         public string? CoverBase64 { get; set; }
         //public string? CoverContentType { get; set; }

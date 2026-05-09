@@ -8,7 +8,7 @@ namespace Chronolibris.Application.Requests.Books
     //public record GetBookFileDtoQuery(long BookFileId) : IRequest<BookFileDto?>;
 
     public record GetBookFileQuery(long BookFileId) : IRequest<Stream?>;
-    public record UploadBookFileCommand(long BookId, int FormatId, bool IsReadable, Stream FileStream, string FileName, long FileSizeBytes,
+    public record UploadBookFileCommand(long BookId, int FormatId, bool IsReadable, bool? HistoricalText, Stream FileStream, string FileName, long FileSizeBytes,
         long CreatedBy) : IRequest<long>;
     
 
