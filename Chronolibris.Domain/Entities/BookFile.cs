@@ -26,6 +26,7 @@ namespace Chronolibris.Domain.Entities
         public long StoredSize { get; set; }
         [Required]
         public bool IsReadable { get; set; }
+        public bool? HistoricalText { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }

@@ -19,6 +19,10 @@ namespace Chronolibris.Infrastructure.Configurations
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.ToTable(t => t.HasCheckConstraint(
+                "ck_themes_name_not_empty",
+                "LENGTH(TRIM(name))>0"));
+
             builder.HasData(
                 new Theme { Id = 1, Name = "Политическая история" },
                 new Theme { Id = 2, Name = "Военная история" },

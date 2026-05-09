@@ -25,6 +25,10 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
+            builder.ToTable(t => t.HasCheckConstraint(
+                "ck_tags_name_not_empty",
+                "LENGTH(TRIM(name))>0"));
+
         }
     }
 }

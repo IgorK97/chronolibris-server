@@ -15,6 +15,11 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Shelf> builder)
         {
+
+            builder.ToTable(t => t.HasCheckConstraint(
+                "ck_shelves_name_not_empty",
+                "LENGTH(TRIM(name))>0"));
+
             builder.HasOne<User>() 
                    .WithMany()     
                    .HasForeignKey(b => b.UserId) 

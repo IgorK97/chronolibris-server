@@ -13,6 +13,12 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Person> builder)
         {
+
+            builder.ToTable(t => t.HasCheckConstraint(
+                "ck_persons_name_not_empty",
+                "LENGTH(TRIM(name))>0"));
+
+
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
 

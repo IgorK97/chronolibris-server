@@ -14,6 +14,11 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Language> builder)
         {
+
+            builder.ToTable(t => t.HasCheckConstraint(
+                "ck_languages_name_not_empty",
+                "LENGTH(TRIM(name))>0"));
+
             builder.HasData(
                 new Language { Id = 1, Name = "Английский" },
                 new Language { Id = 2, Name = "Русский" },

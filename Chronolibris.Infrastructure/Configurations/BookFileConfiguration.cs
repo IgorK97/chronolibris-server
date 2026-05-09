@@ -22,6 +22,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
                 t.HasCheckConstraint("CK_book_files_stored_size_not_negative",
                     "stored_size>=0");
+
+            t.HasCheckConstraint("ck_book_files_readable_format",
+                "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)");
             });
             builder.HasOne(bf => bf.BookFileStatus)
                 .WithMany(bs => bs.BookFiles)
@@ -31,18 +34,25 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             builder.Property(bf => bf.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder
-                .HasIndex(bf => new { bf.BookId, bf.IsReadable })
-                .IsUnique()
-                .HasFilter("\"is_readable\" = true"); //наверное, уже лишнее, если есть оба нижних
+            builder.Property(bf => bf.HistoricalText)
+                .HasDefaultValue(null);
 
             builder
-                .ToTable(t => t.HasCheckConstraint("ck_book_files_readable_format",
-                    "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)")); //если файл читаемый в читалке, то формат всегда - 1, то есть фб2
-
-            builder
-                .HasIndex(bf => new { bf.BookId, bf.FormatId })
+                .HasIndex(bf => new { bf.BookId, bf.FormatId, bf.HistoricalText })
                 .IsUnique();
+
+            //builder
+            //    .HasIndex(bf => new { bf.BookId, bf.IsReadable })
+            //    .IsUnique()
+            //    .HasFilter("\"is_readable\" = true"); //наверное, уже лишнее, если есть оба нижних
+
+            ////builder
+            ////    .ToTable(t => t.HasCheckConstraint("ck_book_files_readable_format",
+            ////        "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)")); //если файл читаемый в читалке, то формат всегда - 1, то есть фб2
+
+            //builder
+            //    .HasIndex(bf => new { bf.BookId, bf.FormatId })
+            //    .IsUnique();
         }
     }
 }

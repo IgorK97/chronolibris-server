@@ -15,6 +15,9 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+            builder.Property(b => b.HasHistoricalVersions)
+                .HasDefaultValue(true);
+
             builder.ToTable("books", t =>
             {
                 t.HasCheckConstraint(
