@@ -59,11 +59,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 await _context.BookFiles.AddAsync(entity, token);
                 await _context.SaveChangesAsync(token);
             }
-            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg)
             {
-                throw new ChronolibrisException(
+                if(pg.SqlState=="23505")
+                    throw new ChronolibrisException(
                     "Файл такого формата уже существует для этой книги",
                     ErrorType.Conflict);
+                if(pg.SqlState=="P0001")
+                    throw new ChronolibrisException(pg.Message, ErrorType.Conflict);
             }
         }
 

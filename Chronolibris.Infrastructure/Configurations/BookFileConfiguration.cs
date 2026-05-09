@@ -38,7 +38,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
             builder
                 .HasIndex(bf => new { bf.BookId, bf.FormatId, bf.HistoricalText })
-                .IsUnique();
+                .IsUnique().AreNullsDistinct(false);
 
             //builder
             //    .HasIndex(bf => new { bf.BookId, bf.IsReadable })

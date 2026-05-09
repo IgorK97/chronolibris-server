@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260509151849_FixUniqueForBookFiles")]
+    partial class FixUniqueForBookFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,7 +254,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_book_files_book_id_format_id_historical_text");
 
-                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("BookId", "FormatId", "HistoricalText"), false);
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("BookId", "FormatId", "HistoricalText"), true);
 
                     b.ToTable("book_files", null, t =>
                         {

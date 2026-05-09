@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Handlers.References
             {
                 Id = c.Id,
                 Name = c.Name
-            });
+            }).OrderBy(c=>c.Name);
         }
     }
 
