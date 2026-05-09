@@ -34,8 +34,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             builder.Property(bf => bf.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(bf => bf.HistoricalText)
-                .HasDefaultValue(true);
+            builder.Property(bf => bf.HistoricalText);
 
             builder
                 .HasIndex(bf => new { bf.BookId, bf.FormatId, bf.HistoricalText })
