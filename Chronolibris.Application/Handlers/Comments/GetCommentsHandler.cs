@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
-using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Interfaces.Repository;
+﻿using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using MediatR;
 
@@ -39,7 +32,5 @@ namespace Chronolibris.Application.Handlers.Comments
 
             return comments;
         }
-
-
     }
 }

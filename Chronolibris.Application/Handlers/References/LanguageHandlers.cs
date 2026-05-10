@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.References;
@@ -51,12 +50,10 @@ namespace Chronolibris.Application.Handlers.References
 
     public class CreateLanguageHandler : IRequestHandler<CreateLanguageCommand, long>
     {
-        private readonly IGenericRepository<Language> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateLanguageHandler(IGenericRepository<Language> repository, IUnitOfWork unitOfWork)
+        public CreateLanguageHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
@@ -68,7 +65,7 @@ namespace Chronolibris.Application.Handlers.References
                 Name = request.Name.Trim(),
             };
 
-            await _repository.AddAsync(language, cancellationToken);
+            await _unitOfWork.Languages.AddAsync(language, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return language.Id;
@@ -77,23 +74,21 @@ namespace Chronolibris.Application.Handlers.References
 
     public class UpdateLanguageHandler : IRequestHandler<UpdateLanguageCommand, bool>
     {
-        private readonly IGenericRepository<Language> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateLanguageHandler(IGenericRepository<Language> repository, IUnitOfWork unitOfWork)
+        public UpdateLanguageHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(UpdateLanguageCommand request, CancellationToken cancellationToken)
         {
-            var language = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var language = await _unitOfWork.Languages.GetByIdAsync(request.Id, cancellationToken);
             if (language == null) return false;
 
             language.Name = request.Name.Trim();
 
-            _repository.Update(language);
+            _unitOfWork.Languages.Update(language);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
@@ -102,21 +97,19 @@ namespace Chronolibris.Application.Handlers.References
 
     public class DeleteLanguageHandler : IRequestHandler<DeleteLanguageCommand, bool>
     {
-        private readonly IGenericRepository<Language> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteLanguageHandler(IGenericRepository<Language> repository, IUnitOfWork unitOfWork)
-        {
-            _repository = repository;
+        public DeleteLanguageHandler(IUnitOfWork unitOfWork)
+        { 
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteLanguageCommand request, CancellationToken cancellationToken)
         {
-            var language = await _repository.GetByIdAsync(request.id, cancellationToken);
+            var language = await _unitOfWork.Languages.GetByIdAsync(request.id, cancellationToken);
             if (language == null) return false;
 
-            _repository.Delete(language);
+            _unitOfWork.Languages.Delete(language);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;

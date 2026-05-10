@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Requests.Books;
+﻿using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
@@ -27,7 +22,7 @@ namespace Chronolibris.Application.Handlers.Books
             var bookFile = await _bookFiles.GetByIdAsync(request.BookFileId, ct)
                 ?? throw new ChronolibrisException("Книга не найдена", ErrorType.NotFound);
 
-            return await _storage.ReadChunkAsync(bookFile.Id.ToString(), "toc.json", true, ct); //Возвращает нулл, если не найдено
+            return await _storage.ReadChunkAsync(bookFile.Id.ToString(), "toc.json", true, ct);
         }
     }
 }

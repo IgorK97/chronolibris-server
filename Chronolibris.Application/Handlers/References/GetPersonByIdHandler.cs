@@ -1,10 +1,10 @@
-﻿using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Application.Requests.References;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.References
 {
-    public record GetPersonByIdQuery(long Id) : IRequest<Person?>;
     public class GetPersonByIdHandler : IRequestHandler<GetPersonByIdQuery, Person?>
     {
         private readonly IGenericRepository<Person> _repository;

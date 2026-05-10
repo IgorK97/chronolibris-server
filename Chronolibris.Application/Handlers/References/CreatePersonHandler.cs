@@ -1,21 +1,16 @@
-﻿using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Application.Requests.References;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.References
 {
-    public record CreatePersonCommand(
-    string Name,
-    string Description) : IRequest<long>;
-
     public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, long>
     {
-        private readonly IGenericRepository<Person> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreatePersonHandler(IGenericRepository<Person> repository, IUnitOfWork unitOfWork)
+        public CreatePersonHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
@@ -27,12 +22,12 @@ namespace Chronolibris.Application.Handlers.References
             {
                 Id = 0,
                 Name = request.Name.Trim(),
-                Description = request.Description,
+                Description = request.Description.Trim(),
                 //ImagePath = imagePath,
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _repository.AddAsync(person, token);
+            await _unitOfWork.Persons.AddAsync(person, token);
             await _unitOfWork.SaveChangesAsync(token);
 
             return person.Id;

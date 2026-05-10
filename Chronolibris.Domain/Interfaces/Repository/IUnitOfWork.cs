@@ -21,11 +21,12 @@ namespace Chronolibris.Domain.Interfaces.Repository
         ISelectionsRepository Selections { get; }
         IShelfRepository Shelves { get; }
         ICommentRepository Comments { get; }
+        IThemeRepository Themes { get; }
         IGenericRepository<Person> Persons { get; }
         IGenericRepository<Country> Countries { get; }
         IGenericRepository<Format> Formats { get; }
         IGenericRepository<Language> Languages { get; }
-        IGenericRepository<Content> Contents { get; }
+        IContentRepository Contents { get; }
         IGenericRepository<Publisher> Publishers { get; }
         IGenericRepository<PersonRole> PersonRoles { get; }
         //IReadingProgressRepository ReadingProgresses { get; }

@@ -19,7 +19,6 @@ namespace Chronolibris.Application.Handlers.References
         public async Task<IEnumerable<PublisherDto>> Handle(GetAllPublishersQuery request, CancellationToken cancellationToken)
         {
             var publishers = await _unitOfWork.Publishers.GetAllAsync(cancellationToken);
-            var countries = await _unitOfWork.Countries.GetAllAsync(cancellationToken);
 
             return publishers.OrderBy(p=>p.Name).Select(p => new PublisherDto
             {
@@ -27,8 +26,6 @@ namespace Chronolibris.Application.Handlers.References
                 Name = p.Name,
                 Description = p.Description,
                 CreatedAt = p.CreatedAt,
-                //CountryId = p.CountryId,
-                //CountryName = countries.FirstOrDefault(c => c.Id == p.CountryId)?.Name
             });
         }
     }
@@ -48,7 +45,6 @@ namespace Chronolibris.Application.Handlers.References
             var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
             if (publisher == null) return null;
 
-            //var country = await _unitOfWork.Countries.GetByIdAsync(publisher.CountryId, cancellationToken);
 
             return new PublisherDto
             {
@@ -56,20 +52,16 @@ namespace Chronolibris.Application.Handlers.References
                 Name = publisher.Name,
                 Description = publisher.Description,
                 CreatedAt = publisher.CreatedAt,
-                //CountryId = publisher.CountryId,
-                //CountryName = country?.Name
             };
         }
     }
 
     public class CreatePublisherHandler : IRequestHandler<CreatePublisherCommand, long>
     {
-        private readonly IGenericRepository<Publisher> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreatePublisherHandler(IGenericRepository<Publisher> repository, IUnitOfWork unitOfWork)
+        public CreatePublisherHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
@@ -80,11 +72,10 @@ namespace Chronolibris.Application.Handlers.References
                 Id=0,
                 Name = request.Name.Trim(),
                 Description = request.Description,
-                //CountryId = request.CountryId,
                 CreatedAt = DateTime.UtcNow,
             };
 
-            await _repository.AddAsync(publisher, cancellationToken);
+            await _unitOfWork.Publishers.AddAsync(publisher, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return publisher.Id;
@@ -93,25 +84,22 @@ namespace Chronolibris.Application.Handlers.References
 
     public class UpdatePublisherHandler : IRequestHandler<UpdatePublisherCommand, bool>
     {
-        private readonly IGenericRepository<Publisher> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdatePublisherHandler(IGenericRepository<Publisher> repository, IUnitOfWork unitOfWork)
+        public UpdatePublisherHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(UpdatePublisherCommand request, CancellationToken cancellationToken)
         {
-            var publisher = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
             if (publisher == null) return false;
 
             publisher.Name = request.Name.Trim();
             publisher.Description = request.Description;
-            //publisher.CountryId = request.CountryId;
 
-            _repository.Update(publisher);
+            _unitOfWork.Publishers.Update(publisher);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
@@ -120,21 +108,19 @@ namespace Chronolibris.Application.Handlers.References
 
     public class DeletePublisherHandler : IRequestHandler<DeletePublisherCommand, bool>
     {
-        private readonly IGenericRepository<Publisher> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeletePublisherHandler(IGenericRepository<Publisher> repository, IUnitOfWork unitOfWork)
+        public DeletePublisherHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeletePublisherCommand request, CancellationToken cancellationToken)
         {
-            var publisher = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
             if (publisher == null) return false;
 
-            _repository.Delete(publisher);
+            _unitOfWork.Publishers.Delete(publisher);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;

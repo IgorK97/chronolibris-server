@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests.Comments;
+﻿using Chronolibris.Application.Requests.Comments;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -53,10 +47,8 @@ namespace Chronolibris.Application.Handlers.Comments
             }
             else
             {
-                rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score;
+                rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score; //интересно, такая логика корректная? Типа, без удаления оценки пользователя вообще
             }
-
-
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return comment;

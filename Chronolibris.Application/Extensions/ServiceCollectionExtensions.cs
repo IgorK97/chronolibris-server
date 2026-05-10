@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Chronolibris.Application.Extensions
@@ -11,7 +6,7 @@ namespace Chronolibris.Application.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Добавляет MediatR и регистрирует все Handlers, Behaviors и Notifications 
+        /// Добавляет MediatR и регистрирует все Handlers
         /// из Application-сборки
         /// </summary>
         /// <param name="services">Коллекция сервисов</param>
@@ -21,11 +16,9 @@ namespace Chronolibris.Application.Extensions
             // ссылка на текущую сборку (Application-слой)
             Assembly applicationAssembly = typeof(ServiceCollectionExtensions).Assembly;
 
-            // Регистрируем MediatR
+            // Регистрация MediatR
             services.AddMediatR(cfg =>
             {
-                // Регистрация все Handlers, Queries, Commands и Behaviors 
-                // из Application-сборки.
                 cfg.RegisterServicesFromAssembly(applicationAssembly);
             });
 

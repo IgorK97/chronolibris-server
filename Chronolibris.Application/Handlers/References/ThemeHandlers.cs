@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -97,12 +96,10 @@ namespace Chronolibris.Application.Handlers.References
 
     public class CreateThemeHandler : IRequestHandler<CreateThemeCommand, long>
     {
-        private readonly IThemeRepository _themeRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateThemeHandler(IThemeRepository themeRepository, IUnitOfWork unitOfWork)
+        public CreateThemeHandler(IUnitOfWork unitOfWork)
         {
-            _themeRepository = themeRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -110,7 +107,7 @@ namespace Chronolibris.Application.Handlers.References
         {
             if (request.ParentThemeId.HasValue)
             {
-                var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);
+                var parentTheme = await _unitOfWork.Themes.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);
                 if (parentTheme == null)
                 {
                     throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
@@ -124,7 +121,7 @@ namespace Chronolibris.Application.Handlers.References
                 ParentThemeId = request.ParentThemeId
             };
 
-            await _themeRepository.AddAsync(theme, cancellationToken);
+            await _unitOfWork.Themes.AddAsync(theme, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return theme.Id;
@@ -133,23 +130,21 @@ namespace Chronolibris.Application.Handlers.References
 
     public class UpdateThemeHandler : IRequestHandler<UpdateThemeCommand, Unit>
     {
-        private readonly IThemeRepository _themeRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateThemeHandler(IThemeRepository themeRepository, IUnitOfWork unitOfWork)
+        public UpdateThemeHandler(IUnitOfWork unitOfWork)
         {
-            _themeRepository = themeRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(UpdateThemeCommand request, CancellationToken ct)
         {
-            var theme = await _themeRepository.GetByIdAsync(request.Id, ct);
+            var theme = await _unitOfWork.Themes.GetByIdAsync(request.Id, ct);
             if (theme == null) throw new ChronolibrisException($"Тема с ID {request.Id} не найдена", ErrorType.NotFound);
 
             if (request.ParentThemeId.HasValue)
             {
-                bool createsCycle = await _themeRepository.IsAncestorAsync(
+                bool createsCycle = await _unitOfWork.Themes.IsAncestorAsync(
                     request.Id,
                     request.ParentThemeId,
                     ct);
@@ -162,7 +157,7 @@ namespace Chronolibris.Application.Handlers.References
 
             if (request.ParentThemeId.HasValue)
             {
-                var parentTheme = await _themeRepository.GetByIdAsync(request.ParentThemeId.Value, ct);
+                var parentTheme = await _unitOfWork.Themes.GetByIdAsync(request.ParentThemeId.Value, ct);
                 if (parentTheme == null)
                 {
                     throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
@@ -172,7 +167,7 @@ namespace Chronolibris.Application.Handlers.References
             theme.Name = request.Name.Trim();
             theme.ParentThemeId = request.ParentThemeId;
 
-            _themeRepository.Update(theme);
+            _unitOfWork.Themes.Update(theme);
             await _unitOfWork.SaveChangesAsync(ct);
 
             return Unit.Value;
@@ -181,21 +176,19 @@ namespace Chronolibris.Application.Handlers.References
 
     public class DeleteThemeHandler : IRequestHandler<DeleteThemeCommand, Unit>
     {
-        private readonly IThemeRepository _themeRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteThemeHandler(IThemeRepository themeRepository, IUnitOfWork unitOfWork)
+        public DeleteThemeHandler(IUnitOfWork unitOfWork)
         {
-            _themeRepository = themeRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(DeleteThemeCommand request, CancellationToken cancellationToken)
         {
-            var theme = await _themeRepository.GetByIdAsync(request.Id, cancellationToken);
+            var theme = await _unitOfWork.Themes.GetByIdAsync(request.Id, cancellationToken);
             if (theme == null) return Unit.Value;
 
-            var hasSubThemes = await _themeRepository.HasSubThemesAsync(request.Id, cancellationToken);
+            var hasSubThemes = await _unitOfWork.Themes.HasSubThemesAsync(request.Id, cancellationToken);
             if (hasSubThemes)
             {
                 throw new ChronolibrisException(
@@ -203,7 +196,7 @@ namespace Chronolibris.Application.Handlers.References
                     ErrorType.Unprocessable);
             }
 
-            _themeRepository.Delete(theme);
+            _unitOfWork.Themes.Delete(theme);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

@@ -70,23 +70,17 @@ namespace Chronolibris.Application.Handlers.Books
 
     public class UploadBookFileHandler : IRequestHandler<UploadBookFileCommand, long>
     {
-        private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
-        //private readonly IBookConversionService _bookConversionService;
         private readonly IFb2Converter _converter;
 
 
         public UploadBookFileHandler(
-            IBookFileRepository bookFileRepository,
             IStorageService bookStorage,
             IUnitOfWork unitOfWork,
             IFb2Converter converter
-
-            //IBookConversionService bookConversionJob
             )
         {
-            _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
             _unitOfWork = unitOfWork;
             _converter = converter;
@@ -125,7 +119,7 @@ namespace Chronolibris.Application.Handlers.Books
                 HistoricalText = request.HistoricalText
             };
 
-            await _bookFileRepository.AddAsync(bookFile, cancellationToken);
+            await _unitOfWork.BookFiles.AddAsync(bookFile, cancellationToken);
             //await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             try
@@ -182,7 +176,7 @@ namespace Chronolibris.Application.Handlers.Books
                     : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
 
-                _bookFileRepository.Update(bookFile);
+                _unitOfWork.BookFiles.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 var bookFileId = bookFile.Id;
 
@@ -198,7 +192,7 @@ namespace Chronolibris.Application.Handlers.Books
                         options: new ConversionOptions { TargetPartSize = 80 }
                       );
 
-                    await _bookFileRepository.SaveConversionResultAsync(bookFileId, result);
+                    await _unitOfWork.BookFiles.SaveConversionResultAsync(bookFileId, result);
 
                 }  
 
@@ -301,26 +295,23 @@ namespace Chronolibris.Application.Handlers.Books
     }
     public class DeleteBookFileHandler : IRequestHandler<DeleteBookFileCommand, Unit>
     {
-        private readonly IBookFileRepository _bookFileRepository;
         private readonly IStorageService _bookStorage;
         private readonly IUnitOfWork _unitOfWork;
 
         public DeleteBookFileHandler(
-            IBookFileRepository bookFileRepository,
             IStorageService bookStorage,
             IUnitOfWork unitOfWork)
         {
-            _bookFileRepository = bookFileRepository;
             _bookStorage = bookStorage;
             _unitOfWork = unitOfWork;
         }
         public async Task<Unit> Handle(DeleteBookFileCommand request, CancellationToken cancellationToken)
         {
-            var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null) 
+            var bookFile = await _unitOfWork.BookFiles.GetByIdAsync(request.BookFileId, cancellationToken);
+            if (bookFile == null)
                 return Unit.Value;
 
-            _bookFileRepository.Delete(bookFile);
+            _unitOfWork.BookFiles.Delete(bookFile);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _bookStorage.DeleteBookDataAsync(bookFile.Id.ToString(), cancellationToken);
 

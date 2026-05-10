@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Requests.Bookmarks;
+﻿using Chronolibris.Application.Requests.Bookmarks;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
@@ -32,7 +27,8 @@ namespace Chronolibris.Application.Handlers.Bookmarks
 
             if(existing.UserId != request.UserId)
             {
-                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden);
+                throw new ChronolibrisException("Нет доступа на совершение этой операции", ErrorType.Forbidden); //или лучше вообще ничего не возвращать,
+                //чтобы даже не поняли, есть ли чья-то такая закладка там или нет
             }
 
             _unitOfWork.Bookmarks.Delete(existing);

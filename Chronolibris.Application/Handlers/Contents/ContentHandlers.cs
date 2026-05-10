@@ -1,11 +1,6 @@
 ﻿using MediatR;
 using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.Contents;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -65,12 +60,10 @@ namespace Chronolibris.Application.Handlers.Contents
 
     public class CreateContentHandler : IRequestHandler<CreateContentCommand, long>
     {
-        private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public CreateContentHandler(IUnitOfWork unitOfWork)
         {
-            _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -92,15 +85,15 @@ namespace Chronolibris.Application.Handlers.Contents
             };
 
             if (request.PersonFilters != null)
-                _contentRepository.SyncParticipations(content, request.PersonFilters);
+                _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
 
             if (request.ThemeIds != null)
             {
-                _contentRepository.SyncThemes(content, request.ThemeIds);
+                _unitOfWork.Contents.SyncThemes(content, request.ThemeIds);
             }
 
 
-            await _contentRepository.AddAsync(content, cancellationToken);
+            await _unitOfWork.Contents.AddAsync(content, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return content.Id;
@@ -109,18 +102,16 @@ namespace Chronolibris.Application.Handlers.Contents
 
     public class UpdateContentHandler : IRequestHandler<UpdateContentRequest, Unit>
     {
-        private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public UpdateContentHandler(IUnitOfWork unitOfWork)
         {
-            _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(UpdateContentRequest request, CancellationToken cancellationToken)
         {
-            var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
+            var content = await _unitOfWork.Contents.GetByIdAsync(request.Id, cancellationToken);
             if (content == null) 
                 throw new ChronolibrisException("Такого контента нет", ErrorType.NotFound);
 
@@ -146,10 +137,10 @@ namespace Chronolibris.Application.Handlers.Contents
                 content.YearTo = request.YearTo;
 
             if (request.ThemeIds != null)
-                _contentRepository.SyncThemes(content, request.ThemeIds);
+                _unitOfWork.Contents.SyncThemes(content, request.ThemeIds);
 
             if (request.PersonFilters != null)
-                _contentRepository.SyncParticipations(content, request.PersonFilters);
+                _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
             //if(request.TagIds!=null)
             //    await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
 
@@ -162,22 +153,20 @@ namespace Chronolibris.Application.Handlers.Contents
 
     public class DeleteContentHandler : IRequestHandler<DeleteContentCommand, Unit>
     {
-        private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public DeleteContentHandler(IUnitOfWork unitOfWork)
         {
-            _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(DeleteContentCommand request, CancellationToken cancellationToken)
         {
-            var content = await _contentRepository.GetByIdAsync(request.Id, cancellationToken);
+            var content = await _unitOfWork.Contents.GetByIdAsync(request.Id, cancellationToken);
             if (content == null)
                 return Unit.Value;
 
-            _contentRepository.Delete(content);
+            _unitOfWork.Contents.Delete(content);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
@@ -186,44 +175,38 @@ namespace Chronolibris.Application.Handlers.Contents
 
     public class LinkBookToContentHandler : IRequestHandler<LinkBookToContentCommand, Unit>
     {
-        private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public LinkBookToContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public LinkBookToContentHandler(IUnitOfWork unitOfWork)
         {
-            _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(LinkBookToContentCommand request, CancellationToken cancellationToken)
         {
-            await _contentRepository.LinkContentToBookAsync(
+            await _unitOfWork.Contents.LinkContentToBookAsync(
                 request.ContentId, request.BookId, cancellationToken);
 
-            //await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
     }
 
     public class UnlinkBookFromContentHandler : IRequestHandler<UnlinkBookFromContentCommand, Unit>
     {
-        private readonly IContentRepository _contentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UnlinkBookFromContentHandler(IContentRepository contentRepository, IUnitOfWork unitOfWork)
+        public UnlinkBookFromContentHandler(IUnitOfWork unitOfWork)
         {
-            _contentRepository = contentRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(UnlinkBookFromContentCommand request, CancellationToken cancellationToken)
         {
-            await _contentRepository.UnlinkContentFromBookAsync(
+            await _unitOfWork.Contents.UnlinkContentFromBookAsync(
                 request.ContentId, request.BookId, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
             return Unit.Value;
         }
     }

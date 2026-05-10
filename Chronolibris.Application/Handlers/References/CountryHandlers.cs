@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Chronolibris.Application.Models;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
@@ -75,23 +74,21 @@ namespace Chronolibris.Application.Handlers.References
 
     public class UpdateCountryHandler : IRequestHandler<UpdateCountryCommand, bool>
     {
-        private readonly IGenericRepository<Country> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateCountryHandler(IGenericRepository<Country> repository, IUnitOfWork unitOfWork)
+        public UpdateCountryHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(UpdateCountryCommand request, CancellationToken cancellationToken)
         {
-            var country = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var country = await _unitOfWork.Countries.GetByIdAsync(request.Id, cancellationToken);
             if (country == null) return false;
 
             country.Name = request.Name.Trim();
 
-            _repository.Update(country);
+            _unitOfWork.Countries.Update(country);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
@@ -100,21 +97,19 @@ namespace Chronolibris.Application.Handlers.References
 
     public class DeleteCountryHandler : IRequestHandler<DeleteCountryCommand, bool>
     {
-        private readonly IGenericRepository<Country> _repository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteCountryHandler(IGenericRepository<Country> repository, IUnitOfWork unitOfWork)
+        public DeleteCountryHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteCountryCommand request, CancellationToken cancellationToken)
         {
-            var country = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var country = await _unitOfWork.Countries.GetByIdAsync(request.Id, cancellationToken);
             if (country == null) return false;
 
-            _repository.Delete(country);
+            _unitOfWork.Countries.Delete(country);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
