@@ -3,7 +3,7 @@ using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Formats
 {
     public class GetAllFormatsHandler : IRequestHandler<GetAllFormatsQuery, IEnumerable<FormatDto>>
     {

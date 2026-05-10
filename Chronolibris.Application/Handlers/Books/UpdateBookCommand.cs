@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers.Books
 {
-    public record UpdateBookCommand( //nullable типы могут не идти в самом конце что ли?
+    public record UpdateBookCommand(
         long Id,
         string Title,
         string Description,

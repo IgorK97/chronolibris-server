@@ -11,63 +11,6 @@ using MediatR;
 
 namespace Chronolibris.Application.Handlers.Books
 {
-    public class GetBookFilesHandler : IRequestHandler<GetBookFilesQuery, List<BookFileDto>>
-    {
-        private readonly IBookFileRepository _bookFileRepository;
-
-        public GetBookFilesHandler(IBookFileRepository bookFileRepository)
-        {
-            _bookFileRepository = bookFileRepository;
-        }
-
-        public async Task<List<BookFileDto>> Handle(GetBookFilesQuery request, CancellationToken cancellationToken)
-        {
-            var bookFiles = await _bookFileRepository.GetByBookIdAsync(request.BookId, request.adminMode, cancellationToken);
-
-            return bookFiles.Select(bf => new BookFileDto
-            {
-                Id = bf.Id,
-                BookId = bf.BookId,
-                FormatId = bf.FormatId,
-                FormatName = bf.Format?.Name,
-                StorageUrl = bf.StorageUrl,
-                FileSizeBytes = bf.OriginalSize,
-                StoredSizeBytes = bf.StoredSize,
-                IsReadable = bf.IsReadable,
-                CreatedAt = bf.CreatedAt,
-                CompletedAt = bf.CompletedAt,
-                //CreatedBy = bf.CreatedBy,
-                //Version = bf.Version,
-                BookFileStatusId = bf.StatusId,
-                BookFileStatusName = bf.BookFileStatus?.Name,
-                HistoricalText = bf.HistoricalText,
-            }).ToList();
-        }
-    }
-
-    public class GetBookFileHandler : IRequestHandler<GetBookFileQuery, Stream?>
-    {
-        private readonly IBookFileRepository _bookFileRepository;
-        private readonly IStorageService _bookStorage;
-
-        public GetBookFileHandler(IBookFileRepository bookFileRepository, IStorageService bookStorage)
-        {
-            _bookFileRepository = bookFileRepository;
-            _bookStorage = bookStorage;
-        }
-
-        public async Task<Stream?> Handle(GetBookFileQuery request, CancellationToken cancellationToken)
-        {
-            var bookFile = await _bookFileRepository.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null || string.IsNullOrEmpty(bookFile.StorageUrl)) return null;
-            string extension = ".fb2.zip";
-            if (bookFile.FormatId == 2)
-                extension = ".epub";
-            return await _bookStorage.ReadBookSourceAsync(bookFile.Id.ToString(), extension, cancellationToken);
-        }
-    }
-
-
     public class UploadBookFileHandler : IRequestHandler<UploadBookFileCommand, long>
     {
         private readonly IStorageService _bookStorage;
@@ -119,7 +62,8 @@ namespace Chronolibris.Application.Handlers.Books
                 HistoricalText = request.HistoricalText
             };
 
-            await _unitOfWork.BookFiles.AddAsync(bookFile, cancellationToken);
+            await _unitOfWork.BookFiles.AddAsync(bookFile, cancellationToken); //сразу сохраняет сам, потом можно подправить, если что
+            //если неуспех, то исключение выбрасывает метод уже здесь
             //await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             try
@@ -149,7 +93,7 @@ namespace Chronolibris.Application.Handlers.Books
 
                 else
                 {
-                    compressedSize = buffer.Length; // EPUB и так архив
+                    compressedSize = buffer.Length; //EPUB и так архив
                     storageStream = buffer;
                     storageExtension = ".epub";
                 }
@@ -176,14 +120,15 @@ namespace Chronolibris.Application.Handlers.Books
                     : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
 
-                _unitOfWork.BookFiles.Update(bookFile);
+                _unitOfWork.BookFiles.Update(bookFile); //надеюсь, детачт нигде не вызывался, проверить и убрать потом
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 var bookFileId = bookFile.Id;
 
                 if (request.IsReadable)
                 //await _bookConversionService.ProcessAsync(bookFile.Id);
                 {
-                    buffer.Position = 0;
+                    buffer.Position = 0; //так как епаб не формат для читалки, исключения не будет
+                    //но могло бы быть - потом посмотреть, как подправить
 
 
                     var result = await _converter.ConvertAsync(
@@ -210,7 +155,7 @@ namespace Chronolibris.Application.Handlers.Books
                 }
                 catch (Exception ex1)
                 {
-                    message = $"Ошибка при изменении данных о файле после неудачной загрузки";
+                    message = "Ошибка при изменении данных о файле после неудачной загрузки"; //можно, наверное, логиовать, но клиенту что вернуть еще подумать
                 }
                 throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов или в процессе конвертации. " + message+
                     ex.Message, ErrorType.ServerException);
@@ -249,7 +194,7 @@ namespace Chronolibris.Application.Handlers.Books
                 var container = zip.GetEntry("META-INF/container.xml")
                     ?? throw new ChronolibrisException("Не найден META-INF/container.xml — невалидный EPUB", ErrorType.Validation);
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is not ChronolibrisException)//сам свое же здесь исключение не поймаю? Нужно, наверное, как-то усовершенствовать
             {
                 throw new ChronolibrisException("Файл не является ZIP-архивом — невалидный EPUB", ErrorType.Validation);
             }
@@ -283,7 +228,7 @@ namespace Chronolibris.Application.Handlers.Books
                     break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is not ChronolibrisException)
             {
                 throw new ChronolibrisException("Файл не является валидным XML — невалидный FB2", ErrorType.Validation);
             }
@@ -293,30 +238,4 @@ namespace Chronolibris.Application.Handlers.Books
             }
         }
     }
-    public class DeleteBookFileHandler : IRequestHandler<DeleteBookFileCommand, Unit>
-    {
-        private readonly IStorageService _bookStorage;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public DeleteBookFileHandler(
-            IStorageService bookStorage,
-            IUnitOfWork unitOfWork)
-        {
-            _bookStorage = bookStorage;
-            _unitOfWork = unitOfWork;
-        }
-        public async Task<Unit> Handle(DeleteBookFileCommand request, CancellationToken cancellationToken)
-        {
-            var bookFile = await _unitOfWork.BookFiles.GetByIdAsync(request.BookFileId, cancellationToken);
-            if (bookFile == null)
-                return Unit.Value;
-
-            _unitOfWork.BookFiles.Delete(bookFile);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _bookStorage.DeleteBookDataAsync(bookFile.Id.ToString(), cancellationToken);
-
-            return Unit.Value;
-        }
-    }
-
 }

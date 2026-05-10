@@ -3,7 +3,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Persons
 {
 
     public class DeletePersonHandler : IRequestHandler<DeletePersonCommand>

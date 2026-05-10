@@ -3,41 +3,14 @@ using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models.Search;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers.Search
+namespace Chronolibris.Application.Handlers.Search.SearchHandlers
 {
-    public class SimpleSearchKeysetQueryHandler
-        : IRequestHandler<SimpleSearchKeysetQuery, PagedBooks<BookSearchResult>>
-    {
-        private readonly ISearchRepository _searchRepository;
-
-        public SimpleSearchKeysetQueryHandler(ISearchRepository searchRepository)
-        {
-            _searchRepository = searchRepository;
-        }
-
-        public Task<PagedBooks<BookSearchResult>> Handle(
-            SimpleSearchKeysetQuery request, CancellationToken cancellationToken)
-        {
-            return _searchRepository.SearchKeysetAsync(
-                new SimpleSearchKeysetRequest
-                {
-                    Query = request.Query,
-                    PageSize = request.PageSize,
-                    UserId = request.UserId,
-                    LastBestSimilarity = request.LastBestSimilarity,
-                    LastId = request.LastId,
-                    mode = request.Mode
-                },
-                cancellationToken);
-        }
-    }
-
-    public class AdvancedSearchKeysetQueryHandler
+    public class AdvancedSearchHandler
         : IRequestHandler<ComplexSearchQuery, PagedBooks<BookSearchResult>>
     {
         private readonly ISearchRepository _searchRepository;
 
-        public AdvancedSearchKeysetQueryHandler(ISearchRepository searchRepository)
+        public AdvancedSearchHandler(ISearchRepository searchRepository)
         {
             _searchRepository = searchRepository;
         }

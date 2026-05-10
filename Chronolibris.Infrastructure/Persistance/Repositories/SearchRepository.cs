@@ -31,8 +31,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
                 cursorClause = @"
                     WHERE (sub.best_similarity < {" + p +@"} 
-                    OR (sub.best_similarity = {" + p + @"} AND sub.id > {" + (p+1).ToString() + @"}))
-                    ";
+                    OR (sub.best_similarity = {" + p + @"} AND sub.id > {" + (p+1).ToString() + @"})) 
+                    "; //почему можно без ту стринг писать?
 
             }
 

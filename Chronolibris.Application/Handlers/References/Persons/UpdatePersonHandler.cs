@@ -5,7 +5,7 @@ using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
 
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Persons
 {
     public class UpdatePersonHandler : IRequestHandler<UpdatePersonCommand>
     {

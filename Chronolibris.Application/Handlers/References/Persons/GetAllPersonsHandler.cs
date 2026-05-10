@@ -4,7 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Persons
 {
     public class GetAllPersonsHandler : IRequestHandler<GetAllPersonsQuery, IEnumerable<PersonDto>>
     {
@@ -23,7 +23,6 @@ namespace Chronolibris.Application.Handlers.References
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                //ImageUrl = p.ImagePath,
                 CreatedAt = p.CreatedAt,
                 //UpdatedAt = p.UpdatedAt
             });

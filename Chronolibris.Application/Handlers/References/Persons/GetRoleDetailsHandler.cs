@@ -4,7 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using MediatR;
 
-namespace Chronolibris.Application.Handlers.References
+namespace Chronolibris.Application.Handlers.References.Persons
 {
     public class GetRoleDetailsHandler(IGenericRepository<PersonRole> personRolesRepository) : IRequestHandler<GetRoleDetailsQuery, List<RoleDetails>>
     {
