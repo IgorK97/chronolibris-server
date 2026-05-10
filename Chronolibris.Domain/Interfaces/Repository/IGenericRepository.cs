@@ -2,7 +2,6 @@
 
 namespace Chronolibris.Domain.Interfaces.Repository
 {
-
     public interface IGenericRepository<TEntity> where TEntity:class
     {
         Task<TEntity?> GetByIdAsync(long id, CancellationToken token = default);
@@ -14,10 +13,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
             CancellationToken token = default);
         void Update(TEntity entity);
         void Delete(TEntity entity);
-
         Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate,  CancellationToken cancellationToken = default);
-
-        //void Detach(TEntity entity);
         Task SaveChangesAsync();
     }
 }

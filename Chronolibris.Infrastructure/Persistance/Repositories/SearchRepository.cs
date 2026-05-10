@@ -16,7 +16,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             _context = context;
         }
-        public async Task<PagedBooks<BookSearchResult>>SearchKeysetAsync(
+        public async Task<PagedBooks<BookSearchResult>>SimpleSearchAsync(
             SimpleSearchKeysetRequest request, CancellationToken token)
         {
             var query = request.Query.Trim();

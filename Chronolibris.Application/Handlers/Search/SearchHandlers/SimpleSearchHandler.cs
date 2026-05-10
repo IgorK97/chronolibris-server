@@ -18,7 +18,7 @@ namespace Chronolibris.Application.Handlers.Search.SearchHandlers
         public Task<PagedBooks<BookSearchResult>> Handle(
             SimpleSearchKeysetQuery request, CancellationToken cancellationToken)
         {
-            return _searchRepository.SearchKeysetAsync(
+            return _searchRepository.SimpleSearchAsync(
                 new SimpleSearchKeysetRequest
                 {
                     Query = request.Query,

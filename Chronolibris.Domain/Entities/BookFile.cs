@@ -11,7 +11,6 @@ namespace Chronolibris.Domain.Entities
         public long BookId { get; set; }
         [Required]
         public int FormatId { get; set; }
-        //public required int MediaTypeId { get; set; }
         [MaxLength(2048)]
         [Required]
         public string StorageUrl { get; set; } = String.Empty;
@@ -34,7 +33,6 @@ namespace Chronolibris.Domain.Entities
 
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;
-        //public MediaType MediaType { get; set; } = null!;
         public ICollection<BookFragment> Fragments { get; set; } = [];
         public BookFileStatus BookFileStatus { get; set; }
         public ICollection<Bookmark> Bookmarks { get; set; } = [];

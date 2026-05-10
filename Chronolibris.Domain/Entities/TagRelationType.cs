@@ -9,7 +9,6 @@ namespace Chronolibris.Domain.Entities
         public required string Name { get; set; }        
         [MaxLength(200)]
         public string? Description { get; set; }        
-
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     }
 }

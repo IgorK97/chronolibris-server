@@ -39,12 +39,6 @@ namespace Chronolibris.Domain.Models
         public string Comment { get; set; } = string.Empty;
     }
 
-    //public class GetTargetInfoRequest
-    //{
-    //    public long TargetId { get; set; }
-    //    public long TargetTypeId { get; set; }
-    //}
-
     public class GetTargetInfoResponse
     {
         public long TargetId { get; set; }

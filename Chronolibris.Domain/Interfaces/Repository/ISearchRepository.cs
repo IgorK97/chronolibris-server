@@ -5,7 +5,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface ISearchRepository
     {
-        Task<PagedBooks<BookSearchResult>> SearchKeysetAsync(
+        Task<PagedBooks<BookSearchResult>> SimpleSearchAsync(
            SimpleSearchKeysetRequest request, CancellationToken token);
 
         Task<PagedBooks<BookSearchResult>> ComplexSearchAsync(

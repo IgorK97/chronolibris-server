@@ -2,7 +2,6 @@
 {
     public class CommentReactions
     {
-
         public required long Id { get; set; }
         public required long CommentId { get; set; }
         public required long UserId { get; set; }

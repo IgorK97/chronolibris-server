@@ -29,7 +29,6 @@ namespace Chronolibris.Domain.Models
         Part
     }
 
-    //У всех файлов фрагментов одинаковые названия, поэтому внутрь поместил BookMeta
     public class BookMeta
     {
         [JsonPropertyName("Title")]

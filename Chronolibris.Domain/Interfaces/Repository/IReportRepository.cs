@@ -9,23 +9,13 @@ namespace Chronolibris.Domain.Interfaces.Repository
             long? LastTargetTypeId,
             int Count, bool TargetTypeFilter,
             bool ReportStatusFilter, long? ReportStatusId, DateTime? LastDate);
-
         Task<GetTargetInfoResponse?> GetTargetInfo(long TargetId, long targetTypeId);
-
         Task<List<ReportDto>> GetTargetReports(long TargetId, long TargetTypeId, long ReportTypeId,
             int Count, long? LastReportId);
-
         Task<Report?> GetLastUserReport(long UserId,
             long TargetTypeId, long TargetId,
             long ReasonTypeId, CancellationToken token = default);
-
         Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, CancellationToken token);
-
-
-        //Task<ModerationTask?> CreateModerationTaskWithReportsAsync(
-        //    long TargetId, long TargetTypeId, long ReportTypeId,
-        //    long ModeratorId,
-        //    ITransaction transaction);
 
     }
 }

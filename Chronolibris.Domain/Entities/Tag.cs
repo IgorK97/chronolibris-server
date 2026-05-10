@@ -8,8 +8,6 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(500)]
         public required string Name { get; set; }
         public required long TagTypeId { get; set; }
-        //public long? ParentTagId { get; set; }
-
         public long? ParentTagId { get; set; }
         public Tag? ParentTag { get; set; }
         public ICollection<Tag> ChildTags { get; set; } = new List<Tag>();

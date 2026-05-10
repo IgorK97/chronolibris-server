@@ -24,9 +24,9 @@ namespace Chronolibris.Domain.Entities
 
     public enum PersonRoleKind
     {
-        Content = 1,    // роль относится только к содержанию
-        Book = 2,       // роль относится только к воплощению
-        Both = 3        // роль применима и к содержанию, и к книге
+        Content = 1,
+        Book = 2,
+        Both = 3
     }
     public class PersonRole
     {
