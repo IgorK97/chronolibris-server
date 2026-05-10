@@ -47,7 +47,9 @@ namespace Chronolibris.Application.Handlers.Comments
             }
             else
             {
-                rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score; //интересно, такая логика корректная? Типа, без удаления оценки пользователя вообще
+                rating.ReactionType = request.Score == rating.ReactionType ? (short)0 : request.Score; //интересно, как это делают в реальности,
+                //но при необходимости можно просто физически удалять,
+                //а если с проивзодительностью будут проблемы - то потом просто денормализовать и триггер добавить
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

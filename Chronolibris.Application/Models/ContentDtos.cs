@@ -15,13 +15,10 @@ namespace Chronolibris.Application.Models
         [MaxLength(5000)]
         public string Description { get; set; } = string.Empty;
 
-        [Required]
         public long CountryId { get; set; }
 
-        [Required]
         public long ContentTypeId { get; set; }
 
-        [Required]
         public long LanguageId { get; set; }
 
         public int? YearFrom { get; set; }

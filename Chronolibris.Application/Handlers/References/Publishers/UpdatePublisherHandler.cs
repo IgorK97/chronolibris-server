@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers.References.Publishers
         public async Task<bool> Handle(UpdatePublisherCommand request, CancellationToken cancellationToken)
         {
             var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
-            if (publisher == null) return false;
+            if (publisher == null) return false; //и здесь тоже самое
 
             publisher.Name = request.Name.Trim();
             publisher.Description = request.Description;

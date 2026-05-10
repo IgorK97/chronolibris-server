@@ -53,8 +53,7 @@ namespace Chronolibris.Application.Handlers.Reviews
             await _unitOfWork.SaveChangesAsync(ct);
             //reviewDto = await _unitOfWork.Reviews.GetByIdWithVotesAsync(request.ReviewId, request.UserId, ct);
             //if(reviewDto is null) return null; // В принципе, логика не особо важная,
-            //можно и не возвращать актуальное количество лайков или дизлайков.
-            //Самое главное, что голос читателя был учтен
+            //можно и не возвращать актуальное количество лайков или дизлайков, так оставлю пока что
 
             return new ReviewDetails
             {

@@ -87,7 +87,7 @@ namespace Chronolibris.Application.Models
     /// Если есть сноски, то массив строк и Note ( "c" : ["текст перед сноской...", {t:"note", ...}, "...текст после сноски"]
     /// Поле может отсутствовать, если тип тега br, или быть числом (номер страницы)
     /// </summary>
-    [JsonConverter(typeof(PartElementJsonConverter))] //Что такое typeof и что он здесь делает? И зачем нужно определять свой конвертер?
+    [JsonConverter(typeof(PartElementJsonConverter))]
     public class PartElement
     {
         public required string T { get; init; }
@@ -128,7 +128,7 @@ namespace Chronolibris.Application.Models
         [JsonPropertyName("xp")]
         public required int[] Xp { get; init; }
 
-        // Параграфы сноски. Каждый параграф — строка.
+        // Параграфы сноски. Каждый параграф — строка
         [JsonPropertyName("c")]
         public required List<string> C { get; init; }
     }
@@ -139,7 +139,6 @@ namespace Chronolibris.Application.Models
     /// </summary>
     public class PartElementJsonConverter : JsonConverter<PartElement>
     {
-        //Можно ли было обойтись только методом сериализации?
         public override PartElement Read(ref Utf8JsonReader reader,
             Type typeToConvert, JsonSerializerOptions options)
             => throw new NotSupportedException("Десериализация на данный момент не определена"); //мне сейчас нужна только сериализация, десериализуется все на клиенте

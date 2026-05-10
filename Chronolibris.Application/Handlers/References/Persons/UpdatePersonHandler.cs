@@ -1,5 +1,4 @@
 ﻿using Chronolibris.Application.Requests.References;
-using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
@@ -21,7 +20,7 @@ namespace Chronolibris.Application.Handlers.References.Persons
         public async Task Handle(UpdatePersonCommand request, CancellationToken token)
         {
             var person = await _unitOfWork.Persons.GetByIdAsync(request.Id, token);
-            if (person == null) throw new KeyNotFoundException("Person not found");
+            if (person == null) throw new KeyNotFoundException("Персоналия не найдена");
 
             person.Name = request.Name.Trim();
             person.Description = request.Description;

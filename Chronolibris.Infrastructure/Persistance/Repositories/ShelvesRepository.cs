@@ -36,7 +36,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             var query = _context.Books
                 .AsNoTracking()
-                .Where(b => b.Shelves.Any(s => s.Id == shelfId));
+                .Where(b => b.Shelves.Any(s => s.Id == shelfId) && b.IsAvailable);
 
             if (lastId.HasValue)
                 query = query.Where(b => b.Id > lastId.Value);

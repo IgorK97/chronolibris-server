@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers.References.Languages
         public async Task<bool> Handle(UpdateLanguageCommand request, CancellationToken cancellationToken)
         {
             var language = await _unitOfWork.Languages.GetByIdAsync(request.Id, cancellationToken);
-            if (language == null) return false;
+            if (language == null) return false; //потом и здесь тоже надо бы выбрасывать исключение, по идее
 
             language.Name = request.Name.Trim();
 

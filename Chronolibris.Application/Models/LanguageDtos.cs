@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Chronolibris.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Chronolibris.Application.Models
 {
 
     public class CreateLanguageRequest
     {
-        [Required]
+        [MinLength(1)]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
     }
 
     public class UpdateLanguageRequest
     {
-        [Required]
         public long Id { get; set; }
 
-        [Required]
+        [MinLength(1)]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
     }

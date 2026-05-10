@@ -27,9 +27,9 @@ namespace Chronolibris.Application.Handlers.Users
 
         public async Task<RegistrationResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            try
-            {
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken); //так как создать пользователя + две полки для него
+            //try //вроде автоматом будет вызвано, уберу пока
+            //{
                 var result = await _identityService.RegisterUserAsync(new RegisterRequest
                 {
                     Email = request.Email,
@@ -70,12 +70,12 @@ namespace Chronolibris.Application.Handlers.Users
                 await transaction.CommitAsync();
 
                 return result;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+            //}
+            //catch
+            //{
+            //    await transaction.RollbackAsync();
+            //    throw;
+            //}
         }
     }
 }

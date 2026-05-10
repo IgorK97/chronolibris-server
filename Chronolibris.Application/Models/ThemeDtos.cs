@@ -6,7 +6,7 @@ namespace Chronolibris.Application.Models
 
     public class CreateThemeInputModel
     {
-        [Required]
+        [MinLength(1)]
         [MaxLength(500)]
         public string Name { get; set; } = string.Empty;
 
@@ -15,10 +15,9 @@ namespace Chronolibris.Application.Models
 
     public class UpdateThemeInputModel
     {
-        [Required]
         public long Id { get; set; }
 
-        [Required]
+        [MinLength(1)]
         [MaxLength(500)]
         public string Name { get; set; } = string.Empty;
 

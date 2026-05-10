@@ -151,7 +151,7 @@ namespace Chronolibris.Application.Handlers.Books
                     //_bookFileRepository.Delete(bookFile);
                     bookFile.StatusId = BookFileStatuses.FAILED;
                     bookFile.CompletedAt = DateTime.UtcNow;
-                    await _unitOfWork.SaveChangesAsync(CancellationToken.None); //чтобы не отменилось при отмене основного токена (а дефолт что это)
+                    await _unitOfWork.SaveChangesAsync(CancellationToken.None);
                 }
                 catch (Exception ex1)
                 {
@@ -194,7 +194,7 @@ namespace Chronolibris.Application.Handlers.Books
                 var container = zip.GetEntry("META-INF/container.xml")
                     ?? throw new ChronolibrisException("Не найден META-INF/container.xml — невалидный EPUB", ErrorType.Validation);
             }
-            catch (Exception ex) when (ex is not ChronolibrisException)//сам свое же здесь исключение не поймаю? Нужно, наверное, как-то усовершенствовать
+            catch (Exception ex) when (ex is not ChronolibrisException)
             {
                 throw new ChronolibrisException("Файл не является ZIP-архивом — невалидный EPUB", ErrorType.Validation);
             }

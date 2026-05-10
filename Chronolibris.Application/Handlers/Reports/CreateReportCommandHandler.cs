@@ -83,7 +83,7 @@ namespace Chronolibris.Application.Handlers.Reports
             }
             if (isHidden)
             {
-                throw new ChronolibrisException("Не найден активный контент для жалобы", ErrorType.NotFound);
+                throw new ChronolibrisException("Не найден контент для жалобы", ErrorType.NotFound);
             }
 
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,

@@ -1,5 +1,4 @@
-﻿
-namespace Chronolibris.Application.Models
+﻿namespace Chronolibris.Application.Models
 {
     public class BookFileDto
     {
@@ -14,9 +13,6 @@ namespace Chronolibris.Application.Models
         public bool? HistoricalText { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
-        public long CreatedBy { get; set; }
-        public string? CreatedByName { get; set; }
-        public int Version { get; set; }
         public long BookFileStatusId { get; set; }
         public string? BookFileStatusName { get; set; }
     }

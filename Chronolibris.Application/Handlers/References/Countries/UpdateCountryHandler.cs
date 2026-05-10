@@ -16,7 +16,7 @@ namespace Chronolibris.Application.Handlers.References.Countries
         public async Task<bool> Handle(UpdateCountryCommand request, CancellationToken cancellationToken)
         {
             var country = await _unitOfWork.Countries.GetByIdAsync(request.Id, cancellationToken);
-            if (country == null) return false;
+            if (country == null) return false; //потом надо бы на исключение изменить
 
             country.Name = request.Name.Trim();
 

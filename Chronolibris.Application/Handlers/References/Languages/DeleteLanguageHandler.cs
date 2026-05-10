@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Chronolibris.Domain.Entities;
-using Chronolibris.Domain.Models;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Interfaces.Repository;
 
@@ -18,7 +16,7 @@ namespace Chronolibris.Application.Handlers.References.Languages
         public async Task<bool> Handle(DeleteLanguageCommand request, CancellationToken cancellationToken)
         {
             var language = await _unitOfWork.Languages.GetByIdAsync(request.id, cancellationToken);
-            if (language == null) return false;
+            if (language == null) return false; //то же самое
 
             _unitOfWork.Languages.Delete(language);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

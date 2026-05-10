@@ -14,8 +14,6 @@ namespace Chronolibris.Application.Handlers.References.Themes
             _themeRepository = themeRepository;
         }
 
-
-
         public async Task<IEnumerable<ThemeDto>> Handle(GetAllThemesQuery request, CancellationToken cancellationToken)
         {
             var themes = await _themeRepository.GetByParentIdAsync(request.ParentThemeId, cancellationToken); //потом усовершенствовать, сразу пусть возвращает дто вместе

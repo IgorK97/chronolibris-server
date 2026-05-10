@@ -5,7 +5,6 @@ namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface IShelfRepository : IGenericRepository<Shelf>
     {
-        //Task<Shelf?> GetByIdAsync(long shelfId, CancellationToken token = default);
         Task<IEnumerable<Shelf>> GetForUserAsync(long userId, CancellationToken token = default);
 
         Task<List<BookListItem>>

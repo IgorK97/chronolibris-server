@@ -12,6 +12,7 @@ namespace Chronolibris.Application.Handlers.Selections
         {
             var books = await selectionsRepository
                 .GetBooksForSelection(request.SelectionId, request.LastId, request.Limit, request.UserId, request.Mode, ct);
+            //будет время, унифицирую пагинацию, а то везде в разных метсах +1 ставлю
 
             bool hasNext = books.Count > request.Limit;
 
