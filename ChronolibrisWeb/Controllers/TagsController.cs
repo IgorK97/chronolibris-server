@@ -1,6 +1,4 @@
-﻿
-using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests.References.Tags;
+﻿using Chronolibris.Application.Requests.References.Tags;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
 using MediatR;

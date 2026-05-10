@@ -1,6 +1,5 @@
 ﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Contents;
-using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Models;
 using ChronolibrisWeb.InputModels;
 using MediatR;

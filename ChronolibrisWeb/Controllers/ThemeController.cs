@@ -1,5 +1,4 @@
-﻿
-using Chronolibris.Application.Models;
+﻿using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.References;
 using Chronolibris.Domain.Models;
 using MediatR;

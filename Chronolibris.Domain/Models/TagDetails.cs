@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chronolibris.Domain.Models
+﻿namespace Chronolibris.Domain.Models
 {
     public class TagDetails
     {
@@ -20,10 +14,4 @@ namespace Chronolibris.Domain.Models
         public bool HasChildren { get; set; }
     }
 
-    //public class TagRelationTypeDto
-    //{
-    //    public long Id { get; set; }
-    //    public required string Name { get; set; }
-    //    public string? Description { get; set; }
-    //}
 }

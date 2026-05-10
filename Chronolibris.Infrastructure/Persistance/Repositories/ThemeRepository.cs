@@ -2,9 +2,6 @@
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chronolibris.Infrastructure.Persistence.Repositories
 {

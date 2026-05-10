@@ -1,11 +1,9 @@
 ﻿using System.Text;
 using Chronolibris.Domain.Interfaces.Services;
 using Chronolibris.Infrastructure.Utils;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
-using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 

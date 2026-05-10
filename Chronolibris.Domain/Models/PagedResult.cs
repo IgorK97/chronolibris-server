@@ -1,5 +1,4 @@
-﻿
-namespace Chronolibris.Domain.Models
+﻿namespace Chronolibris.Domain.Models
 {
     public class PagedResult<T>
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Domain.Interfaces.Repository

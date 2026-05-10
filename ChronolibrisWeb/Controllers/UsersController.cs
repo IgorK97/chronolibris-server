@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Chronolibris.Application.Handlers.Users;
 using Chronolibris.Application.Requests.Users;
 using ChronolibrisWeb.InputModels;
 using MediatR;

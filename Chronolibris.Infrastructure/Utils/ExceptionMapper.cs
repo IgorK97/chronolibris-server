@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Domain.Exceptions;
+﻿using Chronolibris.Domain.Exceptions;
 using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Chronolibris.Infrastructure.Utils
 {

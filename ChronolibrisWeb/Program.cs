@@ -1,20 +1,13 @@
-﻿using System.Reflection;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
 using Chronolibris.Application.Extensions;
-using Chronolibris.Infrastructure.DataAccess.Hangfire;
 using Chronolibris.Infrastructure.DatabaseChecker;
 using Chronolibris.Infrastructure.DependencyInjection;
 using ChronolibrisWeb.Middleware;
-using ChronolibrisWeb.Middleware.Hangfire;
 using ChronolibrisWeb.Utils;
-using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Timeouts;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 

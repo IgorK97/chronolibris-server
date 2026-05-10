@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hangfire.Dashboard;
+﻿using Hangfire.Dashboard;
 
 namespace ChronolibrisWeb.Middleware.Hangfire
 {
@@ -13,13 +8,12 @@ namespace ChronolibrisWeb.Middleware.Hangfire
         {
             var httpContext = context.GetHttpContext();
 
-            // Вариант 1: только для авторизованных
+            //только для авторизованных
             return httpContext.User.Identity?.IsAuthenticated ?? false;
 
-            // Вариант 2: только для роли Admin
+            //только для роли Admin
             // return httpContext.User.IsInRole("Admin");
 
-            // Вариант 3: только в Development (небезопасно для прода!)
             // return true;
         }
     }

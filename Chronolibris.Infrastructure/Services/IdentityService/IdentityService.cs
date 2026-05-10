@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Users;
-using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PhoneNumbers;
-using ErrorType = Chronolibris.Domain.Exceptions.ErrorType;
+//using PhoneNumbers;
 
 namespace Chronolibris.Infrastructure.Services.IdentityService
 {
@@ -42,11 +35,11 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         public async Task<RegistrationResult> RegisterUserAsync(RegisterRequest request)
         {
             DateTime dt = DateTime.UtcNow;
-            var util = PhoneNumberUtil.GetInstance();
-            var number = util.Parse(request.PhoneNumber, "RU");
-            bool isValid = util.IsValidNumber(number);
-            if (!isValid)
-                throw new ChronolibrisException("Невалидный номер телефона", ErrorType.Validation);
+            //var util = PhoneNumberUtil.GetInstance();
+            //var number = util.Parse(request.PhoneNumber, "RU");
+            //bool isValid = util.IsValidNumber(number);
+            //if (!isValid)
+            //    throw new ChronolibrisException("Невалидный номер телефона", ErrorType.Validation);
             var role = string.IsNullOrWhiteSpace(request.Role) ? "reader" : request.Role;
 
             var isPhoneAssignedToRole = await _userManager.Users.Where(u => u.PhoneNumber == request.PhoneNumber)

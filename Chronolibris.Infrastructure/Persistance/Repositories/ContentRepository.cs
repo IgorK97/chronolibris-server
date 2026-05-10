@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 

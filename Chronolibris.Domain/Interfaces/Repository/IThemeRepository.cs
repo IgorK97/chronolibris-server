@@ -1,7 +1,4 @@
 ﻿using Chronolibris.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chronolibris.Domain.Interfaces.Repository
 {

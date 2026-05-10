@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Chronolibris.Application.Handlers.Books;
-using Chronolibris.Application.Models;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Models;
 using ChronolibrisWeb.InputModels;

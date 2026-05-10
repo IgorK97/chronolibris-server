@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Domain.Entities;
+﻿using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;
 using Chronolibris.Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
