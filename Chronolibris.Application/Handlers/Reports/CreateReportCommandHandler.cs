@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Chronolibris.Application.Interfaces;
+﻿using Chronolibris.Application.Interfaces;
 using Chronolibris.Application.Requests.Reports;
 using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Options;
-using FluentValidation;
 using MediatR;
 
 namespace Chronolibris.Application.Handlers.Reports

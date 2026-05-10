@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Requests.Search;
+﻿using Chronolibris.Application.Requests.Search;
 using Chronolibris.Domain.Interfaces.Repository;
-using Chronolibris.Domain.Models;
 using Chronolibris.Domain.Models.Search;
 using MediatR;
 

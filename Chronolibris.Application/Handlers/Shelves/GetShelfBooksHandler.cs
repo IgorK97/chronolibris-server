@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chronolibris.Application.Models;
-using Chronolibris.Application.Requests.Shelves;
+﻿using Chronolibris.Application.Requests.Shelves;
 using Chronolibris.Domain.Exceptions;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Models;

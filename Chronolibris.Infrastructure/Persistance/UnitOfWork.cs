@@ -25,11 +25,12 @@ namespace Chronolibris.Infrastructure.Persistance
         public IBookFileRepository BookFiles { get; }
         public IReviewRepository Reviews { get; }
         public ICommentRepository Comments { get; }
+        public IThemeRepository Themes { get; }
         public ISelectionsRepository Selections { get; }
         public IShelfRepository Shelves { get; }
+        public IContentRepository Contents { get; }
         public IGenericRepository<Person> Persons { get; }
         public IGenericRepository<Language> Languages { get; }
-        public IGenericRepository<Content> Contents { get; }
         public IGenericRepository<Country> Countries { get; }
         public IGenericRepository<Format> Formats { get; }
         public IGenericRepository<Publisher> Publishers { get; }
@@ -38,7 +39,7 @@ namespace Chronolibris.Infrastructure.Persistance
 
         public UnitOfWork(ApplicationDbContext context, IBookRepository bookRepository,
             IBookmarkRepository bookmarks,
-            IGenericRepository<Person> personRepository, IGenericRepository<Content> contentRepository,
+            IGenericRepository<Person> personRepository, IContentRepository contentRepository,
             IGenericRepository<Publisher> publisherRepository,
             IReviewReactionsRepository reviewsRatings,
             IReviewRepository reviewRepository,
@@ -47,7 +48,7 @@ namespace Chronolibris.Infrastructure.Persistance
             ICommentReactionsRepository commentReactions, IGenericRepository<Language> languages,
             IGenericRepository<Country> countries, IGenericRepository<Format> formats,
             IModerationTasksRepository moderationTasks,
-            IBookFileRepository bookFiles, IReportRepository reports)
+            IBookFileRepository bookFiles, IReportRepository reports, IThemeRepository themes)
         {
             _context = context;
 
@@ -70,6 +71,7 @@ namespace Chronolibris.Infrastructure.Persistance
             BookFiles = bookFiles;
             Reports = reports;
             ModerationTasks = moderationTasks;
+            Themes = themes;
         }
         public async Task<int> SaveChangesAsync(CancellationToken ct)
         {
