@@ -2,7 +2,7 @@
 
 namespace Chronolibris.Domain.Interfaces.Repository
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         IBookRepository Books { get; }
         IBookmarkRepository Bookmarks { get; }

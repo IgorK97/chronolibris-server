@@ -24,7 +24,7 @@ namespace ChronolibrisWeb.Middleware
                     context.Request.Method,
                     context.Request.Path,
                     context.Request.QueryString,
-                    context.User.Identity?.Name ?? "anonymous");
+                    context.User.Identity?.Name ?? "Неавторизованный пользователь");
 
                 var sw = Stopwatch.StartNew();
                 await _next(context);
@@ -64,7 +64,5 @@ namespace ChronolibrisWeb.Middleware
                 });
             }
         }
-
-
     }
 }

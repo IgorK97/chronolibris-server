@@ -84,10 +84,6 @@ namespace Chronolibris.Infrastructure.Persistance
             var tx = await _context.Database.BeginTransactionAsync(token);
             return new EfTransaction(tx);
         }
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
     }
 
     public class EfTransaction : ITransaction

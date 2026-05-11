@@ -1,29 +1,28 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Hangfire;
-using Hangfire.PostgreSql;
+﻿//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.DependencyInjection;
+//using Hangfire;
+//using Hangfire.PostgreSql;
 
-namespace Chronolibris.Infrastructure.DataAccess.Hangfire
-{
-    public static class HangfireExtensions
-    {
-        public static IServiceCollection AddHangfireInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
-        {
-            services.AddHangfire(config => config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(c =>
-                    c.UseNpgsqlConnection(
-                        configuration.GetConnectionString("HangfireConnection")))
-                .WithJobExpirationTimeout(TimeSpan.FromDays(7))
-            );
+//namespace Chronolibris.Infrastructure.DataAccess.Hangfire
+//{
+//    public static class HangfireExtensions
+//    {
+//        public static IServiceCollection AddHangfireInfrastructure(
+//        this IServiceCollection services,
+//        IConfiguration configuration)
+//        {
+//            services.AddHangfire(config => config
+//                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+//                .UseSimpleAssemblyNameTypeSerializer()
+//                .UseRecommendedSerializerSettings()
+//                .UsePostgreSqlStorage(c =>
+//                    c.UseNpgsqlConnection(
+//                        configuration.GetConnectionString("HangfireConnection")))
+//                .WithJobExpirationTimeout(TimeSpan.FromDays(7))
+//            );
 
-            services.AddHangfireServer();
-
-            return services;
-        }
-    }
-}
+//            services.AddHangfireServer();
+//            return services;
+//        }
+//    }
+//}

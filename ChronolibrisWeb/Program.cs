@@ -7,7 +7,7 @@ using ChronolibrisWeb.Middleware;
 using ChronolibrisWeb.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+//using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -15,57 +15,54 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Error() // Уровень логирования
-    .WriteTo.Console()    // Оставляем вывод в консоль
+    .MinimumLevel.Error()
+    .WriteTo.Console()
     .WriteTo.File("logs/parsing_log_.txt",
-        rollingInterval: RollingInterval.Day, // Новый файл каждый день
-        retainedFileCountLimit: 30,            // Хранить логи за последние 7 дней
+        rollingInterval: RollingInterval.Day, //Новый файл каждый день
+        retainedFileCountLimit: 30,
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-// Очистка карты клеймов до настройки аутентификации
+//Очистка карты клеймов до настройки аутентификации
 //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-// CORS
-var allowAVDCORSPolicy = "_allowAVDCORSPolicy";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(allowAVDCORSPolicy,
-        policy =>
-        {
-            policy.WithOrigins(/*"http://localhost:5173", "http://localhost:45457",*/ "https://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        });
-});
+//var allowAVDCORSPolicy = "_allowAVDCORSPolicy";
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(allowAVDCORSPolicy,
+//        policy =>
+//        {
+//            policy.WithOrigins(/*"http://localhost:5173", "http://localhost:45457",*/ "https://localhost:5173")
+//            .AllowAnyHeader()
+//            .AllowAnyMethod()
+//            .AllowCredentials();
+//        });
+//});
 
-// Настройка логирования и уровней
+//Настройка логирования и уровней
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Настройка уровней логирования
+//Настройка уровней логирования
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
     .AddFilter("System", LogLevel.Warning)
     .AddFilter("Default", LogLevel.Information);
 
-// Инфраструктурные сервисы
 builder.Services.AddExceptionMapper();
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 builder.Services.AddIdentityRealization(builder.Configuration);
-//builder.Services.AddFileProviderInfrastructure(builder.Configuration);
 builder.Services.AddFileServices(builder.Configuration);
 builder.Services.AddFb2Converter(builder.Configuration);
 
 //builder.Services.AddHangfireInfrastructure(builder.Configuration);
 //GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 3 });
 
-// Конфигурация аутентификации с использованием JWT-токенов
+//Конфигурация аутентификации с использованием JWT-токенов
 builder.Services.AddAuthentication(options =>
 {
-    // Устанавливаем JWT как схему по умолчанию для всего
+    //Установка JWT как схему по умолчанию для всего
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -106,7 +103,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-// Авторизация
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
@@ -125,10 +121,9 @@ builder.Services.AddRateLimiter(options =>
 //    };
 //});
 
-
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
-    options.SuppressModelStateInvalidFilter = false; //автоматически прерывает выполнение при ошибке валидации
+    options.SuppressModelStateInvalidFilter = false; //автоматическое прерывание выполнения при ошибке валидации
     options.InvalidModelStateResponseFactory = context =>
     {
         var errors = context.ModelState.Values.SelectMany(v => v.Errors)
@@ -147,7 +142,7 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
     };
 });
 
-// NSwag (OpenAPI/Swagger)
+//NSwag (OpenAPI/Swagger)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(options =>
 {
@@ -165,29 +160,10 @@ builder.Services.AddOpenApiDocument(options =>
         new NSwag.Generation.Processors.Security.OperationSecurityScopeProcessor("Bearer"));
 });
 
-// HTTP Logging
+//HTTP Logging
 builder.Services.AddHttpLogging(logging =>
 {
     logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
-});
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    //время на получение заголовков запроса
-    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(15);
-
-    //Минимальная скорость передачи тела запроса (байт в секунду)
-    //Если клиент шлет данные медленнее 240 байт/сек дольше 5 секунд (GracePeriod),
-    //соединение будет разорвано
-    serverOptions.Limits.MinRequestBodyDataRate =
-        new MinDataRate(bytesPerSecond: 240, gracePeriod: TimeSpan.FromSeconds(5));
-
-    //То же самое для ответа сервера клиенту
-    serverOptions.Limits.MinResponseDataRate =
-        new MinDataRate(bytesPerSecond: 240, gracePeriod: TimeSpan.FromSeconds(5));
-
-    //Максимальный размер заголовков (тоже защита от переполнения памяти)
-    serverOptions.Limits.MaxRequestHeadersTotalSize = 32768; //32 KB
 });
 
 var app = builder.Build();
@@ -201,13 +177,13 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseHttpLogging();
-if(app.Environment.IsDevelopment())
-    app.UseCors(allowAVDCORSPolicy);
+//if(app.Environment.IsDevelopment())
+//    app.UseCors(allowAVDCORSPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseRequestTimeouts();фт
+//app.UseRequestTimeouts();
 app.UseRateLimiter();
 
 app.UseDefaultFiles();
@@ -234,7 +210,6 @@ app.UseOpenApi(options =>
 app.UseSwaggerUI();
 app.MapControllers();
 
-// Запуск проверки БД (миграций) при старте приложения
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
     try
@@ -244,7 +219,7 @@ app.Lifetime.ApplicationStarted.Register(async () =>
     catch (Exception ex)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Database seeding failed");
+        logger.LogError(ex, "Ошибка выполнения миграций");
     }
 });
 app.Run();

@@ -12,10 +12,12 @@ namespace ChronolibrisWeb.InputModels
     {
         [MinLength(1, ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500, ErrorMessage ="Максимальная длина названия - 500 символов")]
+        [Required(ErrorMessage ="Название книги отсутствует")]
         public string Title { get; init; } = string.Empty;
         //[Required(ErrorMessage = "Описание книги отсутствует")]
         [MaxLength(5000, ErrorMessage = "Максимальная длина описания - 5000 символов")]
         [MinLength(120, ErrorMessage = "Минимальная длина описания - 120 символов")]
+        [Required(ErrorMessage = "Описание книги отсутствует")]
         public string Description { get; init; } = string.Empty;
         //[Required(ErrorMessage = "Указание страны обязательно")]
         [Range(1, long.MaxValue, ErrorMessage = "Указание страны обязательно")]
@@ -51,6 +53,7 @@ namespace ChronolibrisWeb.InputModels
     {
         public long Id { get; set; }
         [Required(ErrorMessage = "Название книги отсутствует")]
+        [MinLength(1, ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500, ErrorMessage = "Максимальная длина названия - 500 символов")]
         public string Title { get; set; } = string.Empty;
         [Required(ErrorMessage = "Описание книги отсутствует")]

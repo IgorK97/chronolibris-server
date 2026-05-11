@@ -6,6 +6,7 @@ namespace ChronolibrisWeb.InputModels
         long ReasonTypeId,
         [MaxLength(2000)]
         [MinLength(20)]
+        [Required]
         string Description);
 
 }

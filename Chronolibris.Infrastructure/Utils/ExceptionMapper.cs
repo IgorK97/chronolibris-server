@@ -1,5 +1,4 @@
 ﻿using Chronolibris.Domain.Exceptions;
-using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Chronolibris.Infrastructure.Utils
@@ -10,14 +9,8 @@ namespace Chronolibris.Infrastructure.Utils
         {
             return exception switch
             {
+                //UniqueConstraintException //их как-то маппить нужно, потом доделаю
                 ChronolibrisException ex => (MapTypeToStatusCode(ex.ErrorType), "Ошибка", ex.Message),
-                CannotInsertNullException ex => (StatusCodes.Status400BadRequest, "Ошибка", "Некоторые обязательные данные не были указаны"),
-
-                //DbUpdateException dbEx when dbEx.InnerException?.Message.Contains("duplicate key") == true =>
-                    //UniqueConstraintException ex=>(StatusCodes.Status409Conflict, "Ошибка", FormatUniqueMessage(ex.Entries)),
-
-                TaskCanceledException => (StatusCodes.Status504GatewayTimeout, "Превышено время ожидания", "Превышено время ожидания"),
-                
                 _ => (StatusCodes.Status500InternalServerError, "Ошибка сервера", "Произошла непредвиденная ошибка")
             };
         }

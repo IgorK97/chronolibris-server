@@ -21,7 +21,6 @@ namespace ChronolibrisWeb.Controllers
         }
 
 
-
         [HttpPost]
         [Authorize(Roles = "reader")]
         [EnableRateLimiting("reports")]
