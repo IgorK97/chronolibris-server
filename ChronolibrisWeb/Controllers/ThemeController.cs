@@ -54,7 +54,6 @@ namespace ChronolibrisWeb.Controllers
         [HttpPost]
         public async Task<ActionResult<long>> Create([FromBody] CreateThemeInputModel request, CancellationToken cancellationToken)
         {
-
             var command = new CreateThemeCommand(request.Name, request.ParentThemeId);
             var id = await _mediator.Send(command, cancellationToken);
             return Ok(id);
@@ -65,8 +64,6 @@ namespace ChronolibrisWeb.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateThemeInputModel request, CancellationToken cancellationToken)
         {
-
-
             var command = new UpdateThemeCommand(id, request.Name, request.ParentThemeId);
             await _mediator.Send(command, cancellationToken);
             return NoContent();
@@ -77,7 +74,6 @@ namespace ChronolibrisWeb.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(long id, CancellationToken cancellationToken)
         {
-
             var command = new DeleteThemeCommand(id);
             await _mediator.Send(command, cancellationToken);
             return NoContent();

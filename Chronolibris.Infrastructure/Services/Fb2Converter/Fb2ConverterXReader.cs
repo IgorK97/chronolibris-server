@@ -38,11 +38,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             CancellationToken ct = default)
         {
             options ??= new ConversionOptions();
-            return await ConvertSeekableAsync(fb2Stream, bookId.ToString(), options, ct);
+            return await ProcessAsync(fb2Stream, bookId.ToString(), options, ct);
 
-            //Алгоритм двупроходный, поэтому поток должен быть таким, чтобы
-            //можно было дважды по нему пройтись.
-            //на всякий случай проверка, вдруг httpResponseStream
             //Stream workStream;
             //bool ownStream = false;
             //options ??= new ConversionOptions();
@@ -71,7 +68,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         }
 
 
-        private async Task<ConversionResult> ConvertSeekableAsync(
+        private async Task<ConversionResult> ProcessAsync(
             Stream stream, string bookId, ConversionOptions options, CancellationToken ct)
         {
             //первый проход - метаданные, сбор сносок (они в конце файла, но
@@ -142,8 +139,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         {
             BookMeta? meta = null;
             //идентификатор и значение (объект сноски или имя файла в хранилище)
-            var notes = new Dictionary<string, ParsedNote>(StringComparer.Ordinal); //сравнение по кодам символов посимвольно
-            var imageMap = new Dictionary<string, string>(StringComparer.Ordinal);
+            var notes = new Dictionary<string, ParsedNote>();
+            var imageMap = new Dictionary<string, string>();
 
             var tempBookId = bookId;
             int imageIndex = 1; //для уникальных имен в рамках данного файла книги
@@ -1025,10 +1022,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 "image/png" => ".png",
                 _ => ".jpg"
             };
-
-        //private static readonly Regex WhitespaceRegex = new Regex(@"\s+"); //регулярное выражение
-        ////верабльный литерал (игнорирование обратных слешей, чтобы не было \\)
-        ////пробел, переносы и табуляции
 
         private static readonly Regex MultipleNewlinesRegex = new Regex(@"\n+");
         private static readonly Regex MultipleSpacesRegex = new Regex(@"[ \t]+");

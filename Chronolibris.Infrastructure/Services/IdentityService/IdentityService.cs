@@ -58,12 +58,6 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 throw new ChronolibrisException("Номер телефона уже занят", ErrorType.Conflict);
             }
 
-            //var existingUser = await _userManager.Users
-            //    .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-
-            //if (existingUser != null)
-            //    throw new ChronolibrisException("Номер телефона уже занят", ErrorType.Conflict);
-
             var user = new User
             {
                 LastName = request.LastName,
@@ -86,18 +80,12 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
 
             await _userManager.AddToRoleAsync(user, role);
-
-            //var refreshToken = GenerateRefreshToken();
-            //user.RefreshToken = refreshToken;
-            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(365);
-           
             await _userManager.UpdateAsync(user);
             return new RegistrationResult
             {
                 Success = result.Succeeded,
                 UserId = user.Id,
                 Token = await GenerateJwtToken(user),
-                //RefreshToken = refreshToken,
                 Message = result.Succeeded ? null : result.Errors.Select(e => e.Description).FirstOrDefault()
             };
         
@@ -105,11 +93,6 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
         private async Task<string> GenerateJwtToken(User user)
         {
-
-            //string res1 = _config["Jwt:Issuer"];
-            //string res2 = _config["Jwt:Audience"];
-            //string res3 = _config["Jwt:Key"];
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -167,14 +150,7 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             if (!result.Succeeded)
                 throw new ChronolibrisException("Неверный логин или пароль", ErrorType.NotFound);
 
-
             string jwt = await GenerateJwtToken(user);
-            //string refresh = GenerateRefreshToken();
-
-            //user.RefreshToken = refresh;
-            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            //await _userManager.UpdateAsync(user);
-
             return new LoginResult { Success = true, Token = jwt };
         }
         public async Task<UserProfileResponse> UpdateUserProfileAsync(UpdateUserProfileCommand request)
@@ -190,8 +166,8 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
             user.UserName = request.UserName;
             user.PhoneNumber = request.PhoneNumber;
             user.Email = request.Email;
-            user.NormalizedEmail = request.Email?.ToUpperInvariant() ?? string.Empty;
-
+            user.NormalizedEmail = request.Email.ToUpperInvariant();
+            //потом проверить, может, сам обновляет
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -224,8 +200,6 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
             if (!changePasswordResult.Succeeded)
             {
-                //throw new ChronolibrisException("Пользователь не найден или неправильный пароль", ErrorType.NotFound);
-                //throw new ChronolibrisException($"Ошибка: {changePasswordResult.Errors.Select(e => e.Description).FirstOrDefault()}", ErrorType.Conflict);
                 throw new ChronolibrisException(string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)), ErrorType.Validation);
 
             }
@@ -233,12 +207,9 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
 
         public async Task<bool> IsUserActiveAsync(long userId)
         {
-            //var hasTx = dbContext.Database.CurrentTransaction != null;
-            //Console.WriteLine($"[IsUserActiveAsync] transaction active: {hasTx}");
             var user = await dbContext.Users
             .FromSqlRaw("SELECT * FROM users WHERE id = {0} FOR UPDATE", userId)
             .FirstOrDefaultAsync();
-            //var user = await _userManager.FindByIdAsync(userId.ToString());
             return user != null && !user.IsDeleted;
         }
     }

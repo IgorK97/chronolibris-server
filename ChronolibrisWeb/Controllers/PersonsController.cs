@@ -44,14 +44,10 @@ namespace ChronolibrisWeb.Controllers
             return Ok(id);
         }
 
-
-
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdatePersonInputModel request)
         {
-
-
             var command = new UpdatePersonCommand(
                 id,
                 request.Name,
@@ -63,7 +59,6 @@ namespace ChronolibrisWeb.Controllers
 
         }
 
-        //Можно ли вообще так писать?
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)

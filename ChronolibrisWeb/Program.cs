@@ -103,28 +103,8 @@ builder.Services.AddAuthentication(options =>
                 }
                 return Task.CompletedTask;
             }
-            //TODO: Реализовать черный список токенов (например, при выходе пользователя из системы) и проверять его здесь
-            //OnTokenValidated = context =>
-            //{
-            //    var jti = context.SecurityToken.Id;
-            //    var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
-
-            //    if (cache.TryGetValue(jti, out _))
-            //    {
-            //        context.Fail("Token is blacklisted");
-            //    }
-            //    return Task.CompletedTask;
-            //}
         };
     });
-
-//builder.Services.Configure<ForwardedHeadersOptions>(options =>
-//{
-//    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-
-//    options.KnownNetworks.Clear();
-//    options.KnownProxies.Clear();
-//});
 
 // Авторизация
 builder.Services.AddAuthorization(options =>
@@ -213,15 +193,6 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 var app = builder.Build();
 var configuration = app.Configuration;
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-//app.UseForwardedHeaders(new ForwardedHeadersOptions //если бы я использовал нгинкс, это было бы критично
-//{
-//    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-//    options.KnownNetworks.Clear();
-//    options.KnownProxies.Clear();
-//});
-//proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-//proxy_set_header X-Real-IP $remote_addr;
 
 //if (app.Environment.IsDevelopment())
 //{

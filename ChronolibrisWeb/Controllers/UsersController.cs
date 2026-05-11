@@ -36,7 +36,6 @@ namespace ChronolibrisWeb.Controllers
             };
 
             Response.Cookies.Append("token", token, cookieOptions);
-            //return StatusCode(StatusCodes.Status201Created);
             return Ok();
         }
 

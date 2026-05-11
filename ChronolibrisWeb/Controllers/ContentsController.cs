@@ -53,18 +53,6 @@ namespace ChronolibrisWeb.Controllers
             return Ok(tags);
         }
 
-        //[HttpGet("tags/search")]
-        //public async Task<ActionResult<List<TagDetails>>> SearchTags(
-        //[FromQuery] string searchTerm,
-        //[FromQuery] long? tagTypeId = null,
-        //[FromQuery] int limit = 5,
-        //CancellationToken cancellationToken = default)
-        //{
-        //    var query = new GetTagsQuery(searchTerm, tagTypeId, Math.Min(limit, 10));
-        //    var tags = await _mediator.Send(query, cancellationToken);
-        //    return Ok(tags);
-        //}
-
         [Authorize(Roles = "admin")]
         [HttpPost("{contentId}/tags/{tagId}")]
         public async Task<ActionResult> AddTagToContent(long contentId, long tagId, CancellationToken cancellationToken)
@@ -84,8 +72,6 @@ namespace ChronolibrisWeb.Controllers
 
             return NoContent();
         }
-
-
 
         [Authorize(Roles = "admin")]
         [HttpPost]
@@ -137,10 +123,6 @@ namespace ChronolibrisWeb.Controllers
         public async Task<ActionResult> LinkBookToContent(long contentId, long bookId,
             [FromBody] BookContentLinkInputModel request, CancellationToken cancellationToken)
         {
-            if (request.ContentId != contentId || request.BookId != bookId)
-                return BadRequest(new { message = "ID в пути и теле запроса не совпадают" });
-
-
             var command = new LinkBookToContentCommand(contentId, bookId);
             await _mediator.Send(command, cancellationToken);
             return NoContent();

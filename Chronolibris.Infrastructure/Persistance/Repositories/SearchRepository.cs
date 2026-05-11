@@ -32,7 +32,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 cursorClause = @"
                     WHERE (sub.best_similarity < {" + p +@"} 
                     OR (sub.best_similarity = {" + p + @"} AND sub.id > {" + (p+1).ToString() + @"})) 
-                    "; //почему можно без ту стринг писать?
+                    ";
 
             }
 
@@ -457,7 +457,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             List<object> parameters)
         {
             if(requiredTagIds.Count == 0)
-            {
+            { //добавить бы потом враиативность для фильтров, по типу проверки первый фильтр или нет
                 var plainSql = $"""
                     SELECT b.id AS id, 1.0 AS best_similarity
                     FROM books b
@@ -586,14 +586,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ) 
                     """);
             }
-            //потом здесь добавить логику-разветвление - 
-            //если пользователь указал несколько тегов, может, он ожидает, что
-            //будет не полное совпадение, а наиболее полное - 
-            //в таком случае либо чтобы было полное совпадение,
-            //либо частичное. Однако это поведение может
-            //быть реализовано пользователем обычной сменой тегов,
-            //поэтому дорабатывать только при необходимости стоит,
-            //на мой взгляд
+
             if (request.RequiredTagIds.Count > 0)
             {
                 foreach (var tagId in request.RequiredTagIds)
@@ -728,8 +721,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
             var ids = pageItems.Select(x => x.Id).ToList();
             var itemsDict = await ProjectByIdsAsync(ids, userId, token);
-            var items = ids.Where(ids => itemsDict.ContainsKey(ids))
-                .Select(ids => itemsDict[ids]).ToList();
+            var items = ids.Where(idx => itemsDict.ContainsKey(idx))
+                .Select(idx => itemsDict[idx]).ToList(); //по ids, чтобы сохранить порядок и проверить,
+            //была ли она возвращена вторым запросом, эта книга
             var last = pageItems.Last();
             return new PagedBooks<BookSearchResult>
             {
@@ -750,9 +744,9 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .Select(p => new PersonSuggestionDto { Id = (int)p.Id, Name = p.Name })
                 .ToListAsync(ct);
         }
-
+        //чтобы по илентификаторам получить названия тегов (для перехода по урлу, например)
         public async Task<List<TagSuggestionDto>> GetTagsByIdsAsync(
-    List<long> ids, CancellationToken ct = default)
+            List<long> ids, CancellationToken ct = default)
         {
             var tags = await _context.Tags
                 .AsNoTracking()

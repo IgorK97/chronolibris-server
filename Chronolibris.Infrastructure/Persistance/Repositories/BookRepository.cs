@@ -29,7 +29,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<BookDetails?> GetBookWithRelationsAsync(long bookId, long userId, bool mode, CancellationToken token)
         {
             var raw = await _context.Books
-                .Where(b => b.Id == bookId).AsSplitQuery()
+                .Where(b => b.Id == bookId)
                 .Select(b => new
                 {
                     b.Id,

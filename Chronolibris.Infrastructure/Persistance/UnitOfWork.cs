@@ -84,10 +84,13 @@ namespace Chronolibris.Infrastructure.Persistance
             var tx = await _context.Database.BeginTransactionAsync(token);
             return new EfTransaction(tx);
         }
-        public void Dispose() => _context.Dispose();
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 
-    public sealed class EfTransaction : ITransaction
+    public class EfTransaction : ITransaction
     {
         private readonly IDbContextTransaction _inner;
         public EfTransaction(IDbContextTransaction inner)
@@ -105,6 +108,9 @@ namespace Chronolibris.Infrastructure.Persistance
             return _inner.RollbackAsync(cancellationToken);
         }
 
-        public ValueTask DisposeAsync() => _inner.DisposeAsync();
+        public ValueTask DisposeAsync()
+        {
+            return _inner.DisposeAsync();
+        }
     }
 }

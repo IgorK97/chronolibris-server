@@ -143,7 +143,9 @@ namespace Chronolibris.Infrastructure.Services.Files
             var items = _minioClient.ListObjectsEnumAsync(new ListObjectsArgs()
                 .WithBucket(bucket)
                 .WithPrefix(prefix)
-                .WithRecursive(true), ct);
+                .WithRecursive(true), ct); //возвращает IAsyncEnumerable<T>,
+            //нельзя получить все сразу, данные приходят порционно,
+            //ничего не накапливает, всегда один элемент только
             await foreach(var item in items)
             {
                 await DeleteFileAsync(bucket, item.Key, ct);
@@ -156,12 +158,15 @@ namespace Chronolibris.Infrastructure.Services.Files
             if (!found) await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucket), ct);
         }
 
-        private static string ResolveContentType(string ext) => ext.ToLowerInvariant() switch
+        private static string ResolveContentType(string ext)
         {
-            ".fb2" => "application/xml", //на что это влияет?
-            ".fb2.zip" => "application/zip",
-            ".epub" => "application/epub+zip",
-            _ => "application/octet-stream"
-        };
+            return ext.ToLowerInvariant() switch
+            {
+                ".fb2" => "application/xml",
+                ".fb2.zip" => "application/zip",
+                ".epub" => "application/epub+zip",
+                _ => "application/octet-stream"
+            };
+        }
     }
 }

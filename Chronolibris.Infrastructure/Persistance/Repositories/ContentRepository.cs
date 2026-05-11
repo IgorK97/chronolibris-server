@@ -256,10 +256,10 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         //    _context.Contents.Update(content);
         //}
 
-        //public void Delete(Content content)
-        //{
-        //    _context.Contents.Remove(content);
-        //}
+        public void Delete(Content content)
+        {
+            _context.Contents.Remove(content);
+        }
 
         public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {

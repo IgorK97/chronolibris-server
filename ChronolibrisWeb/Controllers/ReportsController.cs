@@ -109,7 +109,7 @@ namespace ChronolibrisWeb.Controllers
             return Ok(result);
         }
 
-        [HttpPut("tasks/{id:long}/resolution")]
+        [HttpPut("tasks/{id}/resolution")]
         [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<TaskResolutionResponse>> ResolveTask(
             long id, [FromBody] TaskResolutionRequest request)

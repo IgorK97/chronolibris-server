@@ -30,7 +30,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
 
         public async Task<long?> TryCreateActiveTaskAsync(ModerationTask task, CancellationToken token) //написал так, тогда, если такая запись уже есть,
-            //то будет не исключение, а просто 0 (null) вернет
+            //то будет не исключение, а просто 0 вернет
         {
             var sql = @"
                 INSERT INTO moderation_tasks 
