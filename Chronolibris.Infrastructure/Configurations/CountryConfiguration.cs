@@ -12,7 +12,7 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.ToTable(t => t.HasCheckConstraint(
                 "ck_countries_name_not_empty",
                 "LENGTH(TRIM(name))>0"));
-            
+
             builder.HasData(
                 new Country { Id = 1, Name = "Россия" },
                 new Country { Id = 2, Name = "СССР" },

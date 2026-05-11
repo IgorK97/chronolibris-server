@@ -8,13 +8,13 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<long>> builder)
         {
-            builder.HasData(
-                new IdentityUserRole<long>
-                {
-                    UserId = 1, 
-                    RoleId = 1  
-                }
-            );
+            //builder.HasData(
+            //    new IdentityUserRole<long>
+            //    {
+            //        UserId = 1, 
+            //        RoleId = 1  
+            //    }
+            //);
         }
     }
 }

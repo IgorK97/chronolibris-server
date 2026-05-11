@@ -17,7 +17,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
             builder.HasOne(t => t.RelationType)
                 .WithMany(t => t.Tags)
                 .HasForeignKey(t => t.RelationTypeId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
             builder.ToTable(t => t.HasCheckConstraint(

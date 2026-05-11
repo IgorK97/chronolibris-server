@@ -8,7 +8,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<ContentType> builder)
         {
-            builder.Property(ct => ct.Nature);
+            //builder.Property(ct => ct.Nature);
                 //.HasConversion<string>()
                 //.HasMaxLength(50);
 

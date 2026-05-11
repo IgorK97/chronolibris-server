@@ -24,7 +24,8 @@ namespace Chronolibris.Infrastructure.Configurations
                    .HasPrincipalKey(u => u.Id);
 
             builder.HasIndex(r => new { r.UserId, r.BookId })
-               .IsUnique().HasFilter("\"review_status_id\" != 4"); ;
+               .IsUnique().HasFilter("is_deleted = false");
+               //.HasFilter("\"review_status_id\" != 4");
         }
     }
 }

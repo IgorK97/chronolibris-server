@@ -15,7 +15,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     "title ~ '[[:alnum:]]'");
 
                 t.HasCheckConstraint("CK_contents_description_min_length",
-                    "LENGTH(description)>=120");
+                    "LENGTH(TRIM(description))>=120");
 
                 t.HasCheckConstraint("CK_contents_years",
                     "(year_from is null AND year_to is null) " +

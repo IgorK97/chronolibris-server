@@ -8,6 +8,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Format> builder)
         {
+            builder.ToTable(t =>
+            {
+                t.HasCheckConstraint("ck_formats_name_clean",
+                    "name = LOWER(TRIM(name)) AND LENGTH(TRIM(name)) > 0");
+            });
+
+            builder.HasIndex(f => f.Name).IsUnique();
+
+
             builder.HasData(
                 new Format
                 {

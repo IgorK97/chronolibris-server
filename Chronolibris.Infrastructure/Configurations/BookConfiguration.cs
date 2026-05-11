@@ -26,7 +26,7 @@ namespace Chronolibris.Infrastructure.Configurations
 
                 t.HasCheckConstraint(
                     "CK_books_description_min_length",
-                    "LENGTH(description) >= 120");
+                    "LENGTH(TRIM(description)) >= 120");
 
                 t.HasCheckConstraint(
                     "CK_books_year_range",

@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511132209_AddChecksAndUniques")]
+    partial class AddChecksAndUniques
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1011,7 +1014,7 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.ToTable("languages", null, t =>
                         {
-                            t.HasCheckConstraint("ck_languages_name_not_empty", "LENGTH(TRIM(name))>0");
+                            t.HasCheckConstraint("ck_languages_name_not_empty", "name = LENGTH(TRIM(name))>0");
                         });
 
                     b.HasData(

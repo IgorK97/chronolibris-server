@@ -31,8 +31,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasIndex(c => new { c.BookId, c.CreatedAt });
-            builder.HasIndex(c => c.ParentCommentId);
-            //builder.HasIndex(c => c.UserId);
         }
     }
 }

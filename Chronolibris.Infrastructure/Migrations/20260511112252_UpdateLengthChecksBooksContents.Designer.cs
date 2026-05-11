@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511112252_UpdateLengthChecksBooksContents")]
+    partial class UpdateLengthChecksBooksContents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -969,14 +972,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_formats");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_formats_name");
-
-                    b.ToTable("formats", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_formats_name_clean", "name = LOWER(TRIM(name)) AND LENGTH(TRIM(name)) > 0");
-                        });
+                    b.ToTable("formats", (string)null);
 
                     b.HasData(
                         new
@@ -1577,7 +1573,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasIndex("UserId", "BookId")
                         .IsUnique()
                         .HasDatabaseName("ix_reviews_user_id_book_id")
-                        .HasFilter("is_deleted = false");
+                        .HasFilter("\"review_status_id\" != 4");
 
                     b.ToTable("reviews", null, t =>
                         {
@@ -2333,6 +2329,13 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasDatabaseName("ix_user_role_role_id");
 
                     b.ToTable("user_role", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1L,
+                            RoleId = 1L
+                        });
                 });
 
             modelBuilder.Entity("BookSelection", b =>
@@ -2779,7 +2782,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasOne("Chronolibris.Domain.Entities.TagRelationType", "RelationType")
                         .WithMany("Tags")
                         .HasForeignKey("RelationTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_tags_tag_relation_type_relation_type_id");
 
                     b.HasOne("Chronolibris.Domain.Entities.TagType", "TagType")
