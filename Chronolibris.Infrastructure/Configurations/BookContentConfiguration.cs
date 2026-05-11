@@ -9,19 +9,6 @@ namespace Chronolibris.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<BookContent> builder)
         {
 
-            //        modelBuilder.Entity<BookContent>()
-            //.HasKey(bc => new { bc.BookId, bc.ContentId });
-
-            //        modelBuilder.Entity<BookContent>()
-            //            .HasOne(bc => bc.Book)
-            //            .WithMany(b => b.BookContents)
-            //            .HasForeignKey(bc => bc.BookId);
-
-            //        modelBuilder.Entity<BookContent>()
-            //            .HasOne(bc => bc.Content)
-            //            .WithMany(c => c.BookContents)
-            //            .HasForeignKey(bc => bc.ContentId);
-
             builder
             .HasKey(bc => new { bc.BookId, bc.ContentId });
 

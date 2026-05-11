@@ -14,11 +14,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasForeignKey(mt=>mt.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //builder.HasOne(mt => mt.ReasonType)
-            //    .WithMany(s => s.ModerationTasks)
-            //    .HasForeignKey(mt => mt.ReasonTypeId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasOne(mt=>mt.TargetType)
                 .WithMany(rtt=>rtt.ModerationTasks)
                 .HasForeignKey(mt=>mt.TargetTypeId)

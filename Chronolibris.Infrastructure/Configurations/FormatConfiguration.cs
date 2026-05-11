@@ -19,16 +19,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                     Id = 2,
                     Name = "epub"
                 }
-                //new Format
-                //{
-                //    Id = 3,
-                //    Name = "pdf"
-                //},
-                //new Format 
-                //{ 
-                //    Id=4,
-                //    Name="txt"
-                //}
             );
         }
     }

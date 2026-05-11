@@ -30,13 +30,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(r => r.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            //builder.ToTable(r => {
-            //    r.HasCheckConstraint("ck_report_description_min_length",
-            //        "LENGTH(TRIM(description))>=20");
-            //});
-
-
         }
     }
 }

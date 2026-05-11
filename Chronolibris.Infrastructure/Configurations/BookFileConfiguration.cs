@@ -40,7 +40,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
             ////builder
             ////    .ToTable(t => t.HasCheckConstraint("ck_book_files_readable_format",
-            ////        "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)")); //если файл читаемый в читалке, то формат всегда - 1, то есть фб2
+            ////        "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)"));
 
             //builder
             //    .HasIndex(bf => new { bf.BookId, bf.FormatId })

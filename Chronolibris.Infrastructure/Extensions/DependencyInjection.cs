@@ -45,7 +45,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
 
             var dataSource = dataSourceBuilder.Build();
 
-            // Регистрация DbContext для PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(dataSource);
@@ -69,7 +68,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             });
 
 
-            // Регистрация обобщенных репозиториев
             services.AddScoped<IGenericRepository<Content>, GenericRepository<Content>>();
             services.AddScoped<IGenericRepository<Person>, GenericRepository<Person>>();
             services.AddScoped<IGenericRepository<Publisher>, GenericRepository<Publisher>>();
@@ -83,7 +81,6 @@ namespace Chronolibris.Infrastructure.DependencyInjection
             services.AddScoped<IGenericRepository<Report>,  GenericRepository<Report>>();
             services.AddScoped<IGenericRepository<ModerationTask>, GenericRepository<ModerationTask>>();
 
-            // Регистрация репозиториев
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookmarkRepository, BookmarkRepository>();
             services.AddScoped<IReviewReactionsRepository,  ReviewReactionsRepository>();

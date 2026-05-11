@@ -33,7 +33,7 @@ namespace Chronolibris.Infrastructure.Configurations
                     "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
             });
 
-            builder.HasMany(b => b.Shelves) //уточнить, точно нельзя обойтись и по дефолту не сможет сконфигурировать или нет
+            builder.HasMany(b => b.Shelves)
                 .WithMany(s => s.Books)
                 .UsingEntity<BookShelf>(
                     l => l.HasOne(bs => bs.Shelf)

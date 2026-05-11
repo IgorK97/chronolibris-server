@@ -23,15 +23,8 @@ namespace Chronolibris.Infrastructure.Configurations
                    .HasForeignKey(b => b.UserId)
                    .HasPrincipalKey(u => u.Id);
 
-            //builder.HasOne<ReviewStatus>(r => r.ReviewStatus)
-            //   .WithMany(rs => rs.Reviews)
-            //   .HasForeignKey(b => b.ReviewStatusId)
-            //   .HasPrincipalKey(u => u.Id);
-
             builder.HasIndex(r => new { r.UserId, r.BookId })
                .IsUnique().HasFilter("\"review_status_id\" != 4"); ;
-
-            //builder.HasCheckConstraint("CK_Review_Rating", "[Score] >=0.0 AND [Score]<=5.0");
         }
     }
 }

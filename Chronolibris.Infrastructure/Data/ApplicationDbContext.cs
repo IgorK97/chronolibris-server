@@ -74,10 +74,6 @@ namespace Chronolibris.Infrastructure.Data
             //modelBuilder.Entity<IdentityRoleClaim<long>>().ToTable("role_claims");
             //modelBuilder.Entity<IdentityUserToken<long>>().ToTable("user_tokens");
 
-            //modelBuilder.Entity<TokenBlacklist>()
-            //    .HasIndex(t => t.Expiry)
-            //    .HasDatabaseName("IX_TokenBlacklist_Expiry");
-
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         }
