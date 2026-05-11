@@ -162,10 +162,11 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
         }
 
-        public override async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            return await _context.Books.ToListAsync(cancellationToken);
-        }
+        //public override async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.Books.ToListAsync(cancellationToken); //или может вообще исключение выбрасывать, если кто-то попытается
+        //сразу все книги загрузить
+        //}
 
         public async Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilter, CancellationToken cancellationToken = default)
         {
@@ -188,21 +189,21 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             }
 
 
-            await _set.AddAsync(book, cancellationToken);
+            await _context.Books.AddAsync(book, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return book.Id;
         }
 
-        public void Update(Book book)
-        {
-            _set.Update(book);
-        }
+        //public void Update(Book book)
+        //{
+        //    _context.Books.Update(book);
+        //}
 
-        public void Delete(Book book)
-        {
-            _set.Remove(book);
-        }
+        //public void Delete(Book book)
+        //{
+        //    _context.Books.Remove(book);
+        //}
         public void SyncParticipations(Book book , List<PersonRoleFilter> personFilters)
         {
             var desiredPairs = personFilters

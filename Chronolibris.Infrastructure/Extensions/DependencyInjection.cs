@@ -106,17 +106,13 @@ namespace Chronolibris.Infrastructure.DependencyInjection
         {
 
             services.Configure<BookStorageOptions>(configuration.GetSection("BookStorageOptions"));
-            var minioOpts = configuration.GetSection("MinioOptions").Get<MinioOptions>()!;
+            var minioOpts = configuration.GetSection("MinioOptions").Get<MinioOptions>();
 
             services.AddScoped<IMinioClient>(_ =>
                 new MinioClient()
                     .WithEndpoint(minioOpts.Endpoint)
                     .WithCredentials(minioOpts.AccessKey, minioOpts.SecretKey)
                     .WithSSL(minioOpts.UseSSL)
-                    //.WithHttpClient(new HttpClient(new HttpClientHandler
-                    //{
-                    //    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-                    //}))
                     .Build());
             services.AddScoped<IStorageService, StorageService>();
             return services;

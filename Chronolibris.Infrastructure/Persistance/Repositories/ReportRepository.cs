@@ -21,8 +21,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .ExecuteUpdateAsync(s => s.SetProperty(r => r.ModerationTaskId, taskId), token);
         }
 
-       
-
         public async Task<Report?> GetLastUserReport(long UserId, long TargetTypeId, long TargetId, long ReasonTypeId, CancellationToken token = default)
         {
             return await _context.Reports.Include(r => r.ModerationTask)
@@ -70,7 +68,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .GroupBy(r => new { r.TargetId, r.TargetTypeId })
                 .Select(r=>new ReportShortDto
                 {
-                    //Здесь нужно наверное это убрать и написать просто каунт, нет?
                      Count = r.Count(),
                      FirstReportDate = r.Min(r => r.CreatedAt),
                      LastReportDate = r.Max(r => r.CreatedAt),
@@ -84,7 +81,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     //ReasonTypeId = r.Select(r=>r.ReasonTypeId).FirstOrDefault(),
                     //TargetId = r.Select(r=>r.TargetId).FirstOrDefault(),
                     //TargetTypeId = r.Select(r=>r.TargetTypeId).FirstOrDefault(),
-                    //Как исправить разыменование пустой ссылки?
                     TaskCreatedAt = r.Select(r =>  (r.ModerationTask == null)? (DateTime?) null:r.ModerationTask.StartedAt).FirstOrDefault(),
                      TaskResolvedAt = r.Select(r=> (r.ModerationTask == null) ? (DateTime?)null : r.ModerationTask.ResolvedAt).FirstOrDefault(),
                      TaskStatusId = r.Select(r=> (r.ModerationTask == null) ? (long?)null : r.ModerationTask.StatusId).FirstOrDefault(),
@@ -161,8 +157,6 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             IQueryable<Report> query = _context.Reports
                 .AsNoTracking().Where(r=>r.TargetId==TargetId && r.TargetTypeId==TargetTypeId
                 && r.ReasonTypeId==ReportTypeId);
-
-
 
             if (LastReportId != null)
             {

@@ -13,7 +13,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
     public class SelectionsRepository : GenericRepository<Selection>, ISelectionsRepository
     {
-        //private readonly ApplicationDbContext _context;
 
         public SelectionsRepository(ApplicationDbContext context) : base(context) { }
 
@@ -129,7 +128,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
 
                     Authors = b.BookContents
                         .SelectMany(bc => bc.Content.Participations
-                        .Where(p => p.PersonRoleId == (Int64) PersonRoles.Author)
+                        .Where(p => p.PersonRoleId == 1)
                             .Select(p => p.Person.Name))
                         .Distinct()
                         .ToList()

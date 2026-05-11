@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 {
-    public class ModerationTasksRepository : GenericRepository<ModerationTask>, IModerationTasksRepository //Почему именно такой порядок
-        //нашел ответ - базовый класс один, сначала он, потом уже все интерфейсы
+    public class ModerationTasksRepository : GenericRepository<ModerationTask>, IModerationTasksRepository
     {
         public ModerationTasksRepository(ApplicationDbContext context) : base(context)
         {
@@ -30,7 +29,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
             ).FirstOrDefaultAsync(token);
         }
 
-        public async Task<long?> TryCreateActiveTaskAsync(ModerationTask task, CancellationToken token)
+        public async Task<long?> TryCreateActiveTaskAsync(ModerationTask task, CancellationToken token) //написал так, тогда, если такая запись уже есть,
+            //то будет не исключение, а просто 0 (null) вернет
         {
             var sql = @"
                 INSERT INTO moderation_tasks 

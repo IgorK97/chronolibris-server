@@ -20,15 +20,15 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             {
                 await _context.Bookmarks.AddAsync(entity, token);
                 await _context.SaveChangesAsync(); //потом вынести отсюда и сделать глобальный обработчик - но тогда потребуется глобальный обрабочтик ошибок сделать корректным,
-                //чтобы мог отделять по сущностям
+                //чтобы мог отделять по сущностям или ещё как-то
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
             {
                 switch (pgEx.SqlState)
                 {
-                    case "23505": // Unique Violation
+                    case "23505":
                         throw new ChronolibrisException("Закладка с такой позицией уже существует", ErrorType.Conflict);
-                    case "23503": // Foreign Key Violation
+                    case "23503": //внешний ключ
                         throw new ChronolibrisException("Файл книги был удален", ErrorType.NotFound);
                     default:
                         throw;

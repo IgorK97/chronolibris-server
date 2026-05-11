@@ -184,14 +184,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         {
             var query = _context.Contents
                 .AsNoTracking();
-                //.Include(c => c.Country)
-                //.Include(c => c.Language)
-                //.Include(c => c.ContentType)
-                //.Include(c => c.Themes)
-                //.Include(c => c.Participations)
-                //    .ThenInclude(p => p.Person)
-                //.Include(c => c.Tags)
-                //.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchQuery))
             {
@@ -264,10 +256,10 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
         //    _context.Contents.Update(content);
         //}
 
-        public void Delete(Content content)
-        {
-            _context.Contents.Remove(content);
-        }
+        //public void Delete(Content content)
+        //{
+        //    _context.Contents.Remove(content);
+        //}
 
         public async Task LinkContentToBookAsync(long contentId, long bookId, CancellationToken cancellationToken = default)
         {
@@ -288,7 +280,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 {
                     throw new ChronolibrisException("Книга или подборка не найдена", ErrorType.NotFound);
                 }
-                if (pgEx.SqlState == "23505")
+                if (pgEx.SqlState == "23505") //если уже привязано, ничего не вывожу
                     return;
                 throw;
             }
@@ -303,6 +295,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             {
                 _context.Set<BookContent>().Remove(bookContent);
             }
+            await _context.SaveChangesAsync();
         }
 
         public void SyncThemes(Content content, List<long> newThemeIds)
@@ -314,7 +307,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             foreach (var theme in toRemove)
                 content.Themes.Remove(theme);
 
-            // (Stubs) - заглушки
             var currentIds = content.Themes.Select(t => t.Id).ToHashSet();
             foreach (var themeId in newThemeIds.Where(id => !currentIds.Contains(id)))
             {
@@ -336,10 +328,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 //У меня нет промежуточной сущности, но если бы была,
                 //то можно было бы использовать ее по аналогии с персоналиями - тогда
                 //такой проблемы бы не возникло
-
-                //var themeStub = new Theme { Id = themeId };
-                //_context.Entry(themeStub).State = EntityState.Unchanged;
-                //content.Themes.Add(themeStub);
             }
         }
 

@@ -67,6 +67,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ErrorType.Conflict);
                 if(pg.SqlState=="P0001")
                     throw new ChronolibrisException(pg.Message, ErrorType.Conflict);
+                throw;
             }
         }
 

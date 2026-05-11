@@ -13,9 +13,4 @@
         public string PublicImagesBucket { get; set; } = "images";
         public string CoversBucket { get; set; } = "covers";
     }
-
-    public sealed class UploadStorageOptions
-    {
-        public string UploadsBucket { get; set; } = "pcovers";
-    }
 }
