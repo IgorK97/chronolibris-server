@@ -8,9 +8,10 @@
 
         Task<Stream?> ReadBookSourceAsync(string bookId, string extension, CancellationToken ct = default);
 
-        //Обложки книг
+        //Обложки книг и картинки
         Task SaveCoverAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default);
         Task SaveImageAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default);
+        Task<Stream?> ReadImageAsync(string bookId, string fileName, CancellationToken ct = default);
 
         //Фрагменты книг (сохранение, чтение, проверка на существование)
         Task SaveChunkAsync(string bookId, string fileName, string content, bool isToc = false, CancellationToken ct = default);

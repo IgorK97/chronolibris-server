@@ -47,6 +47,11 @@ namespace Chronolibris.Infrastructure.Services.Files
             await UploadAsync(_bookOpts.PublicImagesBucket, $"{bookId}/{fileName}", data, contentType, ct);
         }
 
+        public Task<Stream?> ReadImageAsync(string bookId, string fileName, CancellationToken ct = default)
+        {
+            return ReadAsync(_bookOpts.PublicImagesBucket, $"{bookId}/{fileName}", ct);
+        }
+
         public async Task SaveChunkAsync(string bookId, string fileName, string content, bool isToc = false, CancellationToken ct = default)
         {
             var bytes = Encoding.UTF8.GetBytes(content);

@@ -133,5 +133,25 @@ namespace ChronolibrisWeb.Controllers
             return Content(json, "application/json; charset=utf-8");
 
         }
+
+        [HttpGet("images/{bookfileId}/{fileName}")]
+        public async Task<ActionResult> GetImage(long bookFileId, string fileName, CancellationToken ct)
+        {
+            var stream = await _mediator.Send(
+                new GetBookImageQuery(bookFileId, fileName), ct);
+
+            if (stream is null)
+                return NotFound();
+
+            var ext = Path.GetExtension(fileName).ToLowerInvariant();
+            var contentType = ext switch
+            {
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                _ => "application/octet-stream"
+            };
+
+            return File(stream, contentType);
+        }
     }
 }
