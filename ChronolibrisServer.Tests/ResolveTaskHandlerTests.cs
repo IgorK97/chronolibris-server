@@ -10,12 +10,12 @@ namespace ChronolibrisServer.Tests.Reports
 {
     public class ResolveTaskHandlerTests
     {
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-        private readonly Mock<IModerationTasksRepository> _taskRepoMock = new();
-        private readonly Mock<ICommentRepository> _commentRepoMock = new();
-        private readonly Mock<IReviewRepository> _reviewRepoMock = new();
-        private readonly Mock<IBookRepository> _bookRepoMock = new();
-        private readonly Mock<ITransaction> _transactionMock = new();
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IModerationTasksRepository> _taskRepoMock;
+        private readonly Mock<ICommentRepository> _commentRepoMock;
+        private readonly Mock<IReviewRepository> _reviewRepoMock;
+        private readonly Mock<IBookRepository> _bookRepoMock;
+        private readonly Mock<ITransaction> _transactionMock;
 
         private readonly long moderatorId = 1;
         private readonly long taskId = 1;
@@ -23,6 +23,12 @@ namespace ChronolibrisServer.Tests.Reports
 
         public ResolveTaskHandlerTests()
         {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _taskRepoMock = new Mock<IModerationTasksRepository>();
+            _commentRepoMock = new Mock<ICommentRepository>();
+            _transactionMock = new Mock<ITransaction>();
+            _reviewRepoMock = new Mock<IReviewRepository>();
+            _bookRepoMock = new Mock<IBookRepository>();
             SetupMocks();
         }
 
@@ -51,11 +57,14 @@ namespace ChronolibrisServer.Tests.Reports
                 .Returns(ValueTask.CompletedTask);
         }
 
-        private ResolveTaskCommand BuildCommand(bool resolution = true) =>
-            new ResolveTaskCommand(taskId, resolution, moderatorId, "Test");
+        private ResolveTaskCommand BuildCommand(bool resolution = true)
+        {
+            return new ResolveTaskCommand(taskId, resolution, moderatorId, "Test");
+        }
 
-        private ModerationTask BuildTask(long targetTypeId = 3) =>
-            new ModerationTask()
+        private ModerationTask BuildTask(long targetTypeId = 3)
+        {
+            return new ModerationTask()
             {
                 Id = taskId,
                 ModeratedBy = moderatorId,
@@ -63,9 +72,12 @@ namespace ChronolibrisServer.Tests.Reports
                 TargetId = targetId,
                 TargetTypeId = targetTypeId,
             };
+        }
 
-        private ResolveTaskCommandHandler CreateHandler() =>
-            new(_unitOfWorkMock.Object);
+        private ResolveTaskCommandHandler CreateHandler()
+        {
+            return new ResolveTaskCommandHandler(_unitOfWorkMock.Object);
+        }
 
         [Theory]
         [InlineData(1)]

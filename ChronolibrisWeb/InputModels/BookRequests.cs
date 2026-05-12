@@ -3,11 +3,7 @@ using Chronolibris.Domain.Models;
 
 namespace ChronolibrisWeb.InputModels
 {
-    public class YearRangeAttribute : RangeAttribute
-    {
-        public YearRangeAttribute(int minYear)
-            : base(minYear, DateTime.UtcNow.Year) { }
-    }
+
     public class CreateBookInputModel
     {
         [MinLength(1, ErrorMessage = "Название книги отсутствует")]
@@ -41,8 +37,6 @@ namespace ChronolibrisWeb.InputModels
         public string? Source { get; init; }
         //[Required(ErrorMessage = "Обложка обязательна")]
         public string? CoverBase64 { get; init; } = string.Empty;
-        //public string? CoverContentType { get; init; } = "image/jpeg";
-        //public string? CoverFileName { get; init; } = "cover";
         public bool IsAvailable { get; init; } = true;
         public bool IsReviewable { get; init; } = true;
         public bool HasHistoricalVersions { get; init; }
@@ -100,5 +94,23 @@ namespace ChronolibrisWeb.InputModels
         public List<PersonRoleFilter>? PersonFilters { get; set; }
         public List<int>? ThemeIds { get; set; }
         public bool DeleteCoverCommand { get; set; } = false;
+    }
+
+
+    public class YearRangeAttribute : ValidationAttribute
+    {
+        private readonly int _minYear;
+        public YearRangeAttribute(int minYear) => _minYear = minYear;
+
+        protected override ValidationResult? IsValid(object? value, ValidationContext ctx)
+        {
+            if (value is null) return ValidationResult.Success;
+            var year = (int)value;
+            var currentYear = DateTime.UtcNow.Year;
+            if (year < _minYear || year > currentYear)
+                return new ValidationResult(
+                    ErrorMessage ?? $"Год должен быть от {_minYear} до {currentYear}");
+            return ValidationResult.Success;
+        }
     }
 }

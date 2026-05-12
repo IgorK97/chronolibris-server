@@ -12,12 +12,12 @@ namespace ChronolibrisServer.Tests.Reports;
 
 public class CreateReportCommandHandlerTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IReportRepository> _reportRepoMock = new();
-    private readonly Mock<IModerationTasksRepository> _tasksRepoMock = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private readonly Mock<ITransaction> _transactionMock = new();
-    private readonly Mock<IReviewRepository> _reviewRepoMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IReportRepository> _reportRepoMock;
+    private readonly Mock<IModerationTasksRepository> _tasksRepoMock;
+    private readonly Mock<IIdentityService> _identityServiceMock;
+    private readonly Mock<ITransaction> _transactionMock;
+    private readonly Mock<IReviewRepository> _reviewRepoMock;
 
     private const int UserId = 1;
     private const int TargetId = 10;
@@ -26,13 +26,20 @@ public class CreateReportCommandHandlerTests
 
     private Report? savedReport;
 
-    private readonly ReportingOptions _defaultOptions = new()
-    {
-        ReportCooldown = TimeSpan.FromDays(1)
-    };
+    private readonly ReportingOptions _defaultOptions;
 
     public CreateReportCommandHandlerTests()
     {
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _reportRepoMock = new Mock<IReportRepository>();
+        _tasksRepoMock = new Mock<IModerationTasksRepository>();
+        _identityServiceMock = new Mock<IIdentityService>();
+        _transactionMock = new Mock<ITransaction>();
+        _reviewRepoMock = new Mock<IReviewRepository>();
+        _defaultOptions = new ReportingOptions()
+        {
+            ReportCooldown = TimeSpan.FromDays(1)
+        };
         SetupMocks();
     }
 
@@ -78,16 +85,21 @@ public class CreateReportCommandHandlerTests
             .Callback<Report, CancellationToken>((r, _) => savedReport = r);
     }
 
-    private void GivenActiveTask(ModerationTask? task) =>
+    private void GivenActiveTask(ModerationTask? task)
+    {
         _tasksRepoMock.Setup(r => r.GetActiveByTarget(TargetId, TargetTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
+    }
 
-    private void GivenLastReport(Report? report) =>
+    private void GivenLastReport(Report? report)
+    {
         _reportRepoMock.Setup(r => r.GetLastUserReport(UserId, TargetTypeId, TargetId, ReasonTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(report);
-
+    }
     private CreateReportCommandHandler CreateHandler()
-        => new(_unitOfWorkMock.Object, _defaultOptions, _identityServiceMock.Object);
+    {
+        return new CreateReportCommandHandler(_unitOfWorkMock.Object, _defaultOptions, _identityServiceMock.Object);
+    }
 
     private CreateReportCommand BuildCommand(
         long userId = UserId,
@@ -95,7 +107,9 @@ public class CreateReportCommandHandlerTests
         int targetTypeId = TargetTypeId,
         int reasonTypeId = ReasonTypeId,
         string description = "Спам")
-        => new(targetId, targetTypeId, reasonTypeId, description, userId);
+    {
+        return new CreateReportCommand(targetId, targetTypeId, reasonTypeId, description, userId);
+    }
 
     [Fact]
     public async Task Handle_WithActiveTask_SetsTaskIdOnReport()

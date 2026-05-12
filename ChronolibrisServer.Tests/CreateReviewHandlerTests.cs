@@ -12,32 +12,42 @@ namespace ChronolibrisServer.Tests.Reviews
 {
     public class CreateReviewHandlerTests
     {
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-        private readonly Mock<IReviewRepository> _reviewRepoMock = new();
-        private readonly Mock<IBookRepository> _bookRepoMock = new();
-        private readonly Mock<IIdentityService> _identityServiceMock = new();
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IReviewRepository> _reviewRepoMock;
+        private readonly Mock<IBookRepository> _bookRepoMock;
+        private readonly Mock<IIdentityService> _identityServiceMock;
 
         private readonly long userId = 1;
         private readonly long bookId = 1;
 
         public CreateReviewHandlerTests()
         {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _reviewRepoMock = new Mock<IReviewRepository>();
+            _bookRepoMock = new Mock<IBookRepository>();
+            _identityServiceMock = new Mock<IIdentityService>();
+
             _identityServiceMock.Setup(i => i.IsUserActiveAsync(It.IsAny<long>())).ReturnsAsync(true);
             _unitOfWorkMock.Setup(u => u.Reviews).Returns(_reviewRepoMock.Object);
             _unitOfWorkMock.Setup(u => u.Books).Returns(_bookRepoMock.Object);
         }
 
         private CreateReviewCommand BuildCommand(string? text = "Отличная книга",
-            short score = 5) => new(UserId : userId,
-            BookId : bookId,
-            ReviewText : text,
-            Score : score
-        );
+            short score = 5)
+        {
+            return new CreateReviewCommand(UserId: userId,
+                                            BookId: bookId,
+                                            ReviewText: text,
+                                            Score: score
+                                          );
+        }
 
-        private void SetupReview(ReviewDetailsWithVote? review) =>
-        _reviewRepoMock
-            .Setup(r => r.GetActiveByUserAndBookAsync(userId, bookId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(review);
+        private void SetupReview(ReviewDetailsWithVote? review)
+        {
+            _reviewRepoMock
+                .Setup(r => r.GetActiveByUserAndBookAsync(userId, bookId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(review);
+        }
 
         private void SetupReviewCreating(long assignedId)
         {
@@ -51,21 +61,28 @@ namespace ChronolibrisServer.Tests.Reviews
                 .Returns(Task.CompletedTask);
         }
 
-        private void SetupBook(bool isReviewable = true, bool isAvailable = true) =>
+        private void SetupBook(bool isReviewable = true, bool isAvailable = true)
+        {
             _bookRepoMock
                 .Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Book { Id = bookId,
-                    IsReviewable = isReviewable, 
+                .ReturnsAsync(new Book
+                {
+                    Id = bookId,
+                    IsReviewable = isReviewable,
                     IsAvailable = isAvailable,
-                Title="Title",
-                Description="Description",
-                CountryId=1,
-                LanguageId=1,
-                CreatedAt=DateTime.UtcNow,
-                CoverPath=""});
+                    Title = "Title",
+                    Description = "Description",
+                    CountryId = 1,
+                    LanguageId = 1,
+                    CreatedAt = DateTime.UtcNow,
+                    CoverPath = ""
+                });
+        }
 
-        private CreateReviewHandler CreateHandler() =>
-            new(_unitOfWorkMock.Object, _identityServiceMock.Object);
+        private CreateReviewHandler CreateHandler()
+        {
+            return new CreateReviewHandler(_unitOfWorkMock.Object, _identityServiceMock.Object);
+        }
 
         [Fact]
         public async Task Handle_ExistingReview_ThrowsConflict()

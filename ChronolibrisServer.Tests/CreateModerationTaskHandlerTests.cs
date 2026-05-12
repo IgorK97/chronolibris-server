@@ -10,21 +10,27 @@ namespace ChronolibrisServer.Tests.Reports
 {
     public class CreateModerationTaskHandlerTests
     {
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-        private readonly Mock<IModerationTasksRepository> _taskRepoMock = new();
-        private readonly Mock<IReportRepository> _reportRepoMock = new();
-        private readonly Mock<ITransaction> _transactionMock = new();
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IModerationTasksRepository> _taskRepoMock;
+        private readonly Mock<IReportRepository> _reportRepoMock;
+        private readonly Mock<ITransaction> _transactionMock;
 
         private readonly long targetId = 1;
         private readonly long moderatorId = 1;
 
         public CreateModerationTaskHandlerTests()
         {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _taskRepoMock = new Mock<IModerationTasksRepository>();
+            _reportRepoMock = new Mock<IReportRepository>();
+            _transactionMock = new Mock<ITransaction>();
+
             SetupMocks();
         }
 
         private void SetupMocks()
         {
+
             _unitOfWorkMock.Setup(u => u.ModerationTasks).Returns(_taskRepoMock.Object);
             _unitOfWorkMock.Setup(u => u.Reports).Returns(_reportRepoMock.Object);
 
@@ -45,15 +51,20 @@ namespace ChronolibrisServer.Tests.Reports
                 .Returns(ValueTask.CompletedTask);
         }
 
-        private CreateModerationTaskCommand BuildCommand() => new(
-            TargetId : targetId,
-            TargetTypeId : 1,
-            ModeratorId : moderatorId
-            //ReportTypeId : 2
-        );
+        private CreateModerationTaskCommand BuildCommand()
+        {
+            return new CreateModerationTaskCommand(
+                            TargetId: targetId,
+                            TargetTypeId: 1,
+                            ModeratorId: moderatorId
+                            //ReportTypeId : 2
+                        );
+        }
 
-        private CreateModerationTaskCommandHandler CreateHandler() =>
-            new(_unitOfWorkMock.Object);
+        private CreateModerationTaskCommandHandler CreateHandler()
+        {
+            return new CreateModerationTaskCommandHandler(_unitOfWorkMock.Object);
+        }
 
         [Fact]
         public async Task Handle_NoLastTask_CreatesTaskWithCheckNumberZero()

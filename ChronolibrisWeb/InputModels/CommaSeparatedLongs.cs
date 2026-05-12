@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-//Вместо этого подхода можно было либо вообще передавать как список изначально long, либо Fluent Validation использовать
 namespace ChronolibrisWeb.InputModels
 {
     public class CommaSeparatedLongs : ValidationAttribute

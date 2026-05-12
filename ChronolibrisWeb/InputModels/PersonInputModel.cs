@@ -8,7 +8,7 @@ namespace ChronolibrisWeb.InputModels
     {
         public List<long> ParsedIds => Ids.Split(',',
             StringSplitOptions.RemoveEmptyEntries)
-            .Select(long.Parse).ToList(); //либо можно написать StringToLongListConverter : TypeConverter
+            .Select(long.Parse).ToList();
     }
 
    
