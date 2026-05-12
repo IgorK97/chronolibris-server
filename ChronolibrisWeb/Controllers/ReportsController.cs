@@ -24,7 +24,6 @@ namespace ChronolibrisWeb.Controllers
         [HttpPost]
         [Authorize(Roles = "reader")]
         [EnableRateLimiting("reports")]
-        [RequestTimeout(milliseconds:5000)]
         public async Task<IActionResult> CreateReport([FromBody] CreateReportInputModel request, CancellationToken ct)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -37,7 +36,6 @@ namespace ChronolibrisWeb.Controllers
                 request.ReasonTypeId,
                 request.Description,
                 userId), ct);
-
            
 
             return Ok(result);
@@ -67,7 +65,7 @@ namespace ChronolibrisWeb.Controllers
             return Ok(result);
         }
 
-        [HttpGet("targets/{targetTypeId}/{targetId}")] //Что могла бы дать валидация типа здесь?
+        [HttpGet("targets/{targetTypeId}/{targetId}")]
         [Authorize(Roles = "admin, moderator")]
         public async Task<ActionResult<GetTargetInfoResponse>>
             GetTargetInfo(long targetTypeId, long targetId)

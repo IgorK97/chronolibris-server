@@ -41,14 +41,14 @@ builder.Host.UseSerilog();
 //        });
 //});
 
-//Настройка логирования и уровней
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+////Настройка логирования и уровней
+//builder.Logging.ClearProviders();
+//builder.Logging.AddConsole();
 
-//Настройка уровней логирования
-builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
-    .AddFilter("System", LogLevel.Warning)
-    .AddFilter("Default", LogLevel.Information);
+////Настройка уровней логирования
+//builder.Logging.AddFilter("Microsoft", LogLevel.Warning)
+//    .AddFilter("System", LogLevel.Warning)
+//    .AddFilter("Default", LogLevel.Information);
 
 builder.Services.AddExceptionMapper();
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
@@ -161,13 +161,18 @@ builder.Services.AddOpenApiDocument(options =>
 });
 
 //HTTP Logging
-builder.Services.AddHttpLogging(logging =>
-{
-    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
-});
+//builder.Services.AddHttpLogging(logging =>
+//{
+//    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+//});
+
+//сюда потом форвардед-фор
 
 var app = builder.Build();
 var configuration = app.Configuration;
+
+//сюда потом юз форвардедхедерс
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 //if (app.Environment.IsDevelopment())
@@ -176,7 +181,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 //}
 
 app.UseHttpsRedirection();
-app.UseHttpLogging();
+//app.UseHttpLogging();
 //if(app.Environment.IsDevelopment())
 //    app.UseCors(allowAVDCORSPolicy);
 
@@ -212,6 +217,7 @@ app.MapControllers();
 
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
+    //var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
     try
     {
         await DatabaseChecker.CheckDatabase(app.Services, configuration);

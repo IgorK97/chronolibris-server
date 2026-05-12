@@ -25,7 +25,15 @@ namespace ChronolibrisWeb.Utils
             };
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
-                var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                //запись должна упроститься при настройке конфиге форвардед опшионс
+
+                var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString()
+                                    ?? "unknown";
+
+                //var ipAddress = httpContext.Request.Headers["X-Forwarded-For"]
+                //                .FirstOrDefault()?.Split(',').FirstOrDefault()?.Trim()
+                //                ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                //                ?? "unknown";
 
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: ipAddress,
@@ -47,9 +55,22 @@ namespace ChronolibrisWeb.Utils
         {
             options.AddPolicy(name, httpContext =>
             {
+                //запись должна упроститься при настройке конфиге форвардед опшионс
+
+                var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString()
+                                    ?? "unknown";
+
+                //var ipAddress = httpContext.Request.Headers["X-Forwarded-For"]
+                //                .FirstOrDefault()?.Split(',').FirstOrDefault()?.Trim()
+                //                ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                //                ?? "unknown";
+
                 var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var key = userId != null ? $"{name}:user:{userId}"
-                : $"{name}:ip:{httpContext.Connection.RemoteIpAddress}";
+                : $"{name}:ip:{ipAddress}";
+
+                //var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                //var key = $"{name}:user:{userId}";
                 if (secondsCount <= 0)
                 {
                     return RateLimitPartition.GetConcurrencyLimiter

@@ -38,7 +38,7 @@ namespace ChronolibrisWeb.Controllers
 
             return File(stream, "application/octet-stream", $"book_file_{id}");
         }
-        //максимальное время поддержания соединения
+
         [Authorize(Roles = "admin")]
         [HttpPost]
         [RequestSizeLimit(50 * 1024 * 1024)]
@@ -56,7 +56,6 @@ namespace ChronolibrisWeb.Controllers
             if (!TryGetUserId(out var userId))
                 return Unauthorized();
 
-
             var command = new UploadBookFileCommand(bookId, formatId, isReadable, historical, file.OpenReadStream(), file.FileName, file.Length, userId);
             var id = await _mediator.Send(command, cancellationToken);
             return Ok(id);
@@ -73,7 +72,6 @@ namespace ChronolibrisWeb.Controllers
             var command = new DeleteBookFileCommand(id, userId);
             await _mediator.Send(command, cancellationToken);
             return NoContent();
-
         }
 
         private bool TryGetUserId(out long userId)

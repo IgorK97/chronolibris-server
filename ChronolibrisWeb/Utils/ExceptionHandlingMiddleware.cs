@@ -20,22 +20,22 @@ namespace ChronolibrisWeb.Middleware
 
             try
             {
-                _logger.LogInformation(" {Method} {Path} | Запрос: {Query} | Пользователь: {User}",
-                    context.Request.Method,
-                    context.Request.Path,
-                    context.Request.QueryString,
-                    context.User.Identity?.Name ?? "Неавторизованный пользователь");
+                //_logger.LogInformation(" {Method} {Path} | Запрос: {Query} | Пользователь: {User}",
+                //    context.Request.Method,
+                //    context.Request.Path,
+                //    context.Request.QueryString,
+                //    context.User.Identity?.Name ?? "Неавторизованный пользователь");
 
-                var sw = Stopwatch.StartNew();
+                //var sw = Stopwatch.StartNew();
                 await _next(context);
 
-                sw.Stop();
+                //sw.Stop();
 
-                _logger.LogInformation(" {Method} {Path} {StatusCode} ({Elapsed}ms)",
-                    context.Request.Method,
-                    context.Request.Path,
-                    context.Response.StatusCode,
-                    sw.ElapsedMilliseconds);
+                //_logger.LogInformation(" {Method} {Path} {StatusCode} ({Elapsed}ms)",
+                //    context.Request.Method,
+                //    context.Request.Path,
+                //    context.Response.StatusCode,
+                //    sw.ElapsedMilliseconds);
             }
 
             catch (Exception exception)
@@ -51,6 +51,7 @@ namespace ChronolibrisWeb.Middleware
 
                 if (context.Response.HasStarted)
                     return; //если уже что-то начало передаваться клиенту, то лучше не записывать
+                //invalide operation exception (headers are read-only)
 
                 var (statusCode, title, detail) = mapper.Map(exception);
 

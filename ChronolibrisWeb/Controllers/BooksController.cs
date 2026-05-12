@@ -71,7 +71,7 @@ namespace ChronolibrisWeb.Controllers
                 request.IsAvailable,
                 request.IsReviewable,
                 request.PublisherId, request.PublisherIdProvided,
-               request.PersonFilters,
+                request.PersonFilters,
                 request.ThemeIds,
                 request.DeleteCoverCommand,
                 request.HasHistoricalVersions
