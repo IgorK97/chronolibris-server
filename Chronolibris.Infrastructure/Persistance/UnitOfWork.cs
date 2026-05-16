@@ -4,6 +4,8 @@ using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Chronolibris.Infrastructure.Persistance
 {
@@ -75,6 +77,10 @@ namespace Chronolibris.Infrastructure.Persistance
             catch (DbUpdateConcurrencyException ex)
             {
                 throw new ChronolibrisException("Ошибка обновления данных - повторите попытку позднее", ErrorType.Conflict);
+            }
+            catch(DbUpdateException updateEx) when (updateEx.InnerException is PostgresException pgex && pgex.SqlState == "23503")
+            {
+                throw new ChronolibrisException("Операция невозможна - запись связана с другими данными", ErrorType.Conflict);
             }
         }
 
