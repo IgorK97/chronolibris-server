@@ -40,14 +40,14 @@ namespace Chronolibris.Infrastructure.Configurations
             builder.HasMany(c => c.Persons)
                 .WithMany(p => p.Contents)
                 .UsingEntity<ContentParticipation>(
-                j => j.HasOne(bp => bp.Person)
-                                   .WithMany(p => p.ContentParticipations)
-                                   .HasForeignKey(bp => bp.PersonId)
-                                   .OnDelete(DeleteBehavior.Restrict),
-                            j => j.HasOne(bp => bp.Content)
-                                   .WithMany(b => b.Participations)
-                                   .HasForeignKey(bp => bp.ContentId)
-                                   .OnDelete(DeleteBehavior.Cascade)
+                    j => j.HasOne(bp => bp.Person)
+                            .WithMany(p => p.ContentParticipations)
+                            .HasForeignKey(bp => bp.PersonId)
+                            .OnDelete(DeleteBehavior.Restrict),
+                    j => j.HasOne(bp => bp.Content)
+                            .WithMany(b => b.Participations)
+                            .HasForeignKey(bp => bp.ContentId)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
 
@@ -56,7 +56,8 @@ namespace Chronolibris.Infrastructure.Configurations
                 .UsingEntity(
                     r => r.HasOne(typeof(Theme))
                           .WithMany()
-                          .HasForeignKey("theme_id"),
+                          .HasForeignKey("theme_id")
+                          .OnDelete(DeleteBehavior.Restrict),
                     l => l.HasOne(typeof(Content))
                           .WithMany()
                           .HasForeignKey("content_id"),

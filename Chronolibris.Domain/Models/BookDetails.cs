@@ -4,6 +4,7 @@
     public class BookDetails
     {
         public long Id { get; set; }
+        public DateTime? OldUpdatedAt { get; set; }
         public required string Title { get; set; }
         public int? Year { get; set; }
         public required string Description { get; set; }

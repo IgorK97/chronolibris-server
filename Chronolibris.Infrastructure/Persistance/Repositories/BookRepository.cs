@@ -43,6 +43,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     b.Bbk,
                     b.Udk,
                     b.Source,
+                    OldUpdatedAt = b.UpdatedAt,
                     CountryId = b.CountryId,
                     LanguageId = b.LanguageId,
                     CountryName = b.Country.Name,
@@ -106,6 +107,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 IsAvailable = raw.IsAvailable,
                 IsReviewable = raw.IsReviewable,
                 CoverUri = raw.CoverPath,
+                OldUpdatedAt = raw.OldUpdatedAt,
                 Country = new()
                 {
                     Name = raw.CountryName,
@@ -147,6 +149,10 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             };
         }
 
+        public void SetOriginalUpdatedAt(Book book, DateTime? updatedAt)
+        {
+            _context.Entry(book).Property(b => b.UpdatedAt).OriginalValue = updatedAt;
+        }
         public override async Task<Book?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             return await _context.Books
@@ -160,13 +166,8 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     .ThenInclude(bc => bc.Content)
                         .ThenInclude(c => c.Themes)
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
-        }
 
-        //public override async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
-        //{
-        //    return await _context.Books.ToListAsync(cancellationToken); //или может вообще исключение выбрасывать, если кто-то попытается
-        //сразу все книги загрузить
-        //}
+        }
 
         public async Task<long> CreateAsync(Book book, List<PersonRoleFilter>? personFilter, CancellationToken cancellationToken = default)
         {

@@ -57,7 +57,7 @@ namespace ChronolibrisWeb.Controllers
         {
 
             var command = new UpdateBookCommand
-            (id,
+            (id, request.OldUpdatedAt,
                request.Title,
                 request.Description,
                 request.CountryId,

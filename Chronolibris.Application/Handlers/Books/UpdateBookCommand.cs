@@ -9,6 +9,7 @@ namespace Chronolibris.Application.Handlers.Books
 {
     public record UpdateBookCommand(
         long Id,
+        DateTime? OldUpdatedAt,
         string Title,
         string Description,
         long? CountryId,
@@ -46,8 +47,10 @@ namespace Chronolibris.Application.Handlers.Books
         {
             var book = await _unitOfWork.Books.GetByIdAsync(cmd.Id, ct)
                 ?? throw new ChronolibrisException("Книга не найдена", ErrorType.NotFound);
-            DateTime date = DateTime.UtcNow;
 
+            _unitOfWork.Books.SetOriginalUpdatedAt(book, cmd.OldUpdatedAt);
+
+            DateTime date = DateTime.UtcNow;
             UpdateBookFields(book, cmd);
             book.UpdatedAt = date;
 

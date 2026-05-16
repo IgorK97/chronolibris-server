@@ -87,7 +87,7 @@ namespace Chronolibris.Infrastructure.Configurations
                    .WithMany(p => p.Books)
                    .HasForeignKey(b => b.PublisherId)
                    .IsRequired(false)
-                   .OnDelete(DeleteBehavior.SetNull);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

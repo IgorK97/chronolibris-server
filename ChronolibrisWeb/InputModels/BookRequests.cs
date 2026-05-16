@@ -46,6 +46,7 @@ namespace ChronolibrisWeb.InputModels
     public class UpdateBookInputModel
     {
         public long Id { get; set; }
+        public DateTime? OldUpdatedAt { get; set; }
         [Required(ErrorMessage = "Название книги отсутствует")]
         [MinLength(1, ErrorMessage = "Название книги отсутствует")]
         [MaxLength(500, ErrorMessage = "Максимальная длина названия - 500 символов")]
