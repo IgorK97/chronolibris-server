@@ -46,6 +46,9 @@ namespace Chronolibris.Application.Handlers.Contents
 
             if (request.PersonFilters != null)
                 await _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
+
+            if (content.YearFrom != null && content.YearTo != null && content.YearFrom > content.YearTo)
+                throw new ChronolibrisException("Самый ранний год не может быть больше конечного", ErrorType.Validation);
             //if(request.TagIds!=null)
             //    await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
 
