@@ -97,7 +97,7 @@ namespace Chronolibris.Application.Handlers.Books
             }
             if (cmd.PersonFilters != null)
             {
-                _unitOfWork.Books.SyncParticipations(book, cmd.PersonFilters);
+                await _unitOfWork.Books.SyncParticipations(book, cmd.PersonFilters);
             }
 
             await _unitOfWork.SaveChangesAsync(ct);
@@ -162,7 +162,7 @@ namespace Chronolibris.Application.Handlers.Books
             if (cmd.SourceProvided) book.Source = cmd.Source?.Trim();
             if (cmd.PublisherIdProvided) book.PublisherId = cmd.PublisherId;
 
-            book.UpdatedAt = DateTime.UtcNow;
+            //book.UpdatedAt = DateTime.UtcNow;
         }
     }
 }

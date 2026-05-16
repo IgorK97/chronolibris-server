@@ -319,7 +319,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    // Если её нет — нужно создать заглушку и пометить как Unchanged
+                    //Если её нет — нужно создать заглушку и пометить как Unchanged
                     //Без проверки может выдать исключение (две сущности с одинаковым идентификатором)
                     var themeStub = new Theme { Id = themeId };
                     _context.Entry(themeStub).State = EntityState.Unchanged;
@@ -331,8 +331,10 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             }
         }
 
-        public void SyncParticipations(Content content, List<PersonRoleFilter> personFilters)
+        public async Task SyncParticipations(Content content, List<PersonRoleFilter> personFilters)
         {
+            var personRoles = await _context.PersonRoles.ToListAsync();
+
             var desiredPairs = personFilters
                 .SelectMany(f => f.PersonIds.Select(pid => (PersonId: pid, RoleId: f.RoleId)))
                 .ToHashSet();
@@ -348,7 +350,7 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 .Select(p => (p.PersonId, p.PersonRoleId))
                 .ToHashSet();
 
-            foreach (var pair in desiredPairs.Where(dp => !currentPairs.Contains(dp)))
+            foreach (var pair in desiredPairs.Where(dp => !currentPairs.Contains(dp)).Where(p => personRoles.Any(pr => pr.Id == p.RoleId && (int)pr.Kind == 1)))
             {
                 content.Participations.Add(new ContentParticipation
                 {

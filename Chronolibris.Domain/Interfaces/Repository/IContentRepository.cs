@@ -9,7 +9,7 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<ContentDto?> GetDtoByIdAsync(long id, CancellationToken cancellationToken = default);
         Task<List<BookDto>> GetBooksDtoByContentIdAsync(long contentId, CancellationToken cancellationToken = default);
         void SyncThemes(Content content, List<long> newThemeIds);
-        void SyncParticipations(Content content, List<PersonRoleFilter> personFilters);
+        Task SyncParticipations(Content content, List<PersonRoleFilter> personFilters);
         Task<PagedResult<ContentDto>> GetWithFilterAsync(ContentFilterRequest filter, CancellationToken ct = default);
         Task AddAsync(Content content, CancellationToken cancellationToken = default);
         void Delete(Content content);

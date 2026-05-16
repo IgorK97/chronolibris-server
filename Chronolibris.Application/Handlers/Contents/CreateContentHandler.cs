@@ -32,7 +32,7 @@ namespace Chronolibris.Application.Handlers.Contents
             };
 
             if (request.PersonFilters != null)
-                _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
+                await _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
 
             if (request.ThemeIds != null)
             {

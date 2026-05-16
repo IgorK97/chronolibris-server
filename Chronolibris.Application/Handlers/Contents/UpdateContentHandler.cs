@@ -45,7 +45,7 @@ namespace Chronolibris.Application.Handlers.Contents
                 _unitOfWork.Contents.SyncThemes(content, request.ThemeIds);
 
             if (request.PersonFilters != null)
-                _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
+                await _unitOfWork.Contents.SyncParticipations(content, request.PersonFilters);
             //if(request.TagIds!=null)
             //    await _contentRepository.SyncTagsAsync(content.Id, request.TagIds, cancellationToken);
 

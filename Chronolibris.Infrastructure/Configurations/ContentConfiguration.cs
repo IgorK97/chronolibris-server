@@ -26,7 +26,9 @@ namespace Chronolibris.Infrastructure.Configurations
 
             builder.HasMany(c => c.Tags)
                 .WithMany(t => t.Contents)
-                .UsingEntity(j => j.ToTable("content_tags"));
+                .UsingEntity<Dictionary<string, object>>("content_tags",
+                j => j.HasOne<Tag>().WithMany().HasForeignKey("tags_id").OnDelete(DeleteBehavior.Restrict),
+                j => j.HasOne<Content>().WithMany().HasForeignKey("contents_id").OnDelete(DeleteBehavior.Cascade));
 
             builder.Property(c => c.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
@@ -37,7 +39,16 @@ namespace Chronolibris.Infrastructure.Configurations
 
             builder.HasMany(c => c.Persons)
                 .WithMany(p => p.Contents)
-                .UsingEntity<ContentParticipation>();
+                .UsingEntity<ContentParticipation>(
+                j => j.HasOne(bp => bp.Person)
+                                   .WithMany(p => p.ContentParticipations)
+                                   .HasForeignKey(bp => bp.PersonId)
+                                   .OnDelete(DeleteBehavior.Restrict),
+                            j => j.HasOne(bp => bp.Content)
+                                   .WithMany(b => b.Participations)
+                                   .HasForeignKey(bp => bp.ContentId)
+                                   .OnDelete(DeleteBehavior.Cascade)
+                );
 
 
             builder.HasMany(c => c.Themes)
@@ -52,11 +63,17 @@ namespace Chronolibris.Infrastructure.Configurations
                     j => j.ToTable("content_theme")
                 );
 
+            builder.HasOne(b => b.Country)
+                   .WithMany(c => c.Contents)
+                   .HasForeignKey(b => b.CountryId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-
+            builder.HasOne(b => b.Language)
+                   .WithMany(l => l.Contents)
+                   .HasForeignKey(b => b.LanguageId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
-
 
             builder.HasData(
                 new Content

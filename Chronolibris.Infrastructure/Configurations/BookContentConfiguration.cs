@@ -15,12 +15,14 @@ namespace Chronolibris.Infrastructure.Configurations
             builder
                 .HasOne(bc => bc.Book)
                 .WithMany(b => b.BookContents)
-                .HasForeignKey(bc => bc.BookId);
+                .HasForeignKey(bc => bc.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder
                 .HasOne(bc => bc.Content)
                 .WithMany(c => c.BookContents)
-                .HasForeignKey(bc => bc.ContentId);
+                .HasForeignKey(bc => bc.ContentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasData(
                 new BookContent

@@ -10,7 +10,16 @@ namespace Chronolibris.Infrastructure.Configurations
         {
             builder.HasMany(b => b.Persons)
                 .WithMany(p => p.Books)
-                .UsingEntity<BookParticipation>();
+                .UsingEntity<BookParticipation>(
+                            j => j.HasOne(bp => bp.Person)
+                                   .WithMany(p=>p.BookParticipations)
+                                   .HasForeignKey(bp => bp.PersonId)
+                                   .OnDelete(DeleteBehavior.Restrict),
+                            j => j.HasOne(bp => bp.Book)
+                                   .WithMany(b=>b.Participations)
+                                   .HasForeignKey(bp => bp.BookId)
+                                   .OnDelete(DeleteBehavior.Cascade)
+               );
 
             builder.Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -63,6 +72,22 @@ namespace Chronolibris.Infrastructure.Configurations
                           .HasForeignKey("book_id"),
                     j => j.ToTable("book_selection")
                 );
+
+            builder.HasOne(b => b.Country)
+                   .WithMany(c => c.Books)
+                   .HasForeignKey(b => b.CountryId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Language)
+                   .WithMany(l => l.Books)
+                   .HasForeignKey(b => b.LanguageId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Publisher)
+                   .WithMany(p => p.Books)
+                   .HasForeignKey(b => b.PublisherId)
+                   .IsRequired(false)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
