@@ -8,6 +8,5 @@ namespace Chronolibris.Domain.Entities
         [MaxLength(50)]
         public string Name { get; set; }
         public ICollection<Report> Reports { get; set; } = [];
-        public ICollection<ModerationTask> ModerationTasks { get; set; } = [];
     }
 }

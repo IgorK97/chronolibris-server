@@ -114,7 +114,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     LastUpdatedAt = b.UpdatedAt ?? b.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
-            else if (TargetTypeId == 2)
+            else if (TargetTypeId == 3)
             {
                 return await _context.Comments.Where(c => c.Id == TargetId).Join(_context.Users, c => c.UserId, u => u.Id, (c, u) =>
                 new GetTargetInfoResponse
@@ -132,7 +132,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     LastUpdatedAt = c.DeletedAt ?? c.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
-            else if (TargetTypeId == 3)
+            else if (TargetTypeId == 2)
             {
                 return await _context.Reviews.Where(c => c.Id == TargetId).Join(_context.Users, r => r.UserId, u => u.Id, (r, u) =>
                 new GetTargetInfoResponse
