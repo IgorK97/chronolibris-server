@@ -269,7 +269,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 {
                     ContentId = contentId,
                     BookId = bookId,
-                    //Order = order
                 };
 
                 await _context.Set<BookContent>().AddAsync(bookContent, cancellationToken);
@@ -282,6 +281,10 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
                 }
                 if (pgEx.SqlState == "23505") //если уже привязано, ничего не вывожу
                     return;
+                if(pgEx.SqlState == "45001")
+                {
+                    throw new ChronolibrisException("Хронологическая ошибка: год обнародования книги не может быть раньше начала создания входящего в него контента", ErrorType.Conflict);
+                }
                 throw;
             }
         }

@@ -78,9 +78,18 @@ namespace Chronolibris.Infrastructure.Persistance
             {
                 throw new ChronolibrisException("Ошибка обновления данных - повторите попытку позднее", ErrorType.Conflict);
             }
-            catch(DbUpdateException updateEx) when (updateEx.InnerException is PostgresException pgex && pgex.SqlState == "23503")
+            catch(DbUpdateException updateEx) when (updateEx.InnerException is PostgresException pgEx)
             {
-                throw new ChronolibrisException("Операция невозможна - запись связана с другими данными", ErrorType.Conflict);
+                if (pgEx.SqlState == "23503")
+                {
+                    throw new ChronolibrisException("Операция невозможна - запись связана с другими данными", ErrorType.Conflict);
+                }
+
+                if (pgEx.SqlState == "45001")
+                {
+                    throw new ChronolibrisException("Хронологическая ошибка: год обнародования книги не может быть раньше начала создания входящего в него контента", ErrorType.Conflict);
+                }
+                throw;
             }
         }
 
