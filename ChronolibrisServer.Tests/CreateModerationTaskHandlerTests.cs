@@ -53,12 +53,7 @@ namespace ChronolibrisServer.Tests.Reports
 
         private CreateModerationTaskCommand BuildCommand()
         {
-            return new CreateModerationTaskCommand(
-                            TargetId: targetId,
-                            TargetTypeId: 1,
-                            ModeratorId: moderatorId
-                            //ReportTypeId : 2
-                        );
+            return new CreateModerationTaskCommand(targetId, 1, moderatorId);
         }
 
         private CreateModerationTaskCommandHandler CreateHandler()

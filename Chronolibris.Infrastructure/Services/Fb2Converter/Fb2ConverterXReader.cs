@@ -159,13 +159,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             while (await reader.ReadAsync())
             {
                 ct.ThrowIfCancellationRequested();
-                //_logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}", reader.NodeType, reader.LocalName, reader.Value);
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     var localName = reader.LocalName;
                     //var ns = reader.NamespaceURI;
 
-                    // в description могут быть нужные метаданные
                     if (localName == "description")
                     {
                         inDescription = true;
@@ -174,7 +172,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    // боди для контента и боди для сносок может быть
+                    //боди для контента и боди для сносок может быть
                     //пока не нужно считывать контент, поэтому континуе
                     if (localName == "body")
                     {
@@ -253,7 +251,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    // картинка! <binary id="..." content-type="...">
+                    // картинка!!! <binary id="..." content-type="...">
                     if (localName == "binary")
                     {
                         var binaryId = reader.GetAttribute("id") ?? "";
@@ -285,10 +283,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                     imageMap[binaryId] = fileName;
                                     imageIndex++;
                                 }
-                                catch (FormatException) { /* повреждённый base64 */ } //можно и прервать,
+                                catch (FormatException) { } //можно и прервать,
                                 //но картинки того не стоит (но как тогда уведомить админа?)
                                 //потом можно добавить строку в класс результата и, если она не пустая,
-                                //то вместе с ответом и ее возвращать тоже
+                                //то вместе с ответом и ее возвращать тоже, потом посмотрю
                             }
                         }
                         continue;
@@ -331,24 +329,16 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             int globalIdx = 0;   //сквозной индекс элемента по всей книге
             int bodyIdx = 0;   //порядковый номер текущего основного боди
             int bodyCount = 0; //количество боди
-            int partIndex = 0;   // индекс текущего файла-фрагмента
+            int partIndex = 0;   //индекс текущего файла-фрагмента
 
             int totalElements = 0; //количество всех фрагментов
             int fullLength = 0; //длина книги
 
-            // Стек секций. Каждый элемент стека соответствует одному уровню вложенности секции.
-            // SectionOrdinal — порядковый номер данной секции среди сестёр на своём уровне
-            //   (увеличивается при входе в секцию, до того как она попадает в стек).
-            // ElemCount — текущий счётчик элементов внутри этой секции.
-            // ParentElemCount — значение счётчика элементов родительского уровня,
-            //   которое нужно восстановить при выходе из секции.
-            //var sectionStack = new Stack<(int SectionOrdinal, int ParentElemCount)>();
-
-            // sectionCounters[depth] — сколько секций уже открыто на данной глубине
-            // (depth 0 = прямые дочери body). Растёт при каждом входе в секцию, не сбрасывается.
+            //sectionCounters[depth] — сколько секций уже открыто на данной глубине
+            //(depth 0 = прямые дочери body). Растёт при каждом входе в секцию
             var sectionCounters = new List<int>();
 
-            // Счётчик элементов текущего уровня (если стек пуст — уровень body)
+            //Счётчик элементов текущего уровня (если стек пуст — уровень body)
             int elemIdx = 0;
 
             bool inMainBody = false; //внутри основного боди
@@ -359,13 +349,11 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
             //Последний фрагмент - чтобы корректно его обработать
             ParsedElement? lastElement = null;
-            //_logger.LogDebug("===second trip===");
             using var reader = CreateXmlReader(stream);
 
             while (await reader.ReadAsync())
             {
                 ct.ThrowIfCancellationRequested();
-                //_logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}", reader.NodeType, reader.LocalName, reader.Value);
                 var nodeType = reader.NodeType;
                 var localName = reader.LocalName;
                 //var nsUri = reader.NamespaceURI;
@@ -382,7 +370,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         var nameAttr = reader.GetAttribute("name");
                         if (nameAttr == "notes") //пропуск сносок (они уже обработаны ранее)
                         { await reader.SkipAsync(); continue; }
-                        // Это основной боди
+                        //это основной боди
                         bodyIdx = bodyCount;
                         inMainBody = true;
                         continue;
@@ -391,21 +379,20 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     if (localName == "binary") //картинки тоже уже обработаны
                     { await reader.SkipAsync(); continue; }
 
-                    if (!inMainBody) continue; // если иной элемент (типа секции) - но не в главном боди,
+                    if (!inMainBody) continue; //если иной элемент (типа секции) - но не в главном боди,
                     //то тоже нужно пропустить - не нужно либо уже обработано
 
                     //глава или раздел
                     if (localName == "section")
                     {
-                        int depth = sectionStack.Count; // глубина вложенности: 0 = прямые дочери body
+                        int depth = sectionStack.Count; //глубина вложенности: 0 = прямые дочери body
 
-                        // Убедимся, что счётчик для этой глубины существует
-                        while (sectionCounters.Count <= depth) sectionCounters.Add(0);
+                        if (sectionCounters.Count <= depth) sectionCounters.Add(0); //while
 
-                        sectionCounters[depth]++;   // порядковый номер секции на данной глубине
+                        sectionCounters[depth]++;   //порядковый номер секции на данной глубине
                         int ordinal = sectionCounters[depth];
 
-                        // Сохраняем текущий elemIdx родителя — восстановим при выходе
+                        //текущий elemIdx родителя — при выходе восстановить
                         //sectionStack.Push((ordinal, elemIdx));
                         sectionStack.Push(new SectionFrame
                             (ordinal, elemIdx, null));
@@ -642,7 +629,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                     {
                         //var (_, parentElemCount) = sectionStack.Pop();
                         var frame = sectionStack.Pop();
-                        //elemIdx = parentElemCount; // восстановить счётчик родителя
+                        //elemIdx = parentElemCount; //восстановить счётчик родителя
                         if (frame.Chapter != null)
                         {
                             frame.Chapter.E = globalIdx > 0 ? globalIdx - 1 : 0;
@@ -668,8 +655,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 //    E = lastElement.GlobalIndex,
                 //    T = last.T
                 //};
-                allChapters[^1].E = lastElement.GlobalIndex; //раньше был тип record, 
-                //зачем мне он нужен вообще? Пусть класс будет!
+                allChapters[^1].E = lastElement.GlobalIndex;
             }
 
             var bookTitle = meta.Title ?? allChapters.FirstOrDefault(c => c.T != null)?.T //title
@@ -701,31 +687,26 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         {
             if (r.IsEmptyElement) return string.Empty;
             var sb = new StringBuilder();
-            int depth = r.Depth; // глубина открывающего тега
+            int depth = r.Depth; //глубина открывающего тега
             while (r.Read() && r.Depth > depth)
             {
                 if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
                     sb.Append(r.Value);
-                // все вложенные теги прозрачно проходятся; их текстовые узлы будут
-                // подхвачены на следующих итерациях, пока глубина больше depth
+                //все вложенные теги прозрачно проходятся; их текстовые узлы будут
+                //подхвачены на следующих итерациях, пока глубина больше depth
             }
-            // после цикла r стоит на EndElement родительского тега — это ожидаемое состояние
+            //после цикла r стоит на EndElement родительского тега — это ожидаемое состояние
             return sb.ToString();
         }
 
-        // Парсит смешанный XML-фрагмент
-        // в объект Content (string или List или object) и plain-text
-        // Использует легковесный XmlReader — не создаёт полный DOM
-
-        // Парсит смешанный XML-фрагмент
-        // в объект Content (string или List или object) и plain-text
-        // Использует легковесный XmlReader — не создаёт полный DOM
+        //Парсит смешанный XML-фрагмент
+        //в объект Content (string или List или object) и plain-text
+        //Использует легковесный XmlReader — не создаёт полный DOM
         private (object? content, string? flatText) ParseMixedXml(
             string outerXml,
             Dictionary<string, ParsedNote> notes,
             Dictionary<string, string> imageMap)
         {
-            //_logger.LogDebug("parse mixed xml");
             var mixed = new List<object>(); //это может быть большой список из разного содержимого, по идее
             var buf = new StringBuilder();
 
@@ -744,17 +725,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             r.Read();
             int rootDepth = r.Depth; //абсолютная глубина
 
-            // Вспомогательный метод: читает содержимое текущего элемента как plain-текст,
-            // рекурсивно обходя любые дочерние теги. Позиция читателя после вызова —
-            // на EndElement обрабатываемого тега (или сразу после пустого элемента).
-            // Используется для «понятных» инлайн-тегов (strong, emphasis), у которых
-            // теоретически может быть вложенная разметка (например, <strong><em>...</em></strong>).
-
-
+            //читает содержимое текущего элемента как plain-текст,
+            //рекурсивно обходя любые дочерние теги. Позиция читателя после вызова —
+            //на EndElement обрабатываемого тега (или сразу после пустого элемента)
             while (r.Read())
             {
-                if (r.Depth == rootDepth) break; //на всякий случай выход сразу по окончании корневого тега
-                //_logger.LogDebug("type {Type}--->node with name {Name}, with value {Value}", r.NodeType, r.LocalName, r.Value);
+                if (r.Depth == rootDepth) break; //выход сразу по окончании корневого тега
                 switch (r.NodeType)
                 {
                     case XmlNodeType.Text:
@@ -769,8 +745,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                             case "strong":
                                 {
                                     FlushBuf(); //сброс уже накопленного текста
-                                    // ReadInnerText безопасно обходит любые вложенные теги,
-                                    // поэтому <strong><em>текст</em></strong> тоже корректно обработается
+                                    //ReadInnerText безопасно обходит любые вложенные теги,
+                                    //<strong><em>текст</em></strong>
                                     var inner = ReadInnerText(r);
                                     if (inner.Length > 0) mixed.Add(new StSegment { C = inner }); //сегмент жирного текста
                                 }
@@ -800,7 +776,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                                     else
                                     {
-                                        // ReadInnerText безопасен для смешанного содержимого ссылки
                                         var label = ReadInnerText(r);
 
                                         if (noteType == "note" && href != null
@@ -840,15 +815,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 }
 
                             default:
-                                // Тег-обёртка (например, <p> внутри <title>, или любой иной неизвестный тег).
-                                // Нельзя вызывать ReadElementContentAsString(), если внутри есть дочерние теги
-                                // (это приведёт к InvalidOperationException).
-                                // Вместо этого используем ReadInnerText(), который безопасно рекурсивно
-                                // извлекает весь текст, а форматирующие сегменты (strong/emphasis/a/image)
-                                // внутри таких обёрток будут потеряны как сегменты, но их текст сохранится.
-                                // Альтернатива — рекурсивный вызов ParseMixedXml с outerXml дочернего тега,
-                                // но тогда нужно вычитывать outerXml через r.ReadOuterXml(), что меняет
-                                // позицию читателя и усложняет логику.
+                                //Тег-обёртка (например, <p> внутри <title>, или любой иной неизвестный тег)
+                                //Нельзя вызывать ReadElementContentAsString(), если внутри есть дочерние теги
+                                //(это приведёт к InvalidOperationException)
+                                //Вместо этого используем ReadInnerText(), который безопасно рекурсивно
+                                //извлекает весь текст, а форматирующие сегменты (strong/emphasis/a/image)
+                                //внутри таких обёрток будут потеряны как сегменты, но их текст сохранится
                                 buf.Append(ReadInnerText(r));
                                 buf.Append(' ');
                                 break;
@@ -874,8 +846,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return (mixed, s);
         }  
 
-        // Сериализует накопленный фрагмент, сохраняет в хранилище,
-        // добавляет запись в список tocParts
+        //Сериализует накопленный фрагмент, сохраняет в хранилище,
+        //добавляет запись в список tocParts
         private async Task<int> FlushPartAsync(
             string bookId,
             List<ParsedElement> part,
@@ -887,7 +859,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
             var first = part[0];
             var last = part[^1];
-            var fileName = $"{partIndex:D3}.json"; //000.json,..., строка формата, целое число, 3 цифры
+            var fileName = $"{partIndex:D3}.json"; //000.json строка формата, целое число, 3 цифры
 
             var items = part.Select(MapToPartElement).ToList(); //преобразовать ParsedElement в PartElement для сохранения, группа методов или делегат (стрелочная функция)
             var json = JsonSerializer.Serialize(items, JsonOpts);
@@ -908,7 +880,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return partIndex;
         }
 
-        // Метаданные (название книги) (парсинг outerXml блока description)
+        //Метаданные (название книги) (парсинг outerXml блока description)
         private static BookMeta ParseMetaFromXml(string descXml)
         {
             using var r = XmlReader.Create(new StringReader(descXml),
@@ -964,26 +936,24 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             catch { return string.Empty; }
         }
 
-        /// <summary>
-        /// Строит массив координат (xp) для текущей позиции в дереве документа
-        /// xp[0] = bodyIdx
-        /// xp[1..^1] = порядковые номера секций на каждом уровне вложенности (от внешних к внутренним)
-        /// xp[^1] = elemIdx — номер текущего элемента внутри самой глубокой секции
-        /// Пример: body/section[2]/section[1]/p[3]  →  [bodyIdx, 2, 1, 3]
-        /// </summary>
+
+        //массив координат (xp) для текущей позиции в дереве документа
+        //xp[0] = bodyIdx
+        //xp[1..^1] = порядковые номера секций на каждом уровне вложенности (от внешних к внутренним)
+        //xp[^1] = elemIdx — номер текущего элемента внутри самой глубокой секции
         private static int[] BuildXp(
             int bodyIdx,
             Stack<SectionFrame> sectionStack,
             int elemIdx)
         {
-            // Стек хранится «верхушка = самый вложенный уровень»,
-            // поэтому для построения пути от корня к листу нужно перевернуть порядок.
+            //Стек хранится как лифо, то есть верх - самый вложенный
+            //поэтому для построения пути от корня к листу нужно перевернуть порядок
             var frames = sectionStack.ToArray(); // [innermost, ..., outermost]
-            // Длина: 1 (body) + глубина секций + 1 (elem)
+            //Длина: 1 (body) + глубина секций + 1 (elem)
             var xp = new int[1 + frames.Length + 1];
             xp[0] = bodyIdx;
             for (int i = 0; i < frames.Length; i++)
-                xp[i + 1] = frames[frames.Length - 1 - i].SectionOrdinal; // от внешнего к внутреннему
+                xp[i + 1] = frames[frames.Length - 1 - i].SectionOrdinal; //от внешнего к внутреннему
             xp[^1] = elemIdx;
             return xp;
         }
@@ -1004,7 +974,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 };
             }
 
-            // Если Content — одиночный ImgSegment, передаём как список из одного
+            // Если Content — одиночный ImgSegment, список из одного
             if (c is ImgSegment img)
                 c = new List<object> { img };
 

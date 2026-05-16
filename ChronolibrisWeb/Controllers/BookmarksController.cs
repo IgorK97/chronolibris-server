@@ -21,7 +21,7 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpPost]
         [Authorize(Roles ="reader")]
-        [EnableRateLimiting("bookmarks")]
+        [EnableRateLimiting("one")]
         public async Task<IActionResult> Add([FromBody] AddBookmarkInputModel command)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

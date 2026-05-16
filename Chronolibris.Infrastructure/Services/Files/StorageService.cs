@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
+using System.IO.Pipelines;
 
 namespace Chronolibris.Infrastructure.Services.Files
 {
@@ -40,6 +41,7 @@ namespace Chronolibris.Infrastructure.Services.Files
         public async Task SaveCoverAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default)
         {
             await UploadAsync(_bookOpts.CoversBucket, $"{bookId}/{fileName}", data, contentType, ct);
+            
         }
 
         public async Task SaveImageAsync(string bookId, string fileName, Stream data, string contentType, CancellationToken ct = default)
@@ -126,7 +128,7 @@ namespace Chronolibris.Infrastructure.Services.Files
             }
         }
 
-        private async Task<Stream?> ReadAsync(string bucket, string key, CancellationToken ct = default)
+        private async Task<Stream?> ReadAsyncWithoutPipe(string bucket, string key, CancellationToken ct = default)
         {
             try
             {
@@ -140,6 +142,42 @@ namespace Chronolibris.Infrastructure.Services.Files
             }
             catch (ObjectNotFoundException) { 
                 return null; 
+            }
+        }
+
+        private async Task<Stream?> ReadAsync(string bucket, string key, CancellationToken ct)
+        {
+            try
+            {
+                await _minioClient.StatObjectAsync(new StatObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(key), ct);
+                var pipe = new Pipe();
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _minioClient.GetObjectAsync(new GetObjectArgs()
+                            .WithBucket(bucket)
+                            .WithObject(key)
+                            .WithCallbackStream(async (minioStream, token) =>
+                            {
+                                await minioStream.CopyToAsync(pipe.Writer.AsStream(), token);
+                            }), ct);
+                        await pipe.Writer.CompleteAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Ошибка при потоковом чтении из MinIO: {Key}", key);
+                        await pipe.Writer.CompleteAsync(ex);
+                    }
+                }, CancellationToken.None);
+                return pipe.Reader.AsStream();
+            }
+            catch (ObjectNotFoundException)
+            {
+                return null;
             }
         }
 

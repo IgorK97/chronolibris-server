@@ -8,6 +8,7 @@ namespace Chronolibris.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<long>> builder)
         {
+            builder.HasIndex(ur => ur.UserId).IsUnique();
             //builder.HasData(
             //    new IdentityUserRole<long>
             //    {

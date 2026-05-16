@@ -32,14 +32,9 @@ namespace ChronolibrisServer.Tests.Reviews
             _unitOfWorkMock.Setup(u => u.Books).Returns(_bookRepoMock.Object);
         }
 
-        private CreateReviewCommand BuildCommand(string? text = "Отличная книга",
-            short score = 5)
+        private CreateReviewCommand BuildCommand(string? text = "Отличная книга", short score = 5)
         {
-            return new CreateReviewCommand(UserId: userId,
-                                            BookId: bookId,
-                                            ReviewText: text,
-                                            Score: score
-                                          );
+            return new CreateReviewCommand(bookId, userId, text,score);
         }
 
         private void SetupReview(ReviewDetailsWithVote? review)
@@ -70,8 +65,8 @@ namespace ChronolibrisServer.Tests.Reviews
                     Id = bookId,
                     IsReviewable = isReviewable,
                     IsAvailable = isAvailable,
-                    Title = "Title",
-                    Description = "Description",
+                    Title = "Название книги",
+                    Description = "Описание книги",
                     CountryId = 1,
                     LanguageId = 1,
                     CreatedAt = DateTime.UtcNow,
@@ -106,7 +101,7 @@ namespace ChronolibrisServer.Tests.Reviews
         public async Task Handle_BookNotAvailable_ThrowsNotFound()
         {
             SetupReview(null);
-            SetupBook(isReviewable: true, isAvailable: false);
+            SetupBook(true, false);
 
             var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
@@ -118,7 +113,7 @@ namespace ChronolibrisServer.Tests.Reviews
         public async Task Handle_BookNotReviewable_ThrowsNotFound()
         {
             SetupReview(null);
-            SetupBook(isReviewable: false, isAvailable: true);
+            SetupBook(false, true);
 
             var act = () => CreateHandler().Handle(BuildCommand(), CancellationToken.None);
 
@@ -130,7 +125,7 @@ namespace ChronolibrisServer.Tests.Reviews
         public async Task Handle_ValidRequest_ReturnsSuccess()
         {
             SetupReview(null);
-            SetupBook(isReviewable: true, isAvailable: true);
+            SetupBook(true, true);
             long expectedId = 17;
             SetupReviewCreating(expectedId);
 

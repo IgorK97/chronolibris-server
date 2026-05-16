@@ -18,10 +18,8 @@ namespace Chronolibris.Infrastructure.DatabaseChecker
         /// </summary>
         public static async Task CheckDatabase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            //Создание новой области видимости (scope) для корректного разрешения сервисов
             using var scope = serviceProvider.CreateScope();
 
-            //Получение экземпляра контекста базы данных ApplicationDbContext
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             //await context.Database.EnsureCreatedAsync();
 

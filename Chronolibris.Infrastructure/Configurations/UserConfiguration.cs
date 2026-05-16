@@ -41,15 +41,15 @@ namespace Chronolibris.Infrastructure.Configurations
 
             builder.ToTable(t => t.HasCheckConstraint(
                 "ck_users_first_name_correct_length",
-                "LENGTH(TRIM(first_name))>0 AND LENGTH(TRIM(first_name))<65"));
+                "LENGTH(TRIM(first_name))>0"));
 
             builder.ToTable(t => t.HasCheckConstraint(
                 "ck_users_last_name_correct_length",
-                "LENGTH(TRIM(last_name))>0 AND LENGTH(TRIM(last_name))<65"));
+                "LENGTH(TRIM(last_name))>0"));
 
             builder.ToTable(t => t.HasCheckConstraint(
                 "ck_users_user_name_correct_length",
-                "LENGTH(TRIM(user_name))>4 AND LENGTH(TRIM(user_name))<33"));
+                "LENGTH(TRIM(user_name))>4"));
         }
     }
 }

@@ -44,7 +44,7 @@ namespace ChronolibrisWeb.Utils
                         QueueLimit = 0              // без очереди (сразу блокировать)
                     });
             });
-            AddUserPolicy(options, "bookmarks", 1, 0);
+            AddUserPolicy(options, "one", 1, 0);
             AddUserPolicy(options, "comments", 5, 60);
             AddUserPolicy(options, "ratings", 20, 60);
             AddUserPolicy(options, "reports", 1, 60);
@@ -55,8 +55,6 @@ namespace ChronolibrisWeb.Utils
         {
             options.AddPolicy(name, httpContext =>
             {
-                //запись должна упроститься при настройке конфиге форвардед опшионс
-
                 var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString()
                                     ?? "unknown";
 

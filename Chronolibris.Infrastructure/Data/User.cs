@@ -5,9 +5,9 @@ namespace Chronolibris.Infrastructure.Data
 {
     public class User : IdentityUser<long>
     {
-        [MaxLength(255)]
+        [MaxLength(256)]
         public required string FirstName { get; set; }
-        [MaxLength(255)]
+        [MaxLength(256)]
         public required string LastName { get; set; }
         public required DateTime RegisteredAt { get; set; }
         public required bool IsDeleted { get; set; }

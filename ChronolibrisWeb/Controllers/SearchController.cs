@@ -135,18 +135,18 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpGet("persons-batch")]
         public async Task<ActionResult<List<PersonSuggestionDto>>> GetPersonsByIds(
-            [FromQuery] PersonInputModel personInputModel,
+            [FromQuery] long[] ids,
             CancellationToken ct)
         {
-            return await _mediator.Send(new GetPersonsByIdsQuery(personInputModel.ParsedIds), ct);
+            return await _mediator.Send(new GetPersonsByIdsQuery(ids.ToList()), ct);
         }
 
         [HttpGet("tags-batch")]
         public async Task<ActionResult<List<TagSuggestionDto>>> GetTagsByIds(
-            [FromQuery] TagsInputModel tagsInputModel,
+            [FromQuery] long[] ids,
             CancellationToken ct)
         {
-            var results = await _mediator.Send(new GetTagsByIdsQuery(tagsInputModel.ParsedIds), ct);
+            var results = await _mediator.Send(new GetTagsByIdsQuery(ids.ToList()), ct);
             return Ok(results);
         }
     }

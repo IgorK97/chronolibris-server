@@ -5,6 +5,7 @@ using ChronolibrisWeb.InputModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChronolibrisWeb.Controllers
 {
@@ -21,6 +22,7 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpPost]
         [Authorize(Roles="reader")]
+        [EnableRateLimiting("one")]
         public async Task<IActionResult> CreateShelf(CreateShelfInputModel request)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
