@@ -14,27 +14,6 @@ namespace Chronolibris.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<bool> IsAncestorAsync(long potentialAncestorId, long? startParentId, CancellationToken ct)
-        {
-            var currentId = startParentId;
-
-            while (currentId.HasValue)
-            {
-                if (currentId.Value == potentialAncestorId)
-                    return true;
-
-                var parent = await _context.Themes
-                    .AsNoTracking()
-                    .Where(t => t.Id == currentId)
-                    .Select(t => t.ParentThemeId)
-                    .FirstOrDefaultAsync(ct);
-
-                currentId = parent;
-            }
-
-            return false;
-        }
-
         public async Task<Theme?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             return await _context.Themes

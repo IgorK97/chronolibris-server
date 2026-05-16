@@ -21,19 +21,6 @@ namespace Chronolibris.Application.Handlers.References.Themes
 
             if (request.ParentThemeId.HasValue)
             {
-                bool createsCycle = await _unitOfWork.Themes.IsAncestorAsync(
-                    request.Id,
-                    request.ParentThemeId,
-                    ct);
-
-                if (createsCycle)
-                    throw new ChronolibrisException(
-                        "Невозможно переместить тему: выбранный родитель является потомком текущей темы",
-                        ErrorType.Conflict);
-            }
-
-            if (request.ParentThemeId.HasValue)
-            {
                 var parentTheme = await _unitOfWork.Themes.GetByIdAsync(request.ParentThemeId.Value, ct);
                 if (parentTheme == null)
                 {

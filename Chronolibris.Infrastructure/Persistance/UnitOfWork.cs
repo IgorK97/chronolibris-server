@@ -89,6 +89,14 @@ namespace Chronolibris.Infrastructure.Persistance
                 {
                     throw new ChronolibrisException("Хронологическая ошибка: год обнародования книги не может быть раньше начала создания входящего в него контента", ErrorType.Conflict);
                 }
+                if (pgEx.SqlState == "45002")
+                {
+                    throw new ChronolibrisException("Темы образуют цикл", ErrorType.Conflict);
+                }
+                if (pgEx.SqlState == "45003")
+                {
+                    throw new ChronolibrisException("Теги образуют цикл", ErrorType.Conflict);
+                }
                 throw;
             }
         }
