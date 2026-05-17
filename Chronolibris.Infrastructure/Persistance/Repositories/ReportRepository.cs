@@ -91,7 +91,12 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 queryGrouping = queryGrouping.Where(r => r.FirstReportDate >  LastDate);
             }
 
-            var resultQuery = queryGrouping.OrderBy(r => r.FirstReportDate).Take(Count);
+            IQueryable<ReportShortDto>? resultQuery;
+
+            if(ReportStatusId>=3)
+                resultQuery = queryGrouping.OrderByDescending(r => r.FirstReportDate).Take(Count);
+            else
+                resultQuery = queryGrouping.OrderBy(r => r.FirstReportDate).Take(Count);
             return await resultQuery.ToListAsync();
            
         }
