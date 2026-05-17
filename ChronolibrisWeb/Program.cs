@@ -185,14 +185,16 @@ app.UseHttpsRedirection();
 //if(app.Environment.IsDevelopment())
 //    app.UseCors(allowAVDCORSPolicy);
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 //app.UseRequestTimeouts();
 app.UseRateLimiter();
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
+
 app.MapFallbackToFile("index.html");
 //app.UseHangfireDashboard("/hangfire", new DashboardOptions
 //{
@@ -215,17 +217,17 @@ app.UseOpenApi(options =>
 app.UseSwaggerUI();
 app.MapControllers();
 
-app.Lifetime.ApplicationStarted.Register(async () =>
-{
-    //var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-    try
-    {
-        await DatabaseChecker.CheckDatabase(app.Services, configuration);
-    }
-    catch (Exception ex)
-    {
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ошибка выполнения миграций");
-    }
-});
+//app.Lifetime.ApplicationStarted.Register(async () =>
+//{
+//    //var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+//    try
+//    {
+//        await DatabaseChecker.CheckDatabase(app.Services, configuration);
+//    }
+//    catch (Exception ex)
+//    {
+//        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+//        logger.LogError(ex, "Ошибка выполнения миграций");
+//    }
+//});
 app.Run();
