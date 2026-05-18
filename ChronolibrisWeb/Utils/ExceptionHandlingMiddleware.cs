@@ -51,7 +51,6 @@ namespace ChronolibrisWeb.Middleware
 
                 if (context.Response.HasStarted)
                     return; //если уже что-то начало передаваться клиенту, то лучше не записывать
-                //invalide operation exception (headers are read-only)
 
                 var (statusCode, title, detail) = mapper.Map(exception);
 

@@ -28,7 +28,7 @@ namespace Chronolibris.Application.Handlers.Users
         public async Task<RegistrationResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken); //так как создать пользователя + две полки для него
-            //try //вроде автоматом будет вызвано, уберу пока
+            //try
             //{
                 var result = await _identityService.RegisterUserAsync(new RegisterRequest
                 {

@@ -18,7 +18,7 @@ namespace Chronolibris.Application.Handlers.References.Publishers
         public async Task<bool> Handle(DeletePublisherCommand request, CancellationToken cancellationToken)
         {
             var publisher = await _unitOfWork.Publishers.GetByIdAsync(request.Id, cancellationToken);
-            if (publisher == null) return false; //если удалили, надо бы ничего не возвращать, и вообще это идемпотентная ведь операция
+            if (publisher == null) return false;
 
             _unitOfWork.Publishers.Delete(publisher);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

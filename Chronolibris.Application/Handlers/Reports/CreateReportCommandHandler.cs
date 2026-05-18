@@ -41,16 +41,10 @@ namespace Chronolibris.Application.Handlers.Reports
                 request.TargetTypeId, request.TargetId, request.ReasonTypeId, cancellationToken);
             
             if (isOnCooldown is not null && isOnCooldown.CreatedAt >= cooldownThreshold)
-                throw new ChronolibrisException($"Вы уже отправляли подобную жалобу. Жалобы одного типа можно отправлять" +
+                throw new ChronolibrisException($"Подобная жалоба уже была отправлена недавно. Жалобы одного типа можно отправлять" +
                     $"не ранее, чем через {_options.ReportCooldown.TotalDays} дн.", ErrorType.TooManyRequests);
 
-            bool isHidden = false; //не успеваю сделать по-хорошему, TODO!!!
-            //по идее, проверка на удаленность будет единственная корректная только при сохранении изменений уже в бд,
-            //так что там нужно обрабатывать исключение, чтобы корректно сообщение передавать.
-            //а что касается проверки на скрытость контента, то здесь лучше бы SELECT FOR UPDATE 
-            //реализовать (особый метод) - только для жалобщиков и модеров как раз, поэтому на остальных никак не скажется.
-            //но на данный момент не считаю это критичным - может прийти до нескольких жалоб на уже
-            //скрытый контент теоретически, но это можно решить и иными способами
+            bool isHidden = false;
             switch (request.TargetTypeId)
             {
                 case 3:

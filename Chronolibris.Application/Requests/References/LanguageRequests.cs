@@ -5,8 +5,6 @@ namespace Chronolibris.Application.Requests.References
 {
     public record GetAllLanguagesQuery : IRequest<IEnumerable<LanguageDto>> { }
 
-    //public record GetFtsConfigurationsQuery : IRequest<IEnumerable<FtsConfigurationDto>> { }
-
     public record GetLanguageByIdQuery(long id) : IRequest<LanguageDto?>;
 
     public record CreateLanguageCommand(string Name) : IRequest<long>;

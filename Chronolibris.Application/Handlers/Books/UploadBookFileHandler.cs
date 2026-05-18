@@ -128,7 +128,7 @@ namespace Chronolibris.Application.Handlers.Books
                 //await _bookConversionService.ProcessAsync(bookFile.Id);
                 {
                     buffer.Position = 0; //так как епаб не формат для читалки, исключения не будет
-                    //но могло бы быть - потом посмотреть, как подправить
+                    //но могло бы быть, наверное, - потом посмотреть, как подправить
 
 
                     var result = await _converter.ConvertAsync(

@@ -22,7 +22,7 @@ namespace Chronolibris.Application.Handlers.References.Themes
                 var parentTheme = await _unitOfWork.Themes.GetByIdAsync(request.ParentThemeId.Value, cancellationToken);
                 if (parentTheme == null)
                 {
-                    throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
+                    throw new ChronolibrisException("Родительская тема не найдена", ErrorType.NotFound);
                 }
             }
 

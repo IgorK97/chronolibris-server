@@ -35,22 +35,22 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
         }
         public override IdentityError PasswordMismatch()
         {
-            return new IdentityError { Code = nameof(PasswordMismatch), Description = $"Пароли не совпадают" };
+            return new IdentityError { Code = nameof(PasswordMismatch), Description = "Пароли не совпадают" };
         }
 
         public override IdentityError PasswordRequiresLower()
         {
-            return new IdentityError { Code = nameof(PasswordRequiresLower), Description = $"Пароль должен содержать строчную букву" };
+            return new IdentityError { Code = nameof(PasswordRequiresLower), Description = "Пароль должен содержать строчную букву" };
         }
 
         public override IdentityError UserAlreadyHasPassword()
         {
-            return new IdentityError { Code = nameof(UserAlreadyHasPassword), Description = $"Этот пароль уже используется" };
+            return new IdentityError { Code = nameof(UserAlreadyHasPassword), Description = "Этот пароль уже используется" };
         }
 
         public override IdentityError InvalidUserName(string? userName)
         {
-            return new IdentityError { Code = nameof(InvalidUserName), Description = $"Некорректное имя пользователя" };
+            return new IdentityError { Code = nameof(InvalidUserName), Description = "Некорректное имя пользователя" };
         }
 
     }

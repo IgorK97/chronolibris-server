@@ -30,7 +30,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         }
 
         public async Task<long?> TryCreateActiveTaskAsync(ModerationTask task, CancellationToken token) //написал так, тогда, если такая запись уже есть,
-            //то будет не исключение, а просто 0 вернет
+            //то будет не исключение, а просто нулл вернет
         {
             var sql = @"
                 INSERT INTO moderation_tasks 
@@ -41,7 +41,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 RETURNING id;";
 
             var result = await _context.Database
-                .SqlQueryRaw<long>(sql,
+                .SqlQueryRaw<long?>(sql,
                     task.TargetId, task.TargetTypeId, task.ModeratedBy,
                     task.StartedAt, task.StatusId, task.Comment)
                 .ToListAsync(token);

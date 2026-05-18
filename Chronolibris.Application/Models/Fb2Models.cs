@@ -4,10 +4,10 @@ using Chronolibris.Domain.Models;
 
 namespace Chronolibris.Application.Models
 {
-    // Настройки процесса конвертации
+    //Настройки процесса конвертации
     public class ConversionOptions
     {
-        // Целевое число элементов (абзацев, разрывов, заголовков) в одном фрагменте
+        //Целевое число элементов (абзацев, разрывов, заголовков) в одном фрагменте
         public int TargetPartSize { get; init; } = 100;
     }
 
@@ -195,8 +195,8 @@ namespace Chronolibris.Application.Models
         /// <summary>
         /// Координаты элемента в дереве документа.
         /// Xp[0] — индекс body, Xp[1..^1] — индексы вложенных секций (по одному на каждый уровень),
-        /// Xp[^1] — порядковый номер элемента внутри непосредственно родительской секции.
-        /// Длина массива = 1 (нет секций) + глубина вложенности секций + 1.
+        /// Xp[^1] — порядковый номер элемента внутри непосредственно родительской секции
+        /// Длина массива = 1 (нет секций) + глубина вложенности секций + 1
         /// </summary>
         public required int[] Xp { get; init; }
         public int GlobalIndex { get; set; } //глобальный порядковый номер
@@ -204,7 +204,7 @@ namespace Chronolibris.Application.Models
     }
 
 
-    //Курсивный текст внутри абзаца {t:"em", c:"текст"}.
+    //Курсивный текст внутри абзаца {t:"em", c:"текст"}
     public sealed class EmSegment
     {
         [JsonPropertyName("t")]
@@ -214,7 +214,7 @@ namespace Chronolibris.Application.Models
         public required string C { get; init; }
     }
 
-    // Жирный текст внутри абзаца (st - strong, в файл тоже будет записываться кратко для экономии места) {t:"st", c:"текст"}.
+    //Жирный текст внутри абзаца (st - strong, в файл тоже будет записываться кратко для экономии места) {t:"st", c:"текст"}
     public sealed class StSegment
     {
         [JsonPropertyName("t")]

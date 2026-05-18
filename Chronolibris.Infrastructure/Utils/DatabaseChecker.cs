@@ -5,13 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Chronolibris.Infrastructure.DatabaseChecker
 {
-
-    /// <summary>
-    /// Статический класс, предоставляющий методы для проверки и инициализации базы данных
-    /// </summary>
     public static class DatabaseChecker
     {
-
         /// <summary>
         /// Асинхронно проверяет состояние базы данных, применяет ожидающие миграции 
         /// (если они есть) и гарантирует, что схема базы данных соответствует модели приложения

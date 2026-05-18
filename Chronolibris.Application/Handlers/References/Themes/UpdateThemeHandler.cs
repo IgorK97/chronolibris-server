@@ -17,14 +17,14 @@ namespace Chronolibris.Application.Handlers.References.Themes
         public async Task<Unit> Handle(UpdateThemeCommand request, CancellationToken ct)
         {
             var theme = await _unitOfWork.Themes.GetByIdAsync(request.Id, ct);
-            if (theme == null) throw new ChronolibrisException($"Тема с ID {request.Id} не найдена", ErrorType.NotFound);
+            if (theme == null) throw new ChronolibrisException("Тема не найдена", ErrorType.NotFound);
 
             if (request.ParentThemeId.HasValue)
             {
                 var parentTheme = await _unitOfWork.Themes.GetByIdAsync(request.ParentThemeId.Value, ct);
                 if (parentTheme == null)
                 {
-                    throw new ChronolibrisException($"Родительская тема с ID {request.ParentThemeId} не найдена", ErrorType.NotFound);
+                    throw new ChronolibrisException("Родительская тема не найдена", ErrorType.NotFound);
                 }
             }
 
