@@ -19,15 +19,15 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         {
             return await _context.BookFiles.Include(bf => bf.Book).Where(bf => bf.Id==id).FirstOrDefaultAsync();
         }
-        public async Task SaveConversionResultAsync(
+        public void SaveConversionResultAsync(
             long bookFileId,
             ConversionResult result,
             CancellationToken ct = default)
         {
-            var bookFile = await _context.BookFiles
-                .FirstOrDefaultAsync(f => f.Id == bookFileId, ct)
-                ?? throw new ChronolibrisException(
-                    $"Файл книги {bookFileId} не найден", ErrorType.NotFound);
+            //var bookFile = await _context.BookFiles
+            //    .FirstOrDefaultAsync(f => f.Id == bookFileId, ct)
+            //    ?? throw new ChronolibrisException(
+            //        $"Файл книги {bookFileId} не найден", ErrorType.NotFound);
 
             var fragments = result.PartFiles
                 .Where(f => f.FileType == StoredFileType.Part)
@@ -44,12 +44,14 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .ToList();
 
             if (fragments.Count > 0)
-                await _context.BookFragments.AddRangeAsync(fragments, ct);
+                //await _context.BookFragments.AddRangeAsync(fragments, ct);
+                _context.BookFragments.AddRange(fragments);
 
-            bookFile.StatusId = BookFileStatuses.COMPLETED;
-            bookFile.CompletedAt = result.CompletedAt;
 
-            await _context.SaveChangesAsync(ct);
+            //bookFile.StatusId = BookFileStatuses.COMPLETED;
+            //bookFile.CompletedAt = result.CompletedAt;
+
+            //await _context.SaveChangesAsync(ct);
         }
 
         public override async Task AddAsync(BookFile entity, CancellationToken token)

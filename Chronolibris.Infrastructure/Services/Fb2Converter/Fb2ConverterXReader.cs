@@ -17,9 +17,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         private static readonly JsonSerializerOptions JsonOpts = new JsonSerializerOptions()
         {
             WriteIndented = true, //отступы, если уберу, то будет минифицирован
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, //не записывать поля со значением null
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping //допускание записи специальных символов в их исходном виде без unicode-послежовательностей типа \u003c
-            //читабельность, уменьшение размера. Проблем со скриптами точно НЕ будет!!! React потому что
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         private readonly IStorageService _storage;
@@ -216,7 +215,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         var id = reader.GetAttribute("id");
                         noteElemIdx++;
 
-                        //извлечение содержимого тега и текста из тега
                         var pXml = await reader.ReadOuterXmlAsync();
                         var text = ExtractTextFromXmlString(pXml);
 
@@ -228,8 +226,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                                 notes[id] = new ParsedNote //поэтому запись в словаре создается при первом обнаружении
                                 {
                                     NoteId = id,
-                                    Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx], // body notes всегда плоские: body > section > p
-                                    Paragraphs = string.IsNullOrEmpty(text) ? [] : [text]
+                                    Xp = [noteBodyIdx, noteSectionIdx, noteElemIdx],
+                                    Paragraphs = [text]
                                 };
                             }
 
@@ -251,7 +249,7 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         continue;
                     }
 
-                    // картинка!!! <binary id="..." content-type="...">
+                    // картинка!!! <binary id= content-type= >
                     if (localName == "binary")
                     {
                         var binaryId = reader.GetAttribute("id") ?? "";
@@ -309,7 +307,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         }
 
         //метод второго прохода
-
         private async Task<(int totalElements, TocDocument toc)> SecondPassAsync(
             Stream stream,
             string bookId,
@@ -834,20 +831,17 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             if (mixed.Count == 0)
                 return (null, null);
 
-            //если все строки, то можно склеить в одну
             if (mixed.All(x => x is string))
             {
-                var plain = string.Concat(mixed.Cast<string>()); //приведение типа к строке
-                return plain.Length > 0 ? (plain, plain) : (null, null);
+                var plain = string.Concat(mixed.Cast<string>());
+                return (plain, plain);
             }
 
             var flatText = string.Concat(mixed.OfType<string>());
-            var s = string.IsNullOrEmpty(flatText) ? null : flatText; //если все строки были только пробелами
-            return (mixed, s);
+            return (mixed, flatText);
         }  
 
-        //Сериализует накопленный фрагмент, сохраняет в хранилище,
-        //добавляет запись в список tocParts
+        //сохранение в мин ио и обновление содержания
         private async Task<int> FlushPartAsync(
             string bookId,
             List<ParsedElement> part,
@@ -855,13 +849,13 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             int partIndex,
             CancellationToken ct)
         {
-            if (part.Count == 0) return partIndex; //проверка на пустой фрагмент - изменений нет
+            if (part.Count == 0) return partIndex;
 
             var first = part[0];
             var last = part[^1];
-            var fileName = $"{partIndex:D3}.json"; //000.json строка формата, целое число, 3 цифры
+            var fileName = $"{partIndex:D3}.json"; //000.json строка формата
 
-            var items = part.Select(MapToPartElement).ToList(); //преобразовать ParsedElement в PartElement для сохранения, группа методов или делегат (стрелочная функция)
+            var items = part.Select(pe => MapToPartElement(pe)).ToList();
             var json = JsonSerializer.Serialize(items, JsonOpts);
             var bytes = Encoding.UTF8.GetByteCount(json);
 
@@ -880,7 +874,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             return partIndex;
         }
 
-        //Метаданные (название книги) (парсинг outerXml блока description)
         private static BookMeta ParseMetaFromXml(string descXml)
         {
             using var r = XmlReader.Create(new StringReader(descXml),
@@ -892,9 +885,10 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             {
                 if (r.NodeType == XmlNodeType.Element)
                 {
-                    switch (r.LocalName)
+                    if(r.LocalName== "book-title")
                     {
-                        case "book-title": title = r.ReadElementContentAsString().Trim(); break;
+                        title = r.ReadElementContentAsString().Trim(); 
+                        break;
                     }
                 }
             }
@@ -904,22 +898,23 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             };
         }
 
-        //парсинг номера страницы - обязательно как pN
+        //номер страницы pN
         private static int? TryParsePageNumber(string? id)
         {
             if (id is null || id.Length < 2 || id[0] != 'p') return null;
-            //взять строку без первого символа без аллокации
-            return int.TryParse(id.AsSpan(1), out var n) && n > 0 ? n : null;
+            return int.TryParse(id.Substring(1), out var n) && n > 0 ? n : null;
 
         }
 
         private static XmlReader CreateXmlReader(Stream stream)
-            => XmlReader.Create(stream, new XmlReaderSettings
+        {
+            return XmlReader.Create(stream, new XmlReaderSettings
             {
                 DtdProcessing = DtdProcessing.Ignore,
-                IgnoreWhitespace = false, //сохранение пробельных узлов
-                Async = true //поддержка асинк методов
+                IgnoreWhitespace = false,
+                Async = true
             });
+        }
 
         private static string ExtractTextFromXmlString(string xml)
         {
@@ -993,12 +988,12 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 _ => ".jpg"
             };
 
-        private static readonly Regex MultipleNewlinesRegex = new Regex(@"\n+");
-        private static readonly Regex MultipleSpacesRegex = new Regex(@"[ \t]+");
-
         private static string CollapseWhitespace(string s)
         {
             if (string.IsNullOrEmpty(s)) return s;
+
+            Regex MultipleNewlinesRegex = new Regex(@"\n+");
+            Regex MultipleSpacesRegex = new Regex(@"[ \t]+");
 
             s = MultipleNewlinesRegex.Replace(s, "\n");
             s = MultipleSpacesRegex.Replace(s, " ");

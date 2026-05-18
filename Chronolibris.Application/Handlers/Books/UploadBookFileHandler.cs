@@ -36,17 +36,14 @@ namespace Chronolibris.Application.Handlers.Books
                 request.FormatId>2 || request.FormatId<1)
                 throw new ChronolibrisException("Неверно указан формат и режим использования книги", ErrorType.Validation);
 
-            var available_extension = Path.GetExtension(request.FileName).ToLowerInvariant();
-            if (available_extension != ".fb2" && available_extension != ".epub")
+            var extension = Path.GetExtension(request.FileName).ToLowerInvariant();
+            if (extension != ".fb2" && extension != ".epub")
                 throw new ChronolibrisException(
                     "Неподдерживаемый формат. Допустимые форматы: .fb2, .epub",
                     ErrorType.Validation);
 
             //var existingFile = await _bookFileRepository.GetByBookIdAndFormatIdAsync(
             //    request.BookId, request.FormatId, cancellationToken);
-            //if (existingFile != null)
-            //    throw new ChronolibrisException($"Файл формата {request.FormatId} уже существует для этой книги. " +
-            //        $"Сначала удалите старый файл, чтобы загрузить новый такого же формата", ErrorType.Conflict);
 
             var bookFile = new BookFile
             {
@@ -57,18 +54,13 @@ namespace Chronolibris.Application.Handlers.Books
                 OriginalSize = request.FileSizeBytes,
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
-                //CreatedBy = request.CreatedBy,
                 StatusId = BookFileStatuses.PENDING,
                 HistoricalText = request.HistoricalText
             };
 
-            await _unitOfWork.BookFiles.AddAsync(bookFile, cancellationToken); //сразу сохраняет сам, потом можно подправить, если что
-            //если неуспех, то исключение выбрасывает метод уже здесь
-            //await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+            await _unitOfWork.BookFiles.AddAsync(bookFile, cancellationToken); //нечисто, но исключения
             try
             {
-                var extension = Path.GetExtension(request.FileName).ToLowerInvariant();
                 using var buffer = new MemoryStream();
 
                 await request.FileStream.CopyToAsync(buffer, cancellationToken);
@@ -93,7 +85,7 @@ namespace Chronolibris.Application.Handlers.Books
 
                 else
                 {
-                    compressedSize = buffer.Length; //EPUB и так архив
+                    compressedSize = buffer.Length;
                     storageStream = buffer;
                     storageExtension = ".epub";
                 }
@@ -120,15 +112,14 @@ namespace Chronolibris.Application.Handlers.Books
                     : BookFileStatuses.COMPLETED;
                 bookFile.CompletedAt = DateTime.UtcNow;
 
-                _unitOfWork.BookFiles.Update(bookFile); //надеюсь, детачт нигде не вызывался, проверить и убрать потом
+                _unitOfWork.BookFiles.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 var bookFileId = bookFile.Id;
 
                 if (request.IsReadable)
                 //await _bookConversionService.ProcessAsync(bookFile.Id);
                 {
-                    buffer.Position = 0; //так как епаб не формат для читалки, исключения не будет
-                    //но могло бы быть, наверное, - потом посмотреть, как подправить
+                    buffer.Position = 0;
 
 
                     var result = await _converter.ConvertAsync(
@@ -137,9 +128,12 @@ namespace Chronolibris.Application.Handlers.Books
                         options: new ConversionOptions { TargetPartSize = 80 }
                       );
 
-                    await _unitOfWork.BookFiles.SaveConversionResultAsync(bookFileId, result);
+                    _unitOfWork.BookFiles.SaveConversionResultAsync(bookFileId, result);
+                    bookFile.StatusId = BookFileStatuses.COMPLETED;
+                    bookFile.CompletedAt = result.CompletedAt;
 
-                }  
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
 
                 return bookFile.Id;
             }
@@ -155,7 +149,7 @@ namespace Chronolibris.Application.Handlers.Books
                 }
                 catch (Exception ex1)
                 {
-                    message = "Ошибка при изменении данных о файле после неудачной загрузки"; //можно, наверное, логиовать, но клиенту что вернуть еще подумать
+                    message = "Ошибка при изменении данных о файле после неудачной загрузки";
                 }
                 throw new ChronolibrisException("Ошибка при создании файла: проблема с хранилищем файлов или в процессе конвертации. " + message+
                     ex.Message, ErrorType.ServerException);
@@ -194,9 +188,11 @@ namespace Chronolibris.Application.Handlers.Books
                 var container = zip.GetEntry("META-INF/container.xml")
                     ?? throw new ChronolibrisException("Не найден META-INF/container.xml — невалидный EPUB", ErrorType.Validation);
             }
-            catch (Exception ex) when (ex is not ChronolibrisException)
+            catch (Exception ex)
             {
-                throw new ChronolibrisException("Файл не является ZIP-архивом — невалидный EPUB", ErrorType.Validation);
+                if (ex is not ChronolibrisException)
+                    throw new ChronolibrisException("Файл не является валидным EPUB", ErrorType.Validation);
+                throw;
             }
             finally
             {
@@ -220,7 +216,6 @@ namespace Chronolibris.Application.Handlers.Books
                 {
                     if (reader.NodeType != XmlNodeType.Element) continue;
 
-                    //Корневой тег должен быть FictionBook (с namespace или без)
                     if (!reader.LocalName.Equals("FictionBook", StringComparison.OrdinalIgnoreCase))
                         throw new ChronolibrisException(
                             $"Корневой тег «{reader.LocalName}» не соответствует формату FB2", ErrorType.Validation);
@@ -228,9 +223,11 @@ namespace Chronolibris.Application.Handlers.Books
                     break;
                 }
             }
-            catch (Exception ex) when (ex is not ChronolibrisException)
+            catch (Exception ex)
             {
-                throw new ChronolibrisException("Файл не является валидным XML — невалидный FB2", ErrorType.Validation);
+                if (ex is not ChronolibrisException)
+                    throw new ChronolibrisException("Файл не является валидным FB2", ErrorType.Validation);
+                throw;
             }
             finally
             {
