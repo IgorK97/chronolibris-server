@@ -30,7 +30,9 @@ namespace ChronolibrisWeb.Controllers
         [HttpGet("{id}/download")]
         public async Task<ActionResult> DownloadBookFile(long id, CancellationToken cancellationToken)
         {
-            var query = new GetBookFileQuery(id);
+            if (!TryGetUserId(out var userId) || !TryGetRole(out var role))
+                return Unauthorized();
+            var query = new GetBookFileQuery(id, userId, role);
             var stream = await _mediator.Send(query, cancellationToken);
 
             if (stream == null)
@@ -78,6 +80,18 @@ namespace ChronolibrisWeb.Controllers
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier);
             return long.TryParse(claim?.Value, out userId);
+        }
+
+        private bool TryGetRole(out string role)
+        {
+            var claim = User.FindFirst(ClaimTypes.Role);
+            if (claim == null)
+            {
+                role = "";
+                return false;
+            }
+            role = claim.Value;
+            return true;
         }
     }
 }

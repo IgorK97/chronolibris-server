@@ -58,9 +58,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     .ThenInclude(bf => bf.Book)
                 .Include(b => b.BookFile)
                     .ThenInclude(bf => bf.Format)
-                .Where(b => b.UserId == userId && b.BookFile.Book.IsAvailable && b.Id>number 
+                .Where(b => b.UserId == userId && b.BookFile.Book.IsAvailable
                 && (b.BookFile.StatusId==BookFileStatuses.COMPLETED || b.BookFile.StatusId==BookFileStatuses.ARCHIVE));
-
+            if (number > 0)
+            {
+                query = query.Where(b => b.Id < number);
+            }
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 var pattern = $"%{searchQuery.Trim()}%";
@@ -72,7 +75,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             var totalCount = await query.CountAsync(token);
 
             var items = await query
-                .OrderByDescending(b => b.CreatedAt)
+                .OrderByDescending(b => b.Id)
                 .Take(pageSize)
                 .ToListAsync(token);
 

@@ -16,6 +16,7 @@ namespace Chronolibris.Application.Models
 
         public long BookFileId { get; set; }
         public string BookFileFormatName { get; set; } = string.Empty;
+        public int BookFileFormatId { get; set; }
         public long BookFileStatusId { get; set; }
 
         public long BookId { get; set; }

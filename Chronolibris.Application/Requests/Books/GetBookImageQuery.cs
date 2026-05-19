@@ -7,5 +7,5 @@ using MediatR;
 
 namespace Chronolibris.Application.Requests.Books
 {
-    public record GetBookImageQuery(long BookFileId, string FileName):IRequest<Stream?>;
+    public record GetBookImageQuery(long BookFileId, string FileName, long UserId, string Role):IRequest<Stream?>;
 }

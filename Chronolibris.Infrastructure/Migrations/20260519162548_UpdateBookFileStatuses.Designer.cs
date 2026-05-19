@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260519162548_UpdateBookFileStatuses")]
+    partial class UpdateBookFileStatuses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,10 +215,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("format_id");
 
-                    b.Property<DateTime?>("HiddenAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("hidden_at");
-
                     b.Property<bool?>("HistoricalText")
                         .HasColumnType("boolean")
                         .HasColumnName("historical_text");
@@ -263,8 +262,6 @@ namespace Chronolibris.Infrastructure.Migrations
                             t.HasCheckConstraint("CK_book_files_original_size_positive", "original_size > 0");
 
                             t.HasCheckConstraint("CK_book_files_stored_size_not_negative", "stored_size>=0");
-
-                            t.HasCheckConstraint("ck_book_files_archive_rule", "(status_id = 6 AND is_readable = true AND hidden_at IS NOT NULL) OR (status_id != 6 AND hidden_at IS NULL)");
 
                             t.HasCheckConstraint("ck_book_files_readable_format", "NOT (\"is_readable\" = true) OR (\"format_id\" = 1)");
                         });

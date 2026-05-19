@@ -111,10 +111,11 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("files/{bookFileId}/toc")]
-        public async Task<ActionResult> GetToc(long bookFileId)
+        public async Task<ActionResult> GetToc(long bookFileId, CancellationToken ct)
         {
-
-            var json = await _mediator.Send(new GetTocQuery(bookFileId));
+            if (!TryGetUserId(out var userId) || !TryGetRole(out var role))
+                return Unauthorized();
+            var json = await _mediator.Send(new GetTocQuery(bookFileId, userId, role), ct);
             if (json is null)
                 return NotFound();
 
@@ -123,10 +124,11 @@ namespace ChronolibrisWeb.Controllers
         }
 
         [HttpGet("files/{bookFileId}/chunks/{chunkIndex}")]
-        public async Task<ActionResult> GetChunk(long bookFileId, string chunkIndex)
+        public async Task<ActionResult> GetChunk(long bookFileId, string chunkIndex, CancellationToken ct)
         {
-
-            var json = await _mediator.Send(new GetChunkQuery(bookFileId, chunkIndex));
+            if (!TryGetUserId(out var userId) || !TryGetRole(out var role))
+                return Unauthorized();
+            var json = await _mediator.Send(new GetChunkQuery(bookFileId, chunkIndex, userId, role), ct);
             if (json is null)
                 return NotFound(new { message = $"Фрагмент {chunkIndex} не найден" });
 
@@ -137,8 +139,10 @@ namespace ChronolibrisWeb.Controllers
         [HttpGet("images/{bookfileId}/{fileName}")]
         public async Task<ActionResult> GetImage(long bookFileId, string fileName, CancellationToken ct)
         {
+            if (!TryGetUserId(out var userId) || !TryGetRole(out var role))
+                return Unauthorized();
             var stream = await _mediator.Send(
-                new GetBookImageQuery(bookFileId, fileName), ct);
+                new GetBookImageQuery(bookFileId, fileName, userId, role), ct);
 
             if (stream is null)
                 return NotFound();
@@ -152,6 +156,24 @@ namespace ChronolibrisWeb.Controllers
             };
 
             return File(stream, contentType);
+        }
+
+        private bool TryGetUserId(out long userId)
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            return long.TryParse(claim?.Value, out userId);
+        }
+
+        private bool TryGetRole(out string role)
+        {
+            var claim = User.FindFirst(ClaimTypes.Role);
+            if (claim == null)
+            {
+                role = "";
+                return false;
+            }
+            role = claim.Value;
+            return true;
         }
     }
 }

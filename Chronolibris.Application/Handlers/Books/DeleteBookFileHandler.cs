@@ -24,9 +24,10 @@ namespace Chronolibris.Application.Handlers.Books
             if (bookFile == null)
                 return Unit.Value;
 
-            if (bookFile.StatusId != BookFileStatuses.ARCHIVE)
+            if (bookFile.StatusId != BookFileStatuses.ARCHIVE && bookFile.IsReadable == true)
             {
                 bookFile.StatusId = BookFileStatuses.ARCHIVE;
+                bookFile.HiddenAt = DateTime.UtcNow;
                 _unitOfWork.BookFiles.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

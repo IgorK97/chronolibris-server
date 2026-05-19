@@ -43,6 +43,7 @@ namespace Chronolibris.Application.Handlers.Bookmarks
                     CreatedAt = b.CreatedAt,
                     BookFileId = b.BookFileId,
                     BookFileFormatName = b.BookFile?.Format?.Name ?? string.Empty,
+                    BookFileFormatId = b.BookFile!.Format!.Id,
                     BookFileStatusId = b.BookFile!.StatusId,
                     BookId = b.BookFile?.BookId ?? 0,
                     BookTitle = b.BookFile?.Book?.Title ?? string.Empty,

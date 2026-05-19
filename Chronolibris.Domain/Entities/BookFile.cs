@@ -23,6 +23,7 @@ namespace Chronolibris.Domain.Entities
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
+        public DateTime? HiddenAt { get; set; }
         //public required DateTime UpdatedAt { get; set; }
         //[Required]
         //public long CreatedBy { get; set; }

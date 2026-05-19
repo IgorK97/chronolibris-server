@@ -115,7 +115,8 @@ namespace Chronolibris.Infrastructure.Services.IdentityService
                 audience: _config["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddDays(365),
-                signingCredentials: creds);
+                signingCredentials: creds
+                );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
