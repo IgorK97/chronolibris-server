@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Application.Requests.Books;
+using Chronolibris.Domain.Entities;
 using Chronolibris.Domain.Interfaces.Repository;
 using Chronolibris.Domain.Interfaces.Services;
 using MediatR;
@@ -23,9 +24,18 @@ namespace Chronolibris.Application.Handlers.Books
             if (bookFile == null)
                 return Unit.Value;
 
-            _unitOfWork.BookFiles.Delete(bookFile);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _bookStorage.DeleteBookDataAsync(bookFile.Id.ToString(), cancellationToken);
+            if (bookFile.StatusId != BookFileStatuses.ARCHIVE)
+            {
+                bookFile.StatusId = BookFileStatuses.ARCHIVE;
+                _unitOfWork.BookFiles.Update(bookFile);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                _unitOfWork.BookFiles.Delete(bookFile);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _bookStorage.DeleteBookDataAsync(bookFile.Id.ToString(), cancellationToken);
+            }
 
             return Unit.Value;
         }

@@ -45,5 +45,38 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         {
             return await _context.Bookmarks.Where(b => b.BookFileId == bookId && b.UserId == userId && b.Xpointer == xpointer).FirstOrDefaultAsync(token);
         }
+
+        public async Task<(List<Bookmark> Items, int TotalCount)> GetPagedForUserAsync(
+            long userId,
+            int number,
+            int pageSize,
+            string? searchQuery,
+            CancellationToken token = default)
+        {
+            var query = _context.Bookmarks
+                .Include(b => b.BookFile)
+                    .ThenInclude(bf => bf.Book)
+                .Include(b => b.BookFile)
+                    .ThenInclude(bf => bf.Format)
+                .Where(b => b.UserId == userId && b.BookFile.Book.IsAvailable && b.Id>number 
+                && (b.BookFile.StatusId==BookFileStatuses.COMPLETED || b.BookFile.StatusId==BookFileStatuses.ARCHIVE));
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                var pattern = $"%{searchQuery.Trim()}%";
+                query = query.Where(b =>
+                    EF.Functions.ILike(b.Context, pattern) ||
+                    (b.Note != null && EF.Functions.ILike(b.Note, pattern)));
+            }
+
+            var totalCount = await query.CountAsync(token);
+
+            var items = await query
+                .OrderByDescending(b => b.CreatedAt)
+                .Take(pageSize)
+                .ToListAsync(token);
+
+            return (items, totalCount);
+        }
     }
 }

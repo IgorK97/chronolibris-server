@@ -69,5 +69,26 @@ namespace ChronolibrisWeb.Controllers
             var bookmarks = await _mediator.Send(new GetBookmarksQuery(bookId, userId));
             return Ok(bookmarks);
         }
+
+        [HttpGet("my")]
+        [Authorize(Roles = "reader")]
+        public async Task<IActionResult> GetMyBookmarks(
+            [FromQuery] int number = 0,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? search = null,
+            CancellationToken cancellationToken = default)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            if (pageSize < 1 || pageSize > 100) pageSize = 20;
+
+            var result = await _mediator.Send(
+                new GetUserBookmarksPagedQuery(userId, number, pageSize, search),
+                cancellationToken);
+
+            return Ok(result);
+        }
     }
 }
