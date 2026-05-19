@@ -318,7 +318,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
         {
             //список элементов текущего накапливаемого фрагмента
             var currentPart = new List<ParsedElement>();
-            //списки метаданных фрагментов
             var sectionStack = new Stack<SectionFrame>();
             var allChapters = new List<TocChapter>(); //список всех глав для оглавления
             var tocParts = new List<TocPart>(); //список всех сохраненных фрагментов для TOC
@@ -506,10 +505,8 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                         }
                         else
                         {
-                            //все остальное - уже текстовое
                             var outerXml = await reader.ReadOuterXmlAsync(); //тег целиком
-                            var (content, flatText) = ParseMixedXml(outerXml, notes, imageMap); //он могу быть смешанным
-                            //(с другими сносками и картинками и т.д.) - в общем, рекурсивная структура гипотетически
+                            var (content, flatText) = ParseMixedXml(outerXml, notes, imageMap); //он мог быть смешанным
 
                             if (content != null || localName != "p") //контента может не быть, 
                                                                      //но это может быть заголовок и т.д. - в таком случае, тоже сохранить (потом можно проверить
@@ -530,8 +527,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
                         //Заголовок верхнего уровня (это стек,
                         //если там до одного элемента, значит, заголовок верхнего уровня)
-                        //Если потребуется составить оглавление многоуровневое - 
-                        //подправить потом здесь
                         //if (pe.Type == "title" && sectionStack.Count <= 1)
                         //    UpdateChapters(allChapters, pe, globalIdx);
 
@@ -698,7 +693,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
         //Парсит смешанный XML-фрагмент
         //в объект Content (string или List или object) и plain-text
-        //Использует легковесный XmlReader — не создаёт полный DOM
         private (object? content, string? flatText) ParseMixedXml(
             string outerXml,
             Dictionary<string, ParsedNote> notes,
@@ -918,47 +912,38 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
 
         private static string ExtractTextFromXmlString(string xml)
         {
-            try
-            {
-                using var r = XmlReader.Create(new StringReader(xml),
-                    new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore });
-                var sb = new StringBuilder();
-                while (r.Read())
-                    if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
-                        sb.Append(r.Value);
-                return CollapseWhitespace(sb.ToString()); //убрать лишние пробелы
-            }
-            catch { return string.Empty; }
+            using var r = XmlReader.Create(new StringReader(xml),
+                                new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore });
+            var sb = new StringBuilder();
+            while (r.Read())
+                if (r.NodeType is XmlNodeType.Text or XmlNodeType.SignificantWhitespace)
+                    sb.Append(r.Value);
+            return CollapseWhitespace(sb.ToString());
+
         }
 
-
-        //массив координат (xp) для текущей позиции в дереве документа
-        //xp[0] = bodyIdx
-        //xp[1..^1] = порядковые номера секций на каждом уровне вложенности (от внешних к внутренним)
-        //xp[^1] = elemIdx — номер текущего элемента внутри самой глубокой секции
         private static int[] BuildXp(
             int bodyIdx,
             Stack<SectionFrame> sectionStack,
             int elemIdx)
         {
-            //Стек хранится как лифо, то есть верх - самый вложенный
+            //то есть верх - самый вложенный
             //поэтому для построения пути от корня к листу нужно перевернуть порядок
-            var frames = sectionStack.ToArray(); // [innermost, ..., outermost]
+            var frames = sectionStack.ToArray();
             //Длина: 1 (body) + глубина секций + 1 (elem)
             var xp = new int[1 + frames.Length + 1];
             xp[0] = bodyIdx;
             for (int i = 0; i < frames.Length; i++)
-                xp[i + 1] = frames[frames.Length - 1 - i].SectionOrdinal; //от внешнего к внутреннему
-            xp[^1] = elemIdx;
+                xp[i + 1] = frames[frames.Length - 1 - i].SectionOrdinal;
+            xp[1+frames.Length] = elemIdx;
             return xp;
         }
 
-        //преобразование предварительной модели в конечную
+        //преобразование в конечную модель
         private static PartElement MapToPartElement(ParsedElement pe)
         {
             object? c = pe.Content;
 
-            // pn-элемент: Content — int (номер страницы)
             if (pe.Type == "pn" && c is int pageNum)
             {
                 return new PartElement
@@ -969,7 +954,6 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
                 };
             }
 
-            // Если Content — одиночный ImgSegment, список из одного
             if (c is ImgSegment img)
                 c = new List<object> { img };
 
@@ -981,12 +965,14 @@ namespace Chronolibris.Infrastructure.Services.Fb2Converter
             };
         }
 
-        private static string ContentTypeToExtension(string contentType) =>
-            contentType.ToLowerInvariant() switch
+        private static string ContentTypeToExtension(string contentType)
+        {
+            return contentType.ToLowerInvariant() switch
             {
                 "image/png" => ".png",
                 _ => ".jpg"
             };
+        }
 
         private static string CollapseWhitespace(string s)
         {

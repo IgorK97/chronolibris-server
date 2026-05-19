@@ -133,10 +133,7 @@ namespace Chronolibris.Application.Models
         public required List<string> C { get; init; }
     }
 
-
-    /// <summary>
-    /// Сериализует PartElement так, чтобы поле c было либо строкой, либо массивом, либо отсутствовало
-    /// </summary>
+    // Сериализует PartElement так, чтобы поле c было либо строкой, либо массивом, либо отсутствовало
     public class PartElementJsonConverter : JsonConverter<PartElement>
     {
         public override PartElement Read(ref Utf8JsonReader reader,
@@ -190,21 +187,15 @@ namespace Chronolibris.Application.Models
     //Элемент, накапливаемый в процессе обхода XML до разбивки на фрагменты
     public class ParsedElement
     {
-        public required string Type { get; init; }   // p / br / title / subtitle - тип тега
+        public required string Type { get; init; }   //p / br / title / subtitle - тип тега
         public object? Content { get; init; } //Само содержимое
-        /// <summary>
-        /// Координаты элемента в дереве документа.
-        /// Xp[0] — индекс body, Xp[1..^1] — индексы вложенных секций (по одному на каждый уровень),
-        /// Xp[^1] — порядковый номер элемента внутри непосредственно родительской секции
-        /// Длина массива = 1 (нет секций) + глубина вложенности секций + 1
-        /// </summary>
         public required int[] Xp { get; init; }
         public int GlobalIndex { get; set; } //глобальный порядковый номер
         public string? Text { get; init; } //чистый текст
     }
 
 
-    //Курсивный текст внутри абзаца {t:"em", c:"текст"}
+    //Курсивный текст внутри абзаца
     public sealed class EmSegment
     {
         [JsonPropertyName("t")]
@@ -214,7 +205,7 @@ namespace Chronolibris.Application.Models
         public required string C { get; init; }
     }
 
-    //Жирный текст внутри абзаца (st - strong, в файл тоже будет записываться кратко для экономии места) {t:"st", c:"текст"}
+    //Жирный текст внутри абзаца
     public sealed class StSegment
     {
         [JsonPropertyName("t")]
@@ -225,11 +216,8 @@ namespace Chronolibris.Application.Models
     }
 
 
-    /// <summary>
-    /// Сегмент изображения. Используется как элемент верхнего уровня (t="p" с единственным img)
-    /// или как вложенный сегмент внутри абзаца
-    /// {t:"img", src:"1.jpg"}
-    /// </summary>
+
+    //{t:"img", src:"1.jpg"}
     public sealed class ImgSegment
     {
         [JsonPropertyName("t")]
