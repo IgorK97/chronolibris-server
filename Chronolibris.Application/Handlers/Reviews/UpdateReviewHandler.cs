@@ -21,7 +21,7 @@ namespace Chronolibris.Application.Handlers.Reviews
         public async Task<Unit> Handle(UpdateReviewCommand cmd, CancellationToken ct)
         {
             var review = await _uow.Reviews.GetByIdAsync(cmd.ReviewId, ct);
-            if (review == null || review.IsDeleted)
+            if (review == null || review.DeletedAt!=null)
             {
                 throw new ChronolibrisException("Отзыв не найден", ErrorType.NotFound);
             }

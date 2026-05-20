@@ -7,7 +7,7 @@ namespace Chronolibris.Domain.Entities
         public required long Id { get; set; }
         public required long UserId { get; set; }
         public required long BookId { get; set; }
-        public required bool IsDeleted { get; set; }
+        //public required bool IsDeleted { get; set; }
         [MinLength(120)]
         [MaxLength(5000)]
         public string? ReviewText { get; set; }

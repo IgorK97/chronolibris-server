@@ -50,7 +50,7 @@ namespace Chronolibris.Application.Handlers.Reports
                 case 3:
                     {
                         var comment = await _unitOfWork.Comments.GetByIdAsync(request.TargetId, cancellationToken);
-                        if (comment is not null && comment.IsDeleted || comment == null)
+                        if (comment is not null && comment.DeletedAt!=null || comment == null)
                         {
                             isHidden = true;
                         }
@@ -59,7 +59,7 @@ namespace Chronolibris.Application.Handlers.Reports
                 case 2:
                     {
                         var review = await _unitOfWork.Reviews.GetByIdAsync(request.TargetId, cancellationToken);
-                        if (review is not null && review.IsDeleted || review == null)
+                        if (review is not null && review.DeletedAt!=null || review == null)
                         {
                             isHidden = true;
                         }

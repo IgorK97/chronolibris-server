@@ -115,7 +115,7 @@ namespace ChronolibrisServer.Tests.Reports
         public async Task Handle_ResolutionTrue_CommentTarget_CommentDeleted()
         {
             var task = BuildTask(targetTypeId: 3);
-            var comment = new Comment { Id = targetId,Text="Text",CreatedAt = DateTime.UtcNow, IsDeleted = false };
+            var comment = new Comment { Id = targetId,Text="Text",CreatedAt = DateTime.UtcNow, DeletedAt=null };
 
             _taskRepoMock
                 .Setup(r => r.GetByIdAsync(taskId, It.IsAny<CancellationToken>()))
@@ -128,7 +128,6 @@ namespace ChronolibrisServer.Tests.Reports
 
             result.Success.Should().BeTrue();
             task.StatusId.Should().Be(3); //Приняты
-            comment.IsDeleted.Should().BeTrue();
             comment.DeletedAt.Should().NotBeNull();
         }
     }

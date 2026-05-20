@@ -41,7 +41,7 @@ namespace Chronolibris.Application.Handlers.Reviews
                 Score = request.Score,
                 CreatedAt = DateTime.UtcNow,
                 Id = 0,
-                IsDeleted = false,
+                //IsDeleted = false,
             };
 
             await _unitOfWork.Reviews.AddAsync(review, cancellationToken);

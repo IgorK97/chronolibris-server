@@ -74,7 +74,8 @@ namespace ChronolibrisServer.Tests.Reports
                 BookId = 1,
                 CreatedAt = DateTime.Now,
                 Id = 10,
-                IsDeleted = false,
+                //IsDeleted = false,
+                DeletedAt = null,
                 Score = 5,
                 UserId = 1
             });

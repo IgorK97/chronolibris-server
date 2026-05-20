@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Security.Claims;
 using Chronolibris.Application.Requests.Selections;
+using ChronolibrisWeb.InputModels;
+using ChronolibrisWeb.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,10 +72,11 @@ namespace ChronolibrisWeb.Controllers
 
         [HttpPut("{selectionId}")]
         [Authorize(Roles ="admin")]
-        public async Task<IActionResult> UpdateSelection(long selectionId, [FromBody] UpdateSelectionRequest request)
+        public async Task<IActionResult> UpdateSelection(long selectionId, [FromBody] UpdateSelectionInputModel request)
         {
-            request = request with { SelectionId = selectionId };
-            var result = await _mediator.Send(request);
+            if (!ControllerUtils.TryGetUserId(User, out var userId))
+                return Unauthorized();
+            var result = await _mediator.Send(new UpdateSelectionRequest(request.SelectionId, request.Name, request.Description, request.IsActive,userId));
             return NoContent();
         }
 

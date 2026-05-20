@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Domain.Entities;
+using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,6 +22,14 @@ namespace Chronolibris.Infrastructure.Configurations
                                    .OnDelete(DeleteBehavior.Cascade)
                );
 
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b=>b.CreatedBy);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.UpdatedBy);
+
             builder.Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
@@ -40,6 +49,10 @@ namespace Chronolibris.Infrastructure.Configurations
                 t.HasCheckConstraint(
                     "CK_books_year_range",
                     "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
+
+                t.HasCheckConstraint(
+                    "CK_books_updated",
+                    "(updated_at = NULL AND updated_by = NULL) OR (updated_at != NULL AND updated_by != NULL)");
             });
 
             builder.HasMany(b => b.Shelves)

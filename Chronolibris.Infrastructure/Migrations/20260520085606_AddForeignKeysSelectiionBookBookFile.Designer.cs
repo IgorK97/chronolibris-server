@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260520085606_AddForeignKeysSelectiionBookBookFile")]
+    partial class AddForeignKeysSelectiionBookBookFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +77,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<long>("CreatedBy")
+                    b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint")
                         .HasColumnName("created_by");
 
@@ -164,8 +167,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                             t.HasCheckConstraint("CK_books_title_alnum", "title ~ '[[:alnum:]]'");
 
-                            t.HasCheckConstraint("CK_books_updated", "(updated_at = NULL AND updated_by = NULL) OR (updated_at != NULL AND updated_by != NULL)");
-
                             t.HasCheckConstraint("CK_books_year_range", "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
                         });
                 });
@@ -224,7 +225,7 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<long>("CreatedBy")
+                    b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint")
                         .HasColumnName("created_by");
 
@@ -301,12 +302,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     b.ToTable("book_files", null, t =>
                         {
-                            t.HasCheckConstraint("CK_book_files_completed", "(completed_at = NULL AND status_id < 4) OR (completed_at != NULL AND status_id >= 4)");
-
-                            t.HasCheckConstraint("CK_book_files_deleted", "(deleted_at = NULL AND status_id != 7) OR (deleted_at != NULL AND status_id = 7)");
-
-                            t.HasCheckConstraint("CK_book_files_hidden", "(hidden_at = NULL AND status_id < 6) OR (hidden_at != NULL AND status_id >=6)");
-
                             t.HasCheckConstraint("CK_book_files_original_size_positive", "original_size > 0");
 
                             t.HasCheckConstraint("CK_book_files_stored_size_not_negative", "stored_size>=0");
@@ -367,11 +362,6 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 6L,
                             Name = "Архив"
-                        },
-                        new
-                        {
-                            Id = 7L,
-                            Name = "Удален"
                         });
                 });
 
@@ -1723,10 +1713,7 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasIndex("UpdatedBy")
                         .HasDatabaseName("ix_selections_updated_by");
 
-                    b.ToTable("selections", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_selections_updated", "(updated_at = NULL AND updated_by = NULL) OR (updated_at != NULL AND updated_by != NULL)");
-                        });
+                    b.ToTable("selections", (string)null);
 
                     b.HasData(
                         new
@@ -2427,8 +2414,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_books_users_created_by");
 
                     b.HasOne("Chronolibris.Domain.Entities.Language", "Language")
@@ -2489,8 +2474,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_book_files_users_created_by");
 
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)

@@ -133,7 +133,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ReaderId = c.UserId,
                     ReaderName = u.UserName,
                     BookId = c.BookId,
-                    IsActive = !c.IsDeleted,
+                    IsActive = c.DeletedAt==null,
                     LastUpdatedAt = c.DeletedAt ?? c.CreatedAt,
                 }).FirstOrDefaultAsync();
             }
@@ -150,7 +150,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     ReaderId = r.UserId,
                     ReaderName = u.UserName,
                     BookId = r.BookId,
-                    IsActive = !r.IsDeleted,
+                    IsActive = r.DeletedAt == null,
                     LastUpdatedAt = r.DeletedAt ?? r.CreatedAt,
                 }).FirstOrDefaultAsync();
             }

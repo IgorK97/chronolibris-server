@@ -21,7 +21,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                    DeletedAt = c.DeletedAt,
                    Id = c.Id,
                    Text = c.Text,
-                   IsDeleted = c.IsDeleted,
+                   IsDeleted = c.DeletedAt != null,
                    UserLogin = u.UserName,
                    ParentCommentId = c.ParentCommentId,
                    RepliesCount = c.Replies.Count(),
@@ -51,7 +51,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 CreatedAt = c.CreatedAt,
                 DeletedAt = c.DeletedAt,
                 ParentCommentId = c.ParentCommentId,
-                IsDeleted = c.IsDeleted,
+                IsDeleted = c.DeletedAt != null,
 
                 Text = c.DeletedAt==null ? c.Text : null, //потом унифицировать все с хэндлерами
                 RepliesCount = c.Replies.Count(),
@@ -82,7 +82,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     CreatedAt = c.CreatedAt,
                     DeletedAt = c.DeletedAt,
                     ParentCommentId = c.ParentCommentId,
-                    IsDeleted = c.IsDeleted,
+                    IsDeleted = c.DeletedAt != null,
 
                     Text = c.DeletedAt == null ? c.Text : null, //потом унифицировать все с хэндлерами
                     RepliesCount = c.Replies.Count(),

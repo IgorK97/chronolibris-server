@@ -13,7 +13,8 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 new BookFileStatus { Id=3, Name="Обработка"},
                 new BookFileStatus { Id=4, Name="Готов"},
                 new BookFileStatus { Id=5, Name="Ошибка"},
-                new BookFileStatus { Id=6, Name="Архив"});
+                new BookFileStatus { Id=6, Name="Архив"},
+                new BookFileStatus { Id=7, Name="Удален"});
         }
     }
 }

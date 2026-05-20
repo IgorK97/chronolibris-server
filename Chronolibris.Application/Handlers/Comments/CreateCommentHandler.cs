@@ -38,7 +38,7 @@ namespace Chronolibris.Application.Handlers.Comments
                 Text = request.Text,
                 ParentCommentId = request.ParentCommentId,
                 CreatedAt = DateTime.UtcNow,
-                IsDeleted = false,
+                //IsDeleted = false,
             };
             await _uow.Comments.AddAsync(comment, ct);
             await _uow.SaveChangesAsync();

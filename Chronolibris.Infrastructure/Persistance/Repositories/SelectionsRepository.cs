@@ -31,16 +31,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             return rowsAffected > 0;
         }
 
-        public async Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken ct)
-        {
-            var selection = await _context.Selections
-                .Include(s => s.Books)
-                .FirstOrDefaultAsync(s => s.Id == id, ct);
-            if ((userId == 0 || !(userRole == "admin" || userRole == "moderator")) && selection?.IsActive == false)
-                return null;
-            return selection;
-        }
-
         public async Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken ct)
         {
             return await _context.Selections
@@ -145,20 +135,6 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
             _context.Selections.Add(selection);
             await _context.SaveChangesAsync(ct); //Пока здесь оставлю
             return selection.Id;
-        }
-
-        public async Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct)
-        {
-            var selection = await _context.Selections.Where(s => s.Id == selectionId).FirstOrDefaultAsync(ct);
-            if (selection == null) return false;
-
-            if (name != null) selection.Name = name;
-            if (description != null) selection.Description = description;
-            if (isActive.HasValue) selection.IsActive = isActive.Value;
-            selection.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync(ct);
-            return true;
         }
         public async Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct)
         {

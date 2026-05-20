@@ -1,4 +1,5 @@
 ﻿using Chronolibris.Domain.Entities;
+using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,7 +24,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                     "(status_id = 6 AND is_readable = true AND hidden_at IS NOT NULL) " +
                     "OR " +
                     "(status_id != 6 AND hidden_at IS NULL)");
-            });
+                t.HasCheckConstraint(
+                    "CK_book_files_hidden",
+                    "(hidden_at = NULL AND status_id < 6) OR (hidden_at != NULL AND status_id >=6)");
+                t.HasCheckConstraint(
+                    "CK_book_files_deleted",
+                    "(deleted_at = NULL AND status_id != 7) OR (deleted_at != NULL AND status_id = 7)");
+                t.HasCheckConstraint(
+                    "CK_book_files_completed",
+                    "(completed_at = NULL AND status_id < 4) OR (completed_at != NULL AND status_id >= 4)");
+                });
 
             builder.HasOne(bf => bf.BookFileStatus)
                 .WithMany(bs => bs.BookFiles)
@@ -32,6 +42,18 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
 
             builder.Property(bf => bf.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.CreatedBy);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.HiddenBy);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.DeletedBy);
 
             //builder.Property(bf => bf.HistoricalText);
 

@@ -46,9 +46,9 @@ namespace Chronolibris.Application.Handlers.Reports
                         case 3:
                             {
                                 var comment = await _unitOfWork.Comments.GetByIdAsync(task.TargetId, token);
-                                if(comment is not null && !comment.IsDeleted)
+                                if(comment is not null && comment.DeletedAt == null)
                                 {
-                                    comment.IsDeleted = true;
+                                    //comment.IsDeleted = true;
                                     comment.DeletedAt = now;
                                 }
                                 break;
@@ -56,9 +56,9 @@ namespace Chronolibris.Application.Handlers.Reports
                         case 2:
                             {
                                 var review = await _unitOfWork.Reviews.GetByIdAsync(task.TargetId, token);
-                                if(review is not null && !review.IsDeleted)
+                                if(review is not null && review.DeletedAt == null)
                                 {
-                                    review.IsDeleted = true;
+                                    //review.IsDeleted = true;
                                     review.DeletedAt = now;
                                     //review.ModeratedAt = now;
                                 }

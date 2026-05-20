@@ -1,15 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MediatR;
 
-namespace Chronolibris.Application.Requests.Selections
+namespace ChronolibrisWeb.InputModels
 {
-    public record UpdateSelectionRequest(
+    public record UpdateSelectionInputModel(
             long SelectionId,
             [MaxLength(500)]
             string? Name,
             [MaxLength(2000)]
             string? Description,
-            bool? IsActive,
-            long UserId
-        ) : IRequest<bool>;
+            bool? IsActive
+        );
 }

@@ -20,7 +20,7 @@ namespace Chronolibris.Application.Handlers.Reviews
                 throw new ChronolibrisException("Нет доступа", ErrorType.Forbidden);
 
             review.DeletedAt = DateTime.UtcNow;
-            review.IsDeleted = true;
+            //review.IsDeleted = true;
 
             await _uow.SaveChangesAsync(ct);
             return Unit.Value;

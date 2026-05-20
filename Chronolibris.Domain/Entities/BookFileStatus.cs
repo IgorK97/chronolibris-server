@@ -10,6 +10,7 @@ namespace Chronolibris.Domain.Entities
         public static readonly int COMPLETED = 4;
         public static readonly int FAILED = 5;
         public static readonly int ARCHIVE = 6;
+        public static readonly int DELETED = 7;
     }
     public class BookFileStatus
     {

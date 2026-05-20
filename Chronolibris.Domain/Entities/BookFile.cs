@@ -22,8 +22,12 @@ namespace Chronolibris.Domain.Entities
         public bool? HistoricalText { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
+        public long CreatedBy { get; set; }
         public DateTime? CompletedAt { get; set; }
         public DateTime? HiddenAt { get; set; }
+        public long? HiddenBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public long? DeletedBy { get; set; }
         //public required DateTime UpdatedAt { get; set; }
         //[Required]
         //public long CreatedBy { get; set; }

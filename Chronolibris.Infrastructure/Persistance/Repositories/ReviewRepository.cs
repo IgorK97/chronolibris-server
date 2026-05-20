@@ -15,7 +15,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
         public async Task<ReviewDetailsWithVote?> GetActiveByUserAndBookAsync(long userId, long bookId, CancellationToken token = default)
         {
             return await _context.Reviews.AsNoTracking()
-                .Where(r => r.UserId == userId && r.BookId == bookId && !r.IsDeleted).OrderByDescending(r => r.CreatedAt)
+                .Where(r => r.UserId == userId && r.BookId == bookId && r.DeletedAt==null).OrderByDescending(r => r.CreatedAt)
 
                 .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
@@ -31,7 +31,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                         UpdatedAt = r.UpdatedAt,
                         //ModeratedAt = r.ModeratedAt,
                         DeletedAt = r.DeletedAt,
-                        IsDeleted= r.IsDeleted,
+                        //IsDeleted= r.IsDeleted,
                         //ReviewStatus = r.ReviewStatus
                     },
                     UserName = u.UserName,
@@ -55,7 +55,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 query = query.Where(r => r.Id > lastId.Value);
             }
 
-            return await query.Where(r => !r.IsDeleted && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
+            return await query.Where(r => r.DeletedAt==null && r.ReviewText!= null).OrderBy(r => r.Id).Take(limit+1)
                 .Join(_context.Users, r => r.UserId, u => u.Id, (r, u) => new ReviewDetailsWithVote
                 {
                     Review = r,
@@ -76,7 +76,7 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                 {
                     Review = r,
                     UserName = u.UserName,
-                    IsDeleted = r.IsDeleted,
+                    IsDeleted = r.DeletedAt != null,
                     DislikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == -1),
                     LikesCount = r.ReviewsRatings.LongCount(rr => rr.ReactionType == 1),
                     UserVote = r.ReviewsRatings.Where(rr => rr.UserId == userId)

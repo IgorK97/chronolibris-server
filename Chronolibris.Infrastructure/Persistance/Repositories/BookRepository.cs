@@ -54,12 +54,12 @@ namespace Chronolibris.Infrastructure.Persistance.Repositories
                     Stats = b.IsReviewable ? new
                     {
                         AverageRating = b.Reviews
-                                        .Where(r => !r.IsDeleted)
+                                        .Where(r => r.DeletedAt==null)
                                         .Average(r => (decimal?)r.Score) ??0m,
-                        RatingsCount = b.Reviews.Count(r => !r.IsDeleted),
-                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && !r.IsDeleted),
+                        RatingsCount = b.Reviews.Count(r => r.DeletedAt==null),
+                        ReviewsCount = b.Reviews.Count(r => r.ReviewText != null && r.DeletedAt == null),
                         CommentsCount = b.Comments.Count(),
-                        UserRating = b.Reviews.Where(r => r.UserId == userId && !r.IsDeleted)
+                        UserRating = b.Reviews.Where(r => r.UserId == userId && r.DeletedAt == null)
                                         .Select(r => (decimal?)r.Score).FirstOrDefault()
                     } : null,
                     IsFavorite = b.Shelves.Any(s => s.UserId == userId && s.ShelfTypeId == ShelfTypes.FAVORITES_CODE),

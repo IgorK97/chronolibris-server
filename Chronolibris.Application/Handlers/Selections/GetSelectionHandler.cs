@@ -16,9 +16,12 @@ namespace Chronolibris.Application.Handlers.Selections
 
         public async Task<SelectionDetails?> Handle(GetSelectionQuery request, CancellationToken ct)
         {
-            var selection = await _repository.GetByIdAsync(request.SelectionId, request.UserId, request.UserRole, ct);
+            var selection = await _repository.GetByIdAsync(request.SelectionId, ct);
 
             if (selection == null)
+                return null;
+
+            if ((request.UserId == 0 || !(request.UserRole == "admin" || request.UserRole == "moderator")) && selection?.IsActive == false)
                 return null;
 
             return new SelectionDetails

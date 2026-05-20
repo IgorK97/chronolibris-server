@@ -678,7 +678,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     IsAvailable = b.IsAvailable,
                     IsReviewable = b.IsReviewable,
                     AverageRating = b.Reviews
-                        .Where(r => !r.IsDeleted)
+                        .Where(r => r.DeletedAt==null)
                         .Average(r => (double?)r.Score),
                     IsFavorite = userId != null &&
                         b.BookShelves.Any(bs =>

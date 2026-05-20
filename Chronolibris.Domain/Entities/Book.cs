@@ -17,8 +17,10 @@ namespace Chronolibris.Domain.Entities
         public long LanguageId { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
+        public long CreatedBy { get; set; }
         [ConcurrencyCheck]
         public DateTime? UpdatedAt { get; set; }
+        public long? UpdatedBy { get; set; }
         public int? Year { get; set; }
         [MaxLength(255)]
         public string? Bbk { get; set; }

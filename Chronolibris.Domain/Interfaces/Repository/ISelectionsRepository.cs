@@ -6,7 +6,6 @@ namespace Chronolibris.Domain.Interfaces.Repository
 {
     public interface ISelectionsRepository : IGenericRepository<Selection>
     {
-        Task<Selection?> GetByIdAsync(long id, long userId, string userRole, CancellationToken token = default);
         Task<IEnumerable<Selection>> GetActiveSelectionsAsync(CancellationToken token = default);
         Task<List<SelectionDetails>> GetSelectionsAsync(
             long? lastId,
@@ -17,7 +16,6 @@ namespace Chronolibris.Domain.Interfaces.Repository
         Task<bool> DeleteAsync(long id, CancellationToken ct);
         Task<bool> IsBookInSelection(long bookId, long selectionId, CancellationToken token = default);
         Task<long> CreateAsync(Selection selection, CancellationToken ct);
-        Task<bool> UpdateAsync(long selectionId, string? name, string? description, bool? isActive, CancellationToken ct);
         Task AddBookToSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         Task<bool> RemoveBookFromSelectionAsync(long selectionId, long bookId, CancellationToken ct);
         Task<List<long>> SeekBookInSelections(long bookId, CancellationToken ct);
