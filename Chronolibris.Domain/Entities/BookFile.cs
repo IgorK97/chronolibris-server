@@ -33,6 +33,7 @@ namespace Chronolibris.Domain.Entities
         //public long CreatedBy { get; set; }
         //public required int Version { get; set; } = 0;
         [Required]
+        [ConcurrencyCheck]
         public long StatusId { get; set; }
         [Required]
 

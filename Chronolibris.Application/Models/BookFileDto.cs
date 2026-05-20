@@ -13,6 +13,8 @@
         public bool? HistoricalText { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
+        public DateTime? HiddenAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public long BookFileStatusId { get; set; }
         public string? BookFileStatusName { get; set; }
     }

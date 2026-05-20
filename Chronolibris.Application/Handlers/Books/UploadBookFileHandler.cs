@@ -54,6 +54,7 @@ namespace Chronolibris.Application.Handlers.Books
                 OriginalSize = request.FileSizeBytes,
                 IsReadable = request.IsReadable,
                 CreatedAt = DateTime.UtcNow,
+                CreatedBy = request.CreatedBy,
                 StatusId = BookFileStatuses.PENDING,
                 HistoricalText = request.HistoricalText
             };

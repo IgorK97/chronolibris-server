@@ -201,20 +201,22 @@ app.MapFallbackToFile("index.html");
 //    Authorization = new[] { new HangfireAuthFilter() },
 //    DashboardTitle = "My App Jobs"
 //});
-
-app.UseOpenApi(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.PostProcess = (document, request) =>
+    app.UseOpenApi(options =>
     {
-        document.Servers.Clear();
-        document.Servers.Add(new NSwag.OpenApiServer
+        options.PostProcess = (document, request) =>
         {
-            Url = "https://localhost:7016",
-            Description = "Local HTTPS (dev)"
-        });
-    };
-});
-app.UseSwaggerUI();
+            document.Servers.Clear();
+            document.Servers.Add(new NSwag.OpenApiServer
+            {
+                Url = "https://localhost:7016",
+                Description = "Local HTTPS (dev)"
+            });
+        };
+    });
+    app.UseSwaggerUI();
+}
 app.MapControllers();
 
 //app.Lifetime.ApplicationStarted.Register(async () =>

@@ -8,6 +8,7 @@ using MediatR;
 namespace Chronolibris.Application.Handlers.Books
 {
     public record CreateBookCommand(
+        long userId,
         string Title,
         string Description,
         long CountryId,
@@ -60,6 +61,7 @@ namespace Chronolibris.Application.Handlers.Books
                 PublisherId = cmd.PublisherId,
                 //SeriesId = cmd.SeriesId,
                 CreatedAt = DateTime.UtcNow,
+                CreatedBy = cmd.userId,
                 HasHistoricalVersions = cmd.HasHistoricalVersions,
             };
 

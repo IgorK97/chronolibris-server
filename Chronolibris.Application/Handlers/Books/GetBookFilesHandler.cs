@@ -30,6 +30,8 @@ namespace Chronolibris.Application.Handlers.Books
                 IsReadable = bf.IsReadable,
                 CreatedAt = bf.CreatedAt,
                 CompletedAt = bf.CompletedAt,
+                HiddenAt = bf.HiddenAt,
+                DeletedAt =bf.DeletedAt,
                 //CreatedBy = bf.CreatedBy,
                 //Version = bf.Version,
                 BookFileStatusId = bf.StatusId,

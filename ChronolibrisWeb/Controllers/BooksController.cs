@@ -3,6 +3,7 @@ using Chronolibris.Application.Handlers.Books;
 using Chronolibris.Application.Requests.Books;
 using Chronolibris.Domain.Models;
 using ChronolibrisWeb.InputModels;
+using ChronolibrisWeb.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,10 @@ namespace ChronolibrisWeb.Controllers
         public async Task<ActionResult<long>> CreateBook(
             [FromBody] CreateBookInputModel request, CancellationToken cancellationToken)
         {
-
+            if (!ControllerUtils.TryGetUserId(User, out var userId))
+                return Unauthorized();
             var command = new CreateBookCommand(
+                userId,
                 request.Title,
                 request.Description,
                 request.CountryId,
@@ -55,9 +58,10 @@ namespace ChronolibrisWeb.Controllers
             [FromBody] UpdateBookInputModel request,
             CancellationToken cancellationToken)
         {
-
+            if (!ControllerUtils.TryGetUserId(User, out var userId))
+                return Unauthorized();
             var command = new UpdateBookCommand
-            (id, request.OldUpdatedAt,
+            (id, userId, request.OldUpdatedAt,
                request.Title,
                 request.Description,
                 request.CountryId,
