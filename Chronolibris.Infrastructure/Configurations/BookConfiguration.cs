@@ -26,9 +26,9 @@ namespace Chronolibris.Infrastructure.Configurations
                 .WithMany()
                 .HasForeignKey(b=>b.CreatedBy);
 
-            builder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(b => b.UpdatedBy);
+            //builder.HasOne<User>()
+            //    .WithMany()
+            //    .HasForeignKey(b => b.UpdatedBy);
 
             builder.Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -50,9 +50,9 @@ namespace Chronolibris.Infrastructure.Configurations
                     "CK_books_year_range",
                     "year IS NULL OR (year>=-10000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)+1)");
 
-                t.HasCheckConstraint(
-                    "CK_books_updated",
-                    "(updated_at = NULL AND updated_by = NULL) OR (updated_at != NULL AND updated_by != NULL)");
+                //t.HasCheckConstraint(
+                //    "CK_books_updated",
+                //    "(updated_at is NULL AND updated_by is NULL) OR (updated_at is NOT NULL AND updated_by is NOT NULL)");
             });
 
             builder.HasMany(b => b.Shelves)

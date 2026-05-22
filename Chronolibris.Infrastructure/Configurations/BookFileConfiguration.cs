@@ -26,13 +26,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                     "(status_id != 6 AND hidden_at IS NULL)");
                 t.HasCheckConstraint(
                     "CK_book_files_hidden",
-                    "(hidden_at = NULL AND status_id < 6) OR (hidden_at != NULL AND status_id >=6)");
+                    "(hidden_at is NULL AND status_id < 6) OR (hidden_at is NOT NULL AND status_id >=6)");
                 t.HasCheckConstraint(
                     "CK_book_files_deleted",
-                    "(deleted_at = NULL AND status_id != 7) OR (deleted_at != NULL AND status_id = 7)");
+                    "(deleted_at is NULL AND status_id != 7) OR (deleted_at is NOT NULL AND status_id = 7)");
                 t.HasCheckConstraint(
                     "CK_book_files_completed",
-                    "(completed_at = NULL AND status_id < 4) OR (completed_at != NULL AND status_id >= 4)");
+                    "(completed_at is NULL AND status_id < 4) OR (completed_at is NOT NULL AND status_id >= 4)");
                 });
 
             builder.HasOne(bf => bf.BookFileStatus)
@@ -47,13 +47,13 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .WithMany()
                 .HasForeignKey(b => b.CreatedBy);
 
-            builder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(b => b.HiddenBy);
+            //builder.HasOne<User>()
+            //    .WithMany()
+            //    .HasForeignKey(b => b.HiddenBy);
 
-            builder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(b => b.DeletedBy);
+            //builder.HasOne<User>()
+            //    .WithMany()
+            //    .HasForeignKey(b => b.DeletedBy);
 
             //builder.Property(bf => bf.HistoricalText);
 

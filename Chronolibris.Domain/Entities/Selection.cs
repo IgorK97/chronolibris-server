@@ -13,7 +13,7 @@ namespace Chronolibris.Domain.Entities
         public required long CreatedBy { get; set; }
         public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public long? UpdatedBy { get; set; }
+        //public long? UpdatedBy { get; set; }
         //public required int SelectionTypeId { get; set; }
         //public SelectionType SelectionType { get; set; } = null!;
         public ICollection<Book> Books = new List<Book>();

@@ -25,9 +25,9 @@ namespace Chronolibris.Domain.Entities
         public long CreatedBy { get; set; }
         public DateTime? CompletedAt { get; set; }
         public DateTime? HiddenAt { get; set; }
-        public long? HiddenBy { get; set; }
+        //public long? HiddenBy { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public long? DeletedBy { get; set; }
+        //public long? DeletedBy { get; set; }
         //public required DateTime UpdatedAt { get; set; }
         //[Required]
         //public long CreatedBy { get; set; }
@@ -36,7 +36,6 @@ namespace Chronolibris.Domain.Entities
         [ConcurrencyCheck]
         public long StatusId { get; set; }
         [Required]
-
         public Book Book { get; set; } = null!;
         public Format Format { get; set; } = null!;
         public ICollection<BookFragment> Fragments { get; set; } = [];

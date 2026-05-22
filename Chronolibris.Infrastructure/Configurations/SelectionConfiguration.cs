@@ -14,18 +14,18 @@ namespace Chronolibris.Infrastructure.Configurations
                 .HasForeignKey(s => s.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(s => s.UpdatedBy);
+            //builder.HasOne<User>()
+            //    .WithMany()
+            //    .HasForeignKey(s => s.UpdatedBy);
 
             builder.Property(s => s.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.ToTable("selections", t =>
-            {
-                t.HasCheckConstraint(
-                    "CK_selections_updated",
-                    "(updated_at = NULL AND updated_by = NULL) OR (updated_at != NULL AND updated_by != NULL)");
-            });
+            //builder.ToTable("selections", t =>
+            //{
+            //    t.HasCheckConstraint(
+            //        "CK_selections_updated",
+            //        "(updated_at is NULL AND updated_by is NULL) OR (updated_at is NOT NULL AND updated_by is NOT NULL)");
+            //});
 
             DateTime dt = new DateTime(2025, 11, 20, 0, 0, 0, DateTimeKind.Utc);
 
