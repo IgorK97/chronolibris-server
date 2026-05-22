@@ -28,7 +28,7 @@ namespace Chronolibris.Application.Handlers.Books
             {
                 bookFile.StatusId = BookFileStatuses.ARCHIVE;
                 bookFile.HiddenAt = DateTime.UtcNow;
-                bookFile.HiddenBy = request.UserId;
+                //bookFile.HiddenBy = request.UserId;
                 _unitOfWork.BookFiles.Update(bookFile);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
@@ -36,7 +36,7 @@ namespace Chronolibris.Application.Handlers.Books
             {
                 bookFile.StatusId=BookFileStatuses.DELETED;
                 bookFile.DeletedAt = DateTime.UtcNow;
-                bookFile.DeletedBy = request.UserId;
+                //bookFile.DeletedBy = request.UserId;
                 //_unitOfWork.BookFiles.Delete(bookFile);
                 //await _unitOfWork.SaveChangesAsync(cancellationToken);
                 _unitOfWork.BookFiles.Update(bookFile);

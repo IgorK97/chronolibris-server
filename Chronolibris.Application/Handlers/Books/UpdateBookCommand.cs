@@ -54,7 +54,7 @@ namespace Chronolibris.Application.Handlers.Books
             DateTime date = DateTime.UtcNow;
             UpdateBookFields(book, cmd);
             book.UpdatedAt = date;
-            book.UpdatedBy = cmd.UserId;
+            //book.UpdatedBy = cmd.UserId;
 
             if (!string.IsNullOrWhiteSpace(cmd.CoverBase64))
             {

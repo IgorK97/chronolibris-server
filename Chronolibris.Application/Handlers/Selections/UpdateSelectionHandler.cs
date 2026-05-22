@@ -23,7 +23,7 @@ namespace Chronolibris.Application.Handlers.Selections
             if (request.Description != null) selection.Description = request.Description;
             if (request.IsActive.HasValue) selection.IsActive = request.IsActive.Value;
             selection.UpdatedAt = DateTime.UtcNow;
-            selection.UpdatedBy = request.UserId;
+            //selection.UpdatedBy = request.UserId;
 
             await uow.SaveChangesAsync(ct);
 
