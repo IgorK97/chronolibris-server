@@ -5,7 +5,7 @@ namespace Chronolibris.Domain.Entities
     public class Format
     {
         [Key]
-        public required int Id { get; set; }
+        public required long Id { get; set; }
         [MaxLength(50)]
         public required string Name { get; set; }
     }

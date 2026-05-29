@@ -83,16 +83,36 @@ namespace Chronolibris.Application.Handlers.Reports
             var activeTask = await _unitOfWork.ModerationTasks.GetActiveByTarget(request.TargetId,
                 request.TargetTypeId, cancellationToken);
 
-            var report = new Report
+            long? bookId = null;
+            long? commentId = null;
+            long? reviewId = null;
+
+            if(request.TargetTypeId == 1)
             {
-                TargetId = request.TargetId,
-                TargetTypeId = request.TargetTypeId,
-                ReasonTypeId = request.ReasonTypeId,
-                Description = request.Description,
-                CreatedBy = request.UserId,
-                CreatedAt = now,
-                ModerationTaskId = activeTask?.Id ?? null,
-            };
+                bookId = request.TargetId;
+            }
+            else if(request.TargetTypeId == 2)
+            {
+                reviewId = request.TargetId;
+            }
+            else if(request.TargetTypeId == 3)
+            {
+                commentId = request.TargetId;
+            }
+            else throw new ChronolibrisException("Неверный тип жалобы", ErrorType.Validation);
+
+            var report = new Report
+                {
+                    //TargetId = request.TargetId,
+                    BookId = bookId,
+                    ReviewId = reviewId,
+                    CommentId = commentId,
+                    ReasonTypeId = request.ReasonTypeId,
+                    Description = request.Description,
+                    CreatedBy = request.UserId,
+                    CreatedAt = now,
+                    ModerationTaskId = activeTask?.Id ?? null,
+                };
 
             await _unitOfWork.Reports.AddAsync(report, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

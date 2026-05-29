@@ -19,7 +19,7 @@ namespace Chronolibris.Application.Handlers.References.Formats
             var formats = await _unitOfWork.Formats.GetAllAsync(cancellationToken);
             return formats.Select(f => new FormatDto
             {
-                Id = f.Id,
+                Id = (int)f.Id,
                 Name = f.Name
             });
         }

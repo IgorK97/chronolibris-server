@@ -14,19 +14,44 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
 
         public async Task AttachReportsToTaskAsync(long taskId, long targetId, long targetTypeId, CancellationToken token)
         {
-            await _context.Reports.Include(r => r.ModerationTask)
-                .Where(r => r.TargetId == targetId &&
-                            r.TargetTypeId == targetTypeId &&
-                            r.ModerationTaskId == null)
+            IQueryable<Report> reportsToUpdate = _context.Reports.Include(r => r.ModerationTask);
+            if(targetTypeId == 1)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.BookId == targetId);
+            }
+            else if(targetTypeId == 2)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.ReviewId == targetId);
+            }
+            else if(targetTypeId == 3)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.CommentId == targetId);
+            }
+            else throw new ChronolibrisException("Неверный тип цели", ErrorType.Validation);
+
+            await reportsToUpdate.Where(r => r.ModerationTaskId == null)
                 .ExecuteUpdateAsync(s => s.SetProperty(r => r.ModerationTaskId, taskId), token);
         }
 
         public async Task<Report?> GetLastUserReport(long UserId, long TargetTypeId, long TargetId, long ReasonTypeId, CancellationToken token = default)
         {
+            IQueryable<Report> reportsToUpdate = _context.Reports.Include(r => r.ModerationTask);
+            if (TargetTypeId == 1)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.BookId == TargetId);
+            }
+            else if (TargetTypeId == 2)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.ReviewId == TargetId);
+            }
+            else if (TargetTypeId == 3)
+            {
+                reportsToUpdate = reportsToUpdate.Where(r => r.CommentId == TargetId);
+            }
+            else throw new ChronolibrisException("Неверный тип цели", ErrorType.Validation);
+
             return await _context.Reports.Include(r => r.ModerationTask)
                 .Where(r => r.CreatedBy == UserId
-                && r.TargetId == TargetId 
-                && r.TargetTypeId == TargetTypeId
                 && r.ReasonTypeId == ReasonTypeId 
                 //&& (r.ModerationTaskId== null || 
                 //r.ModerationTask!=null && r.ModerationTask.StatusId==2)
@@ -46,7 +71,19 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 .Include(r=>r.ModerationTask);
             if(TargetTypeFilter && LastTargetTypeId is not null)
             {
-                query = query.Where(r => r.TargetTypeId == LastTargetTypeId);
+                if(LastTargetTypeId == 1)
+                {
+                    query = query.Where(r => r.BookId == LastTargetId);
+                }
+                else if(LastTargetTypeId == 2)
+                {
+                    query = query.Where(r => r.ReviewId == LastTargetId);
+                }
+                else if(LastTargetTypeId == 3)
+                {
+                    query = query.Where(r => r.CommentId == LastTargetId);
+                }
+                else throw new ChronolibrisException("Неверный тип цели", ErrorType.Validation);
             }
             //if(ReportTypeFilter && LastReportTypeId is not null)
             //{
@@ -65,7 +102,16 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                 }
             }
             var queryGrouping = query
-                .GroupBy(r => new { r.TargetId, r.TargetTypeId })
+                .GroupBy(r => new {
+                    TargetId = r.BookId != null ? r.BookId.Value
+                 : r.ReviewId != null ? r.ReviewId.Value
+                 : r.CommentId != null ? r.CommentId.Value
+                 : 0L,
+                    TargetTypeId = r.BookId != null ? 1L
+                     : r.ReviewId != null ? 2L
+                     : r.CommentId != null ? 3L
+                     : 0L
+                })
                 .Select(r=>new ReportShortDto
                 {
                      Count = r.Count(),
@@ -77,7 +123,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
                     TargetTypeId = r.Key.TargetTypeId,
                     ReasonTypeIds = r.Select(r =>r.ReasonTypeId).Distinct().ToList(),
                     Comment = r
-                     .Where(r => r.ModerationTaskId!=null).Select(r => r.ModerationTask.Comment).FirstOrDefault() ?? "",
+                     .Where(r => r.ModerationTaskId!=null).Select(r => r.ModerationTask.CommentText).FirstOrDefault() ?? "",
                     //ReasonTypeId = r.Select(r=>r.ReasonTypeId).FirstOrDefault(),
                     //TargetId = r.Select(r=>r.TargetId).FirstOrDefault(),
                     //TargetTypeId = r.Select(r=>r.TargetTypeId).FirstOrDefault(),
@@ -160,9 +206,20 @@ namespace Chronolibris.Infrastructure.DataAccess.Persistance.Repositories
         public async Task<List<ReportDto>> GetTargetReports(long TargetId, long TargetTypeId, long ReportTypeId, int Count, long? LastReportId)
         {
             IQueryable<Report> query = _context.Reports
-                .AsNoTracking().Where(r=>r.TargetId==TargetId && r.TargetTypeId==TargetTypeId
+                .AsNoTracking();
+            
+            if(TargetTypeId==1)
+                query = query.Where(r=>r.BookId==TargetTypeId
                 && r.ReasonTypeId==ReportTypeId);
-
+            else if(TargetTypeId==2)
+                query = query.Where(r=>r.ReviewId== TargetTypeId
+                && r.ReasonTypeId==ReportTypeId);
+            else if(TargetTypeId==3)
+            {
+                 query = query.Where(r=>r.CommentId== TargetTypeId
+                 && r.ReasonTypeId==ReportTypeId);
+            }
+            else throw new ChronolibrisException("Неверный тип цели", ErrorType.Validation);
             if (LastReportId != null)
             {
                 query = query.Where(r => r.Id > LastReportId);

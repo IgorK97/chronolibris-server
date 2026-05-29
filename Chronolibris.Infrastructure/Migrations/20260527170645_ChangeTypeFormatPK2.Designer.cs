@@ -4,6 +4,7 @@ using Chronolibris.Domain.Entities;
 using Chronolibris.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chronolibris.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260527170645_ChangeTypeFormatPK2")]
+    partial class ChangeTypeFormatPK2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1084,19 +1087,11 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("BookId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("book_id");
-
-                    b.Property<long?>("CommentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("comment_id");
-
-                    b.Property<string>("CommentText")
+                    b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)")
-                        .HasColumnName("comment_text");
+                        .HasColumnName("comment");
 
                     b.Property<long>("ModeratedBy")
                         .HasColumnType("bigint")
@@ -1105,10 +1100,6 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("resolved_at");
-
-                    b.Property<long?>("ReviewId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("review_id");
 
                     b.Property<DateTime>("StartedAt")
                         .ValueGeneratedOnAdd()
@@ -1120,34 +1111,32 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("status_id");
 
+                    b.Property<long>("TargetId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("target_id");
+
+                    b.Property<long>("TargetTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("target_type_id");
+
                     b.HasKey("Id")
                         .HasName("pk_moderation_tasks");
-
-                    b.HasIndex("BookId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_moderation_tasks_one_book_only")
-                        .HasFilter("status_id = 2");
-
-                    b.HasIndex("CommentId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_moderation_tasks_one_comment_only")
-                        .HasFilter("status_id = 2");
 
                     b.HasIndex("ModeratedBy")
                         .HasDatabaseName("ix_moderation_tasks_moderated_by");
 
-                    b.HasIndex("ReviewId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_moderation_tasks_one_review_only")
-                        .HasFilter("status_id = 2");
-
                     b.HasIndex("StatusId")
                         .HasDatabaseName("ix_moderation_tasks_status_id");
 
-                    b.ToTable("moderation_tasks", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_moderation_task_target", "book_id IS NOT NULL OR review_id IS NOT NULL OR comment_id IS NOT NULL");
-                        });
+                    b.HasIndex("TargetTypeId")
+                        .HasDatabaseName("ix_moderation_tasks_target_type_id");
+
+                    b.HasIndex("TargetId", "TargetTypeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_moderation_tasks_one_active_only")
+                        .HasFilter("status_id = 2");
+
+                    b.ToTable("moderation_tasks", (string)null);
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Person", b =>
@@ -1390,14 +1379,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("BookId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("book_id");
-
-                    b.Property<long?>("CommentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("comment_id");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -1422,18 +1403,16 @@ namespace Chronolibris.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("reason_type_id");
 
-                    b.Property<long?>("ReviewId")
+                    b.Property<long>("TargetId")
                         .HasColumnType("bigint")
-                        .HasColumnName("review_id");
+                        .HasColumnName("target_id");
+
+                    b.Property<long>("TargetTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("target_type_id");
 
                     b.HasKey("Id")
                         .HasName("pk_reports");
-
-                    b.HasIndex("BookId")
-                        .HasDatabaseName("ix_reports_book_id");
-
-                    b.HasIndex("CommentId")
-                        .HasDatabaseName("ix_reports_comment_id");
 
                     b.HasIndex("CreatedBy")
                         .HasDatabaseName("ix_reports_created_by");
@@ -1444,13 +1423,10 @@ namespace Chronolibris.Infrastructure.Migrations
                     b.HasIndex("ReasonTypeId")
                         .HasDatabaseName("ix_reports_reason_type_id");
 
-                    b.HasIndex("ReviewId")
-                        .HasDatabaseName("ix_reports_review_id");
+                    b.HasIndex("TargetTypeId")
+                        .HasDatabaseName("ix_reports_target_type_id");
 
-                    b.ToTable("reports", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_report_target", "book_id IS NOT NULL OR review_id IS NOT NULL OR comment_id IS NOT NULL");
-                        });
+                    b.ToTable("reports", (string)null);
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReportReasonType", b =>
@@ -1541,6 +1517,44 @@ namespace Chronolibris.Infrastructure.Migrations
                         {
                             Id = 4L,
                             Name = "Отклонено"
+                        });
+                });
+
+            modelBuilder.Entity("Chronolibris.Domain.Entities.ReportTargetType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_report_target_types");
+
+                    b.ToTable("report_target_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Книги"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Отзывы"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Комментарии"
                         });
                 });
 
@@ -2654,30 +2668,12 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.ModerationTask", b =>
                 {
-                    b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_moderation_tasks_books_book_id");
-
-                    b.HasOne("Chronolibris.Domain.Entities.Comment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_moderation_tasks_comments_comment_id");
-
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("ModeratedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_moderation_tasks_users_moderated_by");
-
-                    b.HasOne("Chronolibris.Domain.Entities.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_moderation_tasks_reviews_review_id");
 
                     b.HasOne("Chronolibris.Domain.Entities.ReportStatus", "Status")
                         .WithMany("Tasks")
@@ -2686,13 +2682,16 @@ namespace Chronolibris.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_moderation_tasks_report_statuses_status_id");
 
-                    b.Navigation("Book");
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("Review");
+                    b.HasOne("Chronolibris.Domain.Entities.ReportTargetType", "TargetType")
+                        .WithMany("ModerationTasks")
+                        .HasForeignKey("TargetTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_moderation_tasks_report_target_types_target_type_id");
 
                     b.Navigation("Status");
+
+                    b.Navigation("TargetType");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReadingProgress", b =>
@@ -2716,18 +2715,6 @@ namespace Chronolibris.Infrastructure.Migrations
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Report", b =>
                 {
-                    b.HasOne("Chronolibris.Domain.Entities.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_reports_books_book_id");
-
-                    b.HasOne("Chronolibris.Domain.Entities.Comment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_reports_comments_comment_id");
-
                     b.HasOne("Chronolibris.Infrastructure.Data.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
@@ -2748,21 +2735,18 @@ namespace Chronolibris.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_reports_report_reasons_reason_type_id");
 
-                    b.HasOne("Chronolibris.Domain.Entities.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId")
+                    b.HasOne("Chronolibris.Domain.Entities.ReportTargetType", "TargetType")
+                        .WithMany("Reports")
+                        .HasForeignKey("TargetTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_reports_reviews_review_id");
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Comment");
+                        .IsRequired()
+                        .HasConstraintName("fk_reports_report_target_types_target_type_id");
 
                     b.Navigation("ModerationTask");
 
                     b.Navigation("ReasonType");
 
-                    b.Navigation("Review");
+                    b.Navigation("TargetType");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Review", b =>
@@ -3003,6 +2987,13 @@ namespace Chronolibris.Infrastructure.Migrations
             modelBuilder.Entity("Chronolibris.Domain.Entities.ReportStatus", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Chronolibris.Domain.Entities.ReportTargetType", b =>
+                {
+                    b.Navigation("ModerationTasks");
+
+                    b.Navigation("Reports");
                 });
 
             modelBuilder.Entity("Chronolibris.Domain.Entities.Review", b =>

@@ -36,46 +36,41 @@ namespace Chronolibris.Application.Handlers.Reports
                     throw new ChronolibrisException("Задача должна быть в статусе 'В работе'", ErrorType.Validation);
 
                 var now = DateTime.UtcNow;
-                task.Comment = command.Comment;
+                task.CommentText = command.Comment;
                 task.StatusId = command.Resolution ? 3 : 4;
                 task.ResolvedAt = now;
                 if (command.Resolution)
                 {
-                    switch (task.TargetTypeId)
+                    if(task.CommentId is not null)
                     {
-                        case 3:
-                            {
-                                var comment = await _unitOfWork.Comments.GetByIdAsync(task.TargetId, token);
-                                if(comment is not null && comment.DeletedAt == null)
-                                {
-                                    //comment.IsDeleted = true;
-                                    comment.DeletedAt = now;
-                                }
-                                break;
-                            }
-                        case 2:
-                            {
-                                var review = await _unitOfWork.Reviews.GetByIdAsync(task.TargetId, token);
-                                if(review is not null && review.DeletedAt == null)
-                                {
-                                    //review.IsDeleted = true;
-                                    review.DeletedAt = now;
-                                    //review.ModeratedAt = now;
-                                }
-                                break;
-                            }
-                        case 1:
-                            {
-                                var book = await _unitOfWork.Books.GetByIdAsync(task.TargetId, token);
-                                if(book is not null && book.IsAvailable)
-                                {
-                                    book.IsAvailable = false;
-                                    book.UpdatedAt = now;
-                                }
-                                break;
-                            }
+                        var comment = await _unitOfWork.Comments.GetByIdAsync(task.CommentId.Value, token);
+                        if(comment is not null && comment.DeletedAt == null)
+                        {
+                            //comment.IsDeleted = true;
+                            comment.DeletedAt = now;
+                        }
                     }
-                    
+
+                    if(task.ReviewId is not null)
+                    {
+                        var review = await _unitOfWork.Reviews.GetByIdAsync(task.ReviewId.Value, token);
+                        if(review is not null && review.DeletedAt == null)
+                        {
+                            //review.IsDeleted = true;
+                            review.DeletedAt = now;
+                            //review.ModeratedAt = now;
+                        }
+                    }
+
+                    if(task.BookId is not null)
+                    {
+                        var book = await _unitOfWork.Books.GetByIdAsync(task.BookId.Value, token);
+                        if(book is not null && book.IsAvailable)
+                        {
+                            book.IsAvailable = false;
+                            book.UpdatedAt = now;
+                        }
+                    }
                 }
                 await _unitOfWork.SaveChangesAsync(token);
                 //await transaction.CommitAsync(token);

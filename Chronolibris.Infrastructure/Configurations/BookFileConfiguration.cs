@@ -40,6 +40,11 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasForeignKey(b => b.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(bf=>bf.Format)
+                .WithMany()
+                .HasForeignKey(bf=>bf.FormatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(bf => bf.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 

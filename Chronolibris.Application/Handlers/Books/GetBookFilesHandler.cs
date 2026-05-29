@@ -22,7 +22,7 @@ namespace Chronolibris.Application.Handlers.Books
             {
                 Id = bf.Id,
                 BookId = bf.BookId,
-                FormatId = bf.FormatId,
+                FormatId = (int)bf.FormatId,
                 FormatName = bf.Format?.Name,
                 StorageUrl = bf.StorageUrl,
                 FileSizeBytes = bf.OriginalSize,

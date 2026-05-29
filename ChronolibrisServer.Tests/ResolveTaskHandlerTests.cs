@@ -62,16 +62,33 @@ namespace ChronolibrisServer.Tests.Reports
             return new ResolveTaskCommand(taskId, resolution, moderatorId, "Test");
         }
 
-        private ModerationTask BuildTask(long targetTypeId = 3)
+        private ModerationTask BuildTask(ReportTargetType targetTypeId = ReportTargetType.Comment)
         {
+            if(targetTypeId == ReportTargetType.Book)
             return new ModerationTask()
             {
                 Id = taskId,
                 ModeratedBy = moderatorId,
                 StatusId = 2,
-                TargetId = targetId,
-                TargetTypeId = targetTypeId,
+                BookId = targetId,
             };
+            else if(targetTypeId == ReportTargetType.Review)
+            return new ModerationTask()
+            {
+                Id = taskId,
+                ModeratedBy = moderatorId,
+                StatusId = 2,
+                ReviewId = targetId,
+            };
+            else if(targetTypeId == ReportTargetType.Comment)
+            return new ModerationTask()
+            {
+                Id = taskId,
+                ModeratedBy = moderatorId,
+                StatusId = 2,
+                CommentId = targetId,
+            };
+            else throw new ChronolibrisException("Неверный тип контента", ErrorType.Validation);
         }
 
         private ResolveTaskCommandHandler CreateHandler()
@@ -99,7 +116,7 @@ namespace ChronolibrisServer.Tests.Reports
         [Fact]
         public async Task Handle_ResolutionFalse_TaskRejected_ContentUntouched()
         {
-            var task = BuildTask(targetTypeId: 3);
+            var task = BuildTask();
             _taskRepoMock
                 .Setup(r => r.GetByIdAsync(taskId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(task);
@@ -114,7 +131,7 @@ namespace ChronolibrisServer.Tests.Reports
         [Fact]
         public async Task Handle_ResolutionTrue_CommentTarget_CommentDeleted()
         {
-            var task = BuildTask(targetTypeId: 3);
+            var task = BuildTask();
             var comment = new Comment { Id = targetId,Text="Text",CreatedAt = DateTime.UtcNow, DeletedAt=null };
 
             _taskRepoMock

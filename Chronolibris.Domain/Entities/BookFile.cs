@@ -10,7 +10,7 @@ namespace Chronolibris.Domain.Entities
         [Required]
         public long BookId { get; set; }
         [Required]
-        public int FormatId { get; set; }
+        public long FormatId { get; set; }
         [MaxLength(2048)]
         [Required]
         public string StorageUrl { get; set; } = String.Empty;

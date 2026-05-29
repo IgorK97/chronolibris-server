@@ -36,7 +36,7 @@ namespace Chronolibris.Infrastructure.Data
         public DbSet<ModerationTask> ModerationTasks { get; set; }
         public DbSet<ReportReasonType> ReportReasons { get; set; }
         public DbSet<ReportStatus> ReportStatuses { get; set; }
-        public DbSet<ReportTargetType> ReportTargetTypes { get; set; }
+        //public DbSet<ReportTargetType> ReportTargetTypes { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -46,7 +46,6 @@ namespace Chronolibris.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.HasPostgresEnum<PersonRoleKind>();
             modelBuilder.HasPostgresEnum<ContentNature>(
                 name: "content_nature_enum"   

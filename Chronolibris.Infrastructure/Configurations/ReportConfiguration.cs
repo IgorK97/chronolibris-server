@@ -19,10 +19,23 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .HasForeignKey(r => r.ReasonTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(r => r.TargetType)
-                .WithMany(rt => rt.Reports)
-                .HasForeignKey(r => r.TargetTypeId)
+            builder.HasOne(r => r.Book)
+                .WithMany()
+                .HasForeignKey(r => r.BookId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.Review)
+                .WithMany()
+                .HasForeignKey(r => r.ReviewId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.Comment)
+                .WithMany()
+                .HasForeignKey(r => r.CommentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.ToTable("reports", 
+                builder => builder.HasCheckConstraint("ck_report_target", "book_id IS NOT NULL OR review_id IS NOT NULL OR comment_id IS NOT NULL"));
 
             builder.HasOne<User>()
                 .WithMany()

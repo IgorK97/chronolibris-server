@@ -32,15 +32,33 @@ namespace Chronolibris.Application.Handlers.Reports
             }
 
             //var checkNumber = (lastTask?.CheckNumber ?? 0) + 1;
+            long? bookId = null;
+            long? commentId = null;
+            long? reviewId = null;
+
+            if (request.TargetTypeId == 1)
+            {
+                bookId = request.TargetId;
+            }
+            else if (request.TargetTypeId == 2)
+            {
+                reviewId = request.TargetId;
+            }
+            else if (request.TargetTypeId == 3)
+            {
+                commentId = request.TargetId;
+            }
+            else throw new ChronolibrisException("Неверный тип контента", ErrorType.Validation);
 
             var newTask = new ModerationTask
             {
-                TargetId = request.TargetId,
-                TargetTypeId = request.TargetTypeId,
+                BookId = bookId,
+                CommentId = commentId,
+                ReviewId = reviewId,
                 ModeratedBy = request.ModeratorId,
                 StartedAt = DateTime.UtcNow,
                 StatusId = 2,
-                Comment = "",
+                CommentText = "",
                 //CheckNumber = checkNumber,
                 //ReasonTypeId = request.ReportTypeId,
             };
