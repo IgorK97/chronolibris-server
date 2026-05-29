@@ -30,7 +30,7 @@ namespace Chronolibris.Infrastructure.DataAccess.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("moderation_tasks",
-                builder => builder.HasCheckConstraint("ck_moderation_task_target", "book_id IS NOT NULL OR review_id IS NOT NULL OR comment_id IS NOT NULL"));
+                builder => builder.HasCheckConstraint("ck_moderation_task_target", "((book_id IS NOT NULL)::int + (review_id IS NOT NULL)::int + (comment_id IS NOT NULL)::int) = 1"));
 
             builder.HasOne<User>()
                 .WithMany()
